@@ -637,7 +637,7 @@ border-radius:999px;padding:4px 12px;font-size:.7rem;cursor:pointer;font-family:
     <button class="quickbtn" onclick="toggleSinglePick()">단과반으로 둘러보기 →</button><div id="singlePick" style="display:none;margin-top:8px"><div style="font-size:12px;color:#9aa6bd;margin-bottom:6px">신청한 수강 과목을 선택하세요 (단과는 신청 과목만 · 복수 선택 가능)</div><div style="display:flex;flex-wrap:wrap;gap:6px 12px;margin-bottom:8px"><label style="font-size:12.5px;color:#fff;display:flex;align-items:center;gap:4px"><input type="checkbox" class="ssubj" value="민법" checked>1차 민법</label><label style="font-size:12.5px;color:#fff;display:flex;align-items:center;gap:4px"><input type="checkbox" class="ssubj" value="민소법">2차 민사소송법</label></div><button class="quickbtn" onclick="quickLogin('single',getSingleSubjs())">선택 과목으로 입장 →</button></div>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 0917-A · 서버 연결: PSS PATENT ACADEMY</div>
+    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 0917-B · 서버 연결: PSS PATENT ACADEMY</div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -2385,7 +2385,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:rgba(6,12,26,.86);z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:#12233f;border:1px solid #2a3a5c;border-radius:16px;padding:26px;color:#fff"><div style="font-size:12px;font-weight:800;color:#C9A227;letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:#c7cedc;line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:#0a1730;border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:#9aa6bd;font-size:12.5px">학습엔진 1개</span><b style="font-size:26px;color:#C9A227;margin-left:auto">10만 원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:#C9A227;color:#0D1F3C;font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:#0a1730;border:1px solid #2a3a5c;border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:#C9A227;margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:#fff;font-weight:700">박승수 민사법 · <span style="color:#C9A227">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:#9aa6bd;margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:rgba(201,162,39,.16);color:#C9A227;padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid #2a3a5c;border-radius:10px;background:transparent;color:#c7cedc;font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log("PSS Patent OS 빌드 0917-A");
+console.log("PSS Patent OS 빌드 0917-B");
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
 (function(){
   var LOCAL_KEY="pss_orders";
@@ -2476,6 +2476,46 @@ console.log("PSS Patent OS 빌드 0917-A");
     toast(what+"은(는) 목차 결제·입금 확인 후 열립니다 — 강의 선택에서 목차를 골라 신청하세요");
     return false;
   };
+})();
+</script>
+<script>
+/* ===== 서버 연동: 운영 설정(settings) — 가격표·계좌·시험일·기간·연락처·카탈로그·공지·자료실 ===== */
+(function(){
+  var KEYS=["pss_toc_prices","pss_price_default","pss_bank","pss_exam_dates","pss_term","pss_contact","pss_catalog","pss_notices","pss_files"];
+  function realAdmin(){ return typeof user!=="undefined"&&user&&user.admin&&!user.demo&&user.email!=="open-admin"; }
+  function applyLocal(k,v){
+    try{ localStorage.setItem(k, k==="pss_price_default"?String(v):JSON.stringify(v)); }catch(e){}
+    if(k==="pss_toc_prices") window.PSS_TOC_PRICES=v||{};
+    if(k==="pss_price_default"&&parseInt(v,10)>0) window.PSS_PRICE_TOC=parseInt(v,10);
+    if(k==="pss_bank"&&v) window.PSS_BANK=v;
+  }
+  window.pssLoadSettings=async function(){
+    try{
+      var r=await sb.from("settings").select("key,value").in("key",KEYS);
+      if(r.error) throw r.error;
+      (r.data||[]).forEach(function(row){ applyLocal(row.key,row.value); });
+      try{ paintDday(); }catch(e){}
+    }catch(err){ console.error("[supabase] 설정 불러오기",err); }
+  };
+  var pend={}, timer=null;
+  function push(k,v){
+    if(!realAdmin()) return;
+    pend[k]=v; clearTimeout(timer);
+    timer=setTimeout(async function(){
+      var rows=Object.keys(pend).map(function(key){ return {key:key,value:pend[key],updated_at:new Date().toISOString()}; }); pend={};
+      var r=await sb.from("settings").upsert(rows,{onConflict:"key"});
+      if(r.error) toast("설정 서버 저장 실패: "+r.error.message); else toast("설정이 서버에 저장되어 모든 학생 화면에 반영됩니다");
+    },400);
+  }
+  var oldLss=window._lss;
+  window._lss=function(k,v){ oldLss(k,v); if(KEYS.indexOf(k)>=0) push(k,v); };
+  var oldPrices=window.pssSavePrices;
+  window.pssSavePrices=function(map,def){ oldPrices(map,def); push("pss_toc_prices",window.PSS_TOC_PRICES||{}); if(def>0) push("pss_price_default",def); };
+  var oldBank=window.pssSaveBank;
+  window.pssSaveBank=function(b){ oldBank(b); push("pss_bank",b); };
+  window.pssLoadSettings();
+  var oldAfter=window.pssAfterLogin;
+  window.pssAfterLogin=async function(u){ await window.pssLoadSettings(); return oldAfter(u); };
 })();
 </script>
 </body>
