@@ -599,8 +599,8 @@ body.engopen .chat{bottom:168px}
     <input id="fEmail" type="email" placeholder="example@email.com" autocomplete="username">
     <label class="gl2">비밀번호 <small style="color:#9aa6bd;font-weight:400">(6자 이상)</small></label>
     <input id="fPw" type="password" placeholder="비밀번호" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
-    <div id="profileFields">
-    <div style="font-size:12px;color:#9aa6bd;margin:10px 0 2px">처음 가입할 때만 아래 정보를 입력합니다 · 이미 가입했다면 이메일·비밀번호만 넣고 [로그인] · 관리자 계정은 이메일·비밀번호만</div>
+    <div id="profileFields" style="display:none">
+    <div style="font-size:12px;color:#9aa6bd;margin:10px 0 2px">처음 오신 분만 아래를 채워 주세요</div>
     <input type="hidden" id="fSchool" value="변리사">
     <label class="gl2">수험 차수</label>
     <select id="fYear">
@@ -613,7 +613,12 @@ body.engopen .chat{bottom:168px}
       <option value="2차">2차 준비 (민사소송법)</option>
       <option value="동차">동차 (1·2차 함께)</option>
     </select>
-    <label class="gl2">성명</label>
+    <label class="gl2">신청할 반</label>
+      <select id="fPlan">
+        <option value="full">학습반 — 트랙 강의 전체 + 관리·1:1 상담 (35% 할인)</option>
+        <option value="single">단과반 — 목차 단위로 골라 결제</option>
+      </select>
+      <label class="gl2">성명</label>
     <input id="fName" type="text" placeholder="이름을 입력하세요" maxlength="10" onkeydown="if(event.key==='Enter')signup()">
     <label class="gl2">휴대폰 번호 <small style="color:#9aa6bd;font-weight:400">(학습 알림 발송용)</small></label>
     <input id="fPhone" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13" autocomplete="tel" oninput="fmtPhone(this)">
@@ -634,15 +639,15 @@ body.engopen .chat{bottom:168px}
     <div style="font-size:12px;color:#9aa6bd;margin-top:10px">가입은 무료입니다 · 학습반/단과반은 입장 후 <b style="color:var(--gold)">신청 → 입금 → 관리자 승인</b>으로 열립니다</div>
     </div>
     <div class="gerr" id="gerr"></div>
-    <button class="btn gbtn" onclick="login()">로그인 →</button>
-    <button class="btn gbtn" style="margin-top:8px;background:transparent;border:1px solid var(--gold);color:var(--gold)" onclick="signup()">회원가입 (처음 오셨다면) →</button>
+    <button class="btn gbtn" id="btnLogin" onclick="login()">로그인 →</button>
+    <button class="btn gbtn" id="btnSignup" style="margin-top:8px;background:transparent;border:1px solid var(--gold);color:var(--gold)" onclick="openSignup()">처음이신가요? 회원가입 →</button>
     <button class="quickbtn" onclick="resetPw()">비밀번호를 잊으셨나요?</button>
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     <button class="quickbtn" onclick="quickLogin('full')">학습반으로 둘러보기 →</button>
     <button class="quickbtn" onclick="toggleSinglePick()">단과반으로 둘러보기 →</button><div id="singlePick" style="display:none;margin-top:8px"><div style="font-size:12px;color:#9aa6bd;margin-bottom:6px">신청한 수강 과목을 선택하세요 (단과는 신청 과목만 · 복수 선택 가능)</div><div style="display:flex;flex-wrap:wrap;gap:6px 12px;margin-bottom:8px"><label style="font-size:12.5px;color:#fff;display:flex;align-items:center;gap:4px"><input type="checkbox" class="ssubj" value="민법" checked>1차 민법</label><label style="font-size:12.5px;color:#fff;display:flex;align-items:center;gap:4px"><input type="checkbox" class="ssubj" value="민소법">2차 민사소송법</label></div><button class="quickbtn" onclick="quickLogin('single',getSingleSubjs())">선택 과목으로 입장 →</button></div>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 0923-Z · 서버 연결: PSS PATENT ACADEMY</div>
+    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 0923-ZB · 서버 연결: PSS PATENT ACADEMY</div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -1593,6 +1598,16 @@ function applyUser(u){
   user=u; window.userSchool=u.school; window.userName=u.name; window.userPlan=u.plan; window.userSubj=u.subj||null; window.userSubjs=u.subjs||(u.subj?[u.subj]:[]);
   document.getElementById("gate").classList.add("hidden");
   setTimeout(function(){ if(typeof showHome==='function') showHome(); }, 30);
+  setTimeout(function(){
+    try{
+      var jp=localStorage.getItem('pss_join_plan');
+      if(!jp||!u||u.admin||u.demo) return;
+      if(u.plan==='full'||u.plan==='single'||u.applied_at){ localStorage.removeItem('pss_join_plan'); return; }
+      localStorage.removeItem('pss_join_plan');
+      openUpgrade();
+      setTimeout(function(){ try{ rpPick(jp); }catch(e){} },80);
+    }catch(e){}
+  }, 700);
   const chip=document.getElementById("userchip");
   chip.style.display="flex";
   document.getElementById("uinfo").innerHTML=`<b>${u.name}</b>${u.year?' · '+u.year:''}`;
@@ -1621,6 +1636,17 @@ function fmtPhone(el){
   el.value = d.length<4 ? d : d.length<8 ? d.slice(0,3)+"-"+d.slice(3) : d.slice(0,3)+"-"+d.slice(3,d.length-4)+"-"+d.slice(-4);
 }
 function phoneOk(p){ return /^01[016789]-\d{3,4}-\d{4}$/.test(p||""); }
+function openSignup(){
+  var box=document.getElementById("profileFields"), btn=document.getElementById("btnSignup"), lg=document.getElementById("btnLogin");
+  if(box.style.display==="none"){
+    box.style.display="";
+    btn.textContent="회원가입 하기 →"; btn.style.background="var(--gold)"; btn.style.color="#0D1F3C";
+    if(lg){ lg.textContent="이미 가입했다면 로그인 →"; lg.style.background="transparent"; lg.style.border="1px solid rgba(255,255,255,.25)"; lg.style.color="#fff"; }
+    setTimeout(function(){ var y=document.getElementById("fYear"); if(y) y.focus(); },60);
+    return;
+  }
+  signup();
+}
 function readProfileFields(){
   const school=document.getElementById("fSchool").value;
   const year=document.getElementById("fYear").value;
@@ -1703,6 +1729,7 @@ async function signup(){
     }catch(e){ console.warn("[supabase] dup check",e); }
   }
   err.style.color="";
+  try{ localStorage.setItem('pss_join_plan',(document.getElementById('fPlan')||{}).value||'full'); }catch(e){}
   const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:pf}});
   if(error){
     err.textContent=/already registered/i.test(error.message)?"이미 가입된 이메일입니다. [로그인]을 눌러 주세요":"가입 실패: "+error.message;
@@ -2465,7 +2492,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:rgba(6,12,26,.86);z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:#12233f;border:1px solid #2a3a5c;border-radius:16px;padding:26px;color:#fff"><div style="font-size:12px;font-weight:800;color:#C9A227;letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:#c7cedc;line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:#0a1730;border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:#9aa6bd;font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:#C9A227;margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:#C9A227;color:#0D1F3C;font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:#0a1730;border:1px solid #2a3a5c;border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:#C9A227;margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:#fff;font-weight:700">박승수 민사법 · <span style="color:#C9A227">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:#9aa6bd;margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:rgba(201,162,39,.16);color:#C9A227;padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid #2a3a5c;border-radius:10px;background:transparent;color:#c7cedc;font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log("민사법 덜컥합격 빌드 0923-Z");
+console.log("민사법 덜컥합격 빌드 0923-ZB");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // AI 조교 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
