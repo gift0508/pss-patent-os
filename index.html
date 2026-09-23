@@ -652,7 +652,7 @@ body.engopen .chat{bottom:168px}
     <button class="quickbtn" onclick="toggleSinglePick()">단과반으로 둘러보기 →</button><div id="singlePick" style="display:none;margin-top:8px"><div style="font-size:12px;color:#9aa6bd;margin-bottom:6px">신청한 수강 과목을 선택하세요 (단과는 신청 과목만 · 복수 선택 가능)</div><div style="display:flex;flex-wrap:wrap;gap:6px 12px;margin-bottom:8px"><label style="font-size:12.5px;color:#fff;display:flex;align-items:center;gap:4px"><input type="checkbox" class="ssubj" value="민법" checked>1차 민법</label><label style="font-size:12.5px;color:#fff;display:flex;align-items:center;gap:4px"><input type="checkbox" class="ssubj" value="민소법">2차 민사소송법</label></div><button class="quickbtn" onclick="quickLogin('single',getSingleSubjs())">선택 과목으로 입장 →</button></div>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 0923-ZT · 서버 연결: PSS PATENT ACADEMY</div>
+    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 0923-ZU · 서버 연결: PSS PATENT ACADEMY</div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -1342,9 +1342,9 @@ var FB_ENGINES=[
   {key:"barcase", eng:"barcivil", subj:"민법", name:"변호사 · 민법", sub:"변호사시험 사례형 답안지 양식"},
   {key:"barcase", eng:"barcase", subj:"민사소송법", name:"변호사 · 민사소송법", sub:"변호사시험 사례형 답안지 양식"},
   {key:"barcase", eng:"barcomm", subj:"상법", name:"변호사 · 상법", sub:"변호사시험 사례형 답안지 양식"},
-  {key:"barcase", eng:"baradmin", subj:"행정법", name:"변호사 · 행정법", sub:"변호사시험 사례형 답안지 양식"},
   {key:"barcase", eng:"barall", subj:"민사법", name:"변호사 · 민사법 실전 사례형", sub:"민법·민소법·상법 통합 회차 · 350점"},
-  {key:"barcase", eng:"barrec", subj:"민사법", type:"rec", name:"변호사 · 민사법 기록형", sub:"변호사시험 기록형 답안지 양식 · 175점"}
+  {key:"barcase", eng:"barrec", subj:"민사법", type:"rec", name:"변호사 · 민사법 기록형", sub:"변호사시험 기록형 답안지 양식 · 175점"},
+  {key:"barcase", eng:"baradmin", subj:"행정법", name:"변호사 · 행정법 (번외)", sub:"변호사시험 사례형 답안지 양식"}
 ];
 function ecCards(kicker,title,banner,cards){
   document.getElementById("ecKicker").textContent=kicker;
@@ -2593,7 +2593,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:rgba(6,12,26,.86);z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:#12233f;border:1px solid #2a3a5c;border-radius:16px;padding:26px;color:#fff"><div style="font-size:12px;font-weight:800;color:#C9A227;letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:#c7cedc;line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:#0a1730;border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:#9aa6bd;font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:#C9A227;margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:#C9A227;color:#0D1F3C;font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:#0a1730;border:1px solid #2a3a5c;border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:#C9A227;margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:#fff;font-weight:700">박승수 민사법 · <span style="color:#C9A227">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:#9aa6bd;margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:rgba(201,162,39,.16);color:#C9A227;padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid #2a3a5c;border-radius:10px;background:transparent;color:#c7cedc;font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log("민사법 덜컥합격 빌드 0923-ZT");
+console.log("민사법 덜컥합격 빌드 0923-ZU");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // AI 조교 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
