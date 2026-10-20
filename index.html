@@ -554,6 +554,82 @@ body.engopen .chat{bottom:168px}
 .ecprice{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;margin-top:6px;display:inline-block}
 .ecprice.pay{background:rgba(201,161,71,.18);color:#C9A227}
 .ecprice.free{background:rgba(94,201,143,.18);color:#5ec98f}
+.classroom{width:min(560px,92vw);margin:6px auto 26px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px 18px 13px}
+.cboard{background:linear-gradient(135deg,#1a2c50,#223a66);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:8px;font-size:12px;font-weight:800;color:#d8e0f0;letter-spacing:.5px;margin-bottom:14px}
+.crlive{color:#ff6b6b;font-size:10px;margin-left:6px;animation:crblink 1.6s infinite}
+@keyframes crblink{0%,100%{opacity:1}50%{opacity:.35}}
+.seatgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.seat{height:38px;border-radius:8px 8px 11px 11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:9.5px;color:transparent;transition:.35s}
+.seat.on{background:linear-gradient(160deg,rgba(201,162,39,.28),rgba(201,162,39,.1));border-color:rgba(201,162,39,.5);color:#e8d9a8;box-shadow:0 0 14px rgba(201,162,39,.22)}
+.seat.me{background:linear-gradient(160deg,rgba(201,162,39,.55),rgba(201,162,39,.22));border-color:var(--gold,#C9A227);color:#0D1F3C;font-weight:900;color:#ffe9a8;box-shadow:0 0 20px rgba(201,162,39,.45)}
+.seat.pop{animation:seatpop .6s}
+@keyframes seatpop{0%{transform:scale(.7);box-shadow:0 0 0 rgba(201,162,39,0)}55%{transform:scale(1.12);box-shadow:0 0 26px rgba(201,162,39,.55)}100%{transform:scale(1)}}
+.crfoot{font-size:11.5px;color:#9aa6bd;margin-top:12px;text-align:left}
+.crfoot b{color:var(--gold,#C9A227)}
+.crlog{margin-left:10px;color:#7d879e;font-size:10.5px}
+#homeHero{display:grid;grid-template-columns:380px minmax(0,1fr);grid-template-areas:"logo logo" "tag tag" "chat room" "sub sub";column-gap:24px;align-items:stretch;max-width:1120px;margin:0 auto;min-height:0;padding:34px 24px 40px;text-align:center}
+#homeHero .hero-inner{display:contents}
+#homeHero .hero-logo{grid-area:logo;margin-bottom:12px}
+#homeHero .hero-tag{grid-area:tag;font-size:46px;margin:0 0 30px}
+#homeHero .ccside{grid-area:chat;height:540px}
+#homeHero .classroom{grid-area:room;width:auto;margin:0;display:flex;flex-direction:column;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.035);padding:16px 20px}
+#homeHero .cboard{padding:10px;font-size:12.5px}
+#homeHero .seatgrid{flex:1;grid-auto-rows:1fr;align-content:stretch;gap:12px;margin-top:4px}
+#homeHero .seat{height:auto;min-height:44px;font-size:12px;border-radius:10px 10px 14px 14px}
+#homeHero .crfoot{margin-top:14px}
+#homeHero .hero-sub{grid-area:sub;margin-top:24px}
+.ccside{text-align:left;position:relative;min-width:0}
+.ccside.adm{height:560px;min-height:0}
+.ccadmgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;margin-top:12px}
+.ccchat{height:100%;display:flex;flex-direction:column;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative}
+.ccnotice{padding:12px 14px;background:rgba(232,185,60,.08);border-bottom:1px solid rgba(232,185,60,.35)}
+.ccnt{font-size:.68rem;font-weight:800;color:var(--gold);letter-spacing:.08em;margin-bottom:4px}
+.ccnbody{font-size:.8rem;color:var(--ink);line-height:1.6;max-height:110px;overflow:auto}
+.ccnotice textarea{width:100%;margin-top:8px;background:rgba(0,0,0,.25);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;font-family:inherit;font-size:.78rem;resize:vertical}
+.cchead{padding:9px 14px;font-size:.78rem;font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.cclive{font-size:.66rem;font-weight:500;color:var(--mute)}.cclive.on{color:#5ec98f}
+.ccmsgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ccempty{color:var(--mute);font-size:.75rem;text-align:center;margin:auto}
+.ccmsg{font-size:.8rem;line-height:1.55;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.04)}
+.ccmsg.me{background:rgba(93,140,230,.12)}
+.ccmsg.w{background:rgba(160,110,230,.16);border:1px dashed rgba(190,150,250,.5)}
+.ccmsg.a{background:rgba(232,185,60,.12);border:1px solid rgba(232,185,60,.4)}
+.ccmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.68rem;margin-bottom:2px}
+.ccname{background:none;border:none;padding:0;color:#9fc0ff;font-weight:700;font-size:.72rem;cursor:pointer;font-family:inherit}
+.ccname:hover{text-decoration:underline}
+.ccadm{color:var(--gold);font-size:.72rem}
+.ccreal{color:var(--mute);font-weight:400}
+.ccwl{color:#cdb4ff;font-weight:700}
+.cctime{margin-left:auto;color:var(--mute)}
+.cctext{color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.ccwbar{padding:7px 12px;background:rgba(160,110,230,.18);font-size:.74rem;color:#e3d6ff;justify-content:space-between;align-items:center;gap:8px}
+.ccin{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line)}
+.ccin input{flex:1;min-width:0;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--ink);font-family:inherit;font-size:.82rem;outline:none}
+.ccin input:focus{border-color:var(--gold)}
+.ccfoot{font-size:.62rem;color:var(--mute);padding:0 12px 9px}
+.ccban{position:absolute;inset:0;background:rgba(8,16,34,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#ff9b9b;font-size:.85rem;line-height:1.7;padding:20px}
+.ccpop{position:fixed;z-index:200;background:#1b2b4d;border:1px solid var(--gold);border-radius:10px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.ccpop button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--ink);font-family:inherit;font-size:.8rem;padding:8px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.ccpop button:hover{background:rgba(232,185,60,.15)}
+.ccbanrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 4px;border-top:1px solid rgba(255,255,255,.06);font-size:.78rem}
+@media(max-width:980px){#homeHero{grid-template-columns:1fr;grid-template-areas:"logo" "tag" "room" "chat" "sub";row-gap:18px}#homeHero .hero-tag{font-size:34px;margin-bottom:6px}#homeHero .ccside{height:70vh}#homeHero .classroom{min-height:340px}.ccadmgrid{grid-template-columns:1fr}}
+.crtabs{display:flex;gap:6px;margin:0 0 10px}
+.crtab{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;color:var(--sub);font-family:inherit;font-size:12px;font-weight:800;padding:6px 4px;cursor:pointer}
+.crtab small{font-weight:500;color:var(--mute);margin-left:2px}
+.crtab.on{border-color:var(--gold);color:var(--gold);background:rgba(232,185,60,.1)}
+.crtab.full small{color:#ff9b9b}
+#homeHero .seatgrid{grid-template-columns:repeat(10,1fr);gap:6px}
+#homeHero .seat{min-height:0;font-size:10.5px;letter-spacing:-.3px;overflow:hidden;white-space:nowrap}
+.seat.on{cursor:pointer}.seat.on:hover{border-color:var(--gold)}
+.ccpn{font-size:.68rem;font-weight:500;color:var(--sub);margin-left:auto;margin-right:10px}.ccpn b{color:#5ec98f}
+.ccppl{display:flex;flex-wrap:wrap;gap:5px;padding:8px 12px;max-height:74px;overflow-y:auto;border-bottom:1px solid var(--line);background:rgba(0,0,0,.12)}
+.ccp{background:rgba(94,201,143,.1);border:1px solid rgba(94,201,143,.35);color:#bfe9d1;border-radius:999px;padding:2px 9px;font-size:.68rem;font-family:inherit;cursor:pointer;white-space:nowrap}
+.ccp small{color:var(--mute)}
+.ccp.me{cursor:default;background:rgba(232,185,60,.12);border-color:rgba(232,185,60,.45);color:var(--gold)}
+.ccpnone{font-size:.68rem;color:var(--mute)}
+@media(max-width:520px){#homeHero .hero-tag{font-size:27px;word-break:keep-all}#homeHero{padding:24px 14px 30px}}
+
+.ccexp{border:1px solid var(--line);border-radius:12px;padding:12px 14px}.ccexprow{display:flex;gap:8px;flex-wrap:wrap}.ccexprow select,.ccexprow input{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:.8rem}.ccexpmsg{font-size:.76rem;color:var(--mute);margin-top:6px}
 </style>
 <style>.engmenu{align-items:center}.engmenu .fa{color:#c9a14a;font-weight:800;font-size:.85rem;align-self:center;margin:0 -1px}.engmenu .fa.div{color:#3a4a68;font-weight:400;margin:0 3px}  .secline{border:none;border-top:1px solid rgba(201,162,39,.45);margin:30px 0 22px}
   .hcell.hsnone{background:rgba(255,255,255,.05);color:rgba(255,255,255,.30)}
@@ -667,7 +743,7 @@ body.engopen .chat{bottom:168px}
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 1020-V · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
+    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 1020-W · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -707,6 +783,22 @@ body.engopen .chat{bottom:168px}
       <div class="sub">1년차 · 2년차 · 3년차 이상 인원 · 3년차 이상 비중 <b style="color:var(--gold)" id="akLocal">0%</b></div>
       <div class="bars" id="schoolBars"></div>
     </div>
+    <div class="panel" style="margin-top:22px">
+      <h3>덜컥합격 채팅방 관리</h3>
+      <div class="sub">수강생 홈 화면 왼쪽 채팅방과 같은 방입니다 · 맨 위 공지를 쓰고, 귓속말까지 모두 보고, 이름을 눌러 강퇴합니다</div>
+      <div class="ccadmgrid"><div class="ccside adm" id="ccChatAdm"></div>
+        <div>
+          <div class="ccexp">
+            <div class="stt" style="margin-bottom:8px">💾 채팅 기록 보관 (txt 내려받기)</div>
+            <div class="sub" style="margin-bottom:10px">귓속말까지 포함한 대화를 실명·이메일·초 단위 시각과 함께 저장합니다 · 문제가 생겼을 때 증거로 보관하세요</div>
+            <div class="ccexprow"><select id="ccExpRange" onchange="ccExpRange()"><option value="all">전체 기간</option><option value="today">오늘</option><option value="7">최근 7일</option><option value="30">최근 30일</option><option value="custom">기간 지정</option></select>
+              <input id="ccExpId" placeholder="특정 수강생 이메일 (비우면 전체)" autocapitalize="off"></div>
+            <div class="ccexprow" id="ccExpDates" style="display:none"><input type="date" id="ccExpFrom"> ~ <input type="date" id="ccExpTo"></div>
+            <button class="mini" id="ccExpBtn" style="border-color:var(--gold);color:var(--gold);margin-top:8px" onclick="ccChatExport()">💾 txt 파일로 내려받기</button>
+            <div class="ccexpmsg" id="ccExpMsg"></div>
+          </div>
+          <div class="stt" style="margin:18px 0 8px">강퇴된 수강생</div><div id="ccBanList"></div></div></div>
+    </div>
   </div>
 
   <!-- 학생 상세 -->
@@ -738,9 +830,16 @@ body.engopen .chat{bottom:168px}
   </div>
 
   <div id="homeHero">
+  <aside class="ccside" id="ccChatStu"></aside>
   <div class="hero-inner">
     <div class="hero-logo"><span data-site="brand">민사법 덜컥합격</span> <span style="font-size:.55em;font-weight:700;opacity:.85" data-site="by">by 24h 페이스메이커</span></div>
-    <h1 class="hero-tag">믿음직한<br><span class="hero-accent">합격동반자</span></h1>
+    <h1 class="hero-tag">믿음직한 <span class="hero-accent">합격동반자</span></h1>
+    <div class="classroom">
+      <div class="cboard">민사법 덜컥합격 · 가상 강의실 <span class="crlive">● LIVE</span></div>
+      <div class="crtabs" id="crTabs"></div>
+      <div class="seatgrid" id="seatgrid"></div>
+      <div class="crfoot">지금 함께 공부 중 <b id="crCnt">0</b>명 <span class="crlog" id="crLog"></span></div>
+    </div>
     <p class="hero-sub"><button class="hero-hint" onclick="openEngine('mission')">✅ 에브리데이 학습미션</button>에서 오늘 할 일을 시작하세요. 무엇부터 할지 모르겠다면 <button class="hero-hint" onclick="openEngine('schedule')">🧭 출발점</button>부터.</p>
   </div>
 </div>
@@ -2293,7 +2392,7 @@ window.setPlacement=function(subj, stageIdx, credit){
   }
   return true;
 };
-function showHome(){var h=document.getElementById('homeHero'),d=document.getElementById('dashSections'),t=document.querySelector('.wrap .top-stats'),f=document.getElementById('fab');if(h)h.style.display='flex';if(d)d.style.display='none';if(t)t.style.display='none';if(f)f.style.display='flex';window.scrollTo(0,0);}
+function showHome(){var h=document.getElementById('homeHero'),d=document.getElementById('dashSections'),t=document.querySelector('.wrap .top-stats'),f=document.getElementById('fab');if(h)h.style.display='grid';if(d)d.style.display='none';if(t)t.style.display='none';if(f)f.style.display='flex';window.scrollTo(0,0);}
 function showRoadmap(){var h=document.getElementById('homeHero'),d=document.getElementById('dashSections'),t=document.querySelector('.wrap .top-stats'),f=document.getElementById('fab');if(h)h.style.display='none';if(d)d.style.display='block';if(t)t.style.display='flex';if(f)f.style.display='flex';window.scrollTo(0,0);}
 grid();initBoard();bars();renderFinal();
 if(document.querySelector('.wrap .top-stats')) document.querySelector('.wrap .top-stats').style.display='none';
@@ -2528,7 +2627,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:rgba(6,12,26,.86);z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:#12233f;border:1px solid #2a3a5c;border-radius:16px;padding:26px;color:#fff"><div style="font-size:12px;font-weight:800;color:#C9A227;letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:#c7cedc;line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:#0a1730;border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:#9aa6bd;font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:#C9A227;margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:#C9A227;color:#0D1F3C;font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:#0a1730;border:1px solid #2a3a5c;border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:#C9A227;margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:#fff;font-weight:700"><span data-site="academy">박승수 민사법</span> · <span style="color:#C9A227">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:#9aa6bd;margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:rgba(201,162,39,.16);color:#C9A227;padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid #2a3a5c;border-radius:10px;background:transparent;color:#c7cedc;font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log(SITE.text.brand+" 빌드 1020-V");
+console.log(SITE.text.brand+" 빌드 1020-W");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // 무시로질의응답 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
@@ -3245,7 +3344,7 @@ window.pssBarMode=function(){
 })();
 </script>
 <script>
-/* ═══ 학습 흐름 (빌드 1020-V) ═══ */
+/* ═══ 학습 흐름 (빌드 1020-W) ═══ */
 /* ── 수강 계획: 출발점 → 진단 → 강의매칭 → 학습 로드맵(예상 소요일수) → 에브리데이 학습미션 ──
    과목 · 단계 · 강의마다 '담김 여부'와 수강생이 정한 '하루 수강량'을 하나의 계획으로 두고, 모든 화면이 이것을 읽고 씀.
    · 처음부터: 모든 강의를 담음
@@ -4583,6 +4682,418 @@ window.addEventListener("storage",function(e){ try{ if(e.key&&PL_LS.some(functio
   };
   window.pssTkPackAdd=function(w){ var C=read(w); C.packs.push({p:10000,n:(C.packs.length?C.packs[C.packs.length-1].n+1:4)}); _lss("pss_ticket_cfg",C); try{ w.pdRender(); }catch(e){} };
   window.pssTkPackDel=function(i,w){ var C=read(w); C.packs.splice(i,1); _lss("pss_ticket_cfg",C); try{ w.pdRender(); }catch(e){} };
+})();
+
+/* ═══ 가상 강의실 · 덜컥합격 채팅방 (노무사판과 같은 틀) ═══ */
+var ccProfiles=[], ccUid=null;
+function ccErr(e){ var m=(e&&(e.message||e.error_description))||String(e||""); return m; }
+/* ── 덜컥합격 채팅방: 실시간 · 귓속말(수강생) · 강퇴/공지(관리자) ── */
+const ccChat={msgs:[],ids:{},lastId:0,ch:null,poll:null,tick:0,rtOk:false,mode:null,to:null,myId:null,banned:false,sending:false};
+function ccChatHTML(mode){
+  const adm=(mode==="admin");
+  return `<div class="ccchat">
+    <div class="ccnotice"><div class="ccnt">📢 공지</div><div class="ccnbody" id="ccNotice"></div>
+      ${adm?`<textarea id="ccNoticeEd" rows="3" placeholder="채팅방 맨 위에 보일 공지를 쓰세요 (비우고 저장하면 공지가 내려갑니다)"></textarea><button class="mini" style="margin-top:6px;border-color:var(--gold);color:var(--gold)" onclick="ccNoticeSave()">공지 저장</button>`:""}</div>
+    <div class="cchead">💬 덜컥합격 채팅방 <span class="ccpn">지금 접속 <b id="ccPplN">0</b>명</span><span id="ccLive" class="cclive">연결 중…</span></div>
+    <div class="ccppl" id="ccPpl"></div>
+    <div class="ccmsgs" id="ccMsgs"></div>
+    <div class="ccwbar" id="ccWbar" style="display:none"></div>
+    <div class="ccin"><input id="ccIn" ${adm?"":'maxlength="200"'} placeholder="${adm?"관리자로 전체에게 쓰기":"메시지 입력 (200자까지) · Enter로 보내기"}" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();ccChatSend();}"><button class="mini" onclick="ccChatSend()">보내기</button></div>
+    <div class="ccfoot">${adm?"귓속말을 포함한 모든 대화가 보입니다 · 수강생 이름을 누르면 귓속말(경고)이나 강퇴를 할 수 있습니다":"이름을 누르면 귓속말을 보낼 수 있습니다<br>모든 대화는 문제 발생에 대비하여 일정 기간 동안 기록됩니다. 건전하고 생산적인 채팅이 되도록 합시다"}</div>
+    <div class="ccban" id="ccBanned" style="display:none">⛔ 관리자에 의해 채팅방에서 내보내졌습니다.<br><small>궁금한 점은 관리자에게 문의해 주세요.</small></div>
+  </div>`;
+}
+function ccHM(t){ const d=new Date(t); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function ccLiveState(){ const el=document.getElementById("ccLive"); if(!el) return; el.textContent=ccChat.rtOk?"● 실시간":"○ 몇 초마다 새로고침"; el.classList.toggle("on",ccChat.rtOk); }
+async function ccChatStart(mode,hostId){
+  const host=document.getElementById(hostId); if(!host||!sb) return;
+  ccChatStop();
+  ccChat.mode=mode; ccChat.msgs=[]; ccChat.ids={}; ccChat.lastId=0; ccChat.to=null; ccChat.banned=false; ccChat.rtOk=false;
+  ["ccChatStu","ccChatAdm"].forEach(function(id){ if(id!==hostId){ const o=document.getElementById(id); if(o) o.innerHTML=""; } });
+  host.innerHTML=ccChatHTML(mode);
+  try{ const r=await sb.auth.getSession(); ccChat.myId=r&&r.data&&r.data.session?r.data.session.user.id:null; }catch(e){ ccChat.myId=null; }
+  if(!ccChat.myId) return;
+  if(mode==="student"){
+    try{ const r=await sb.rpc("pss_chat_banned"); if(r.data===true){ ccBanState(true); } }catch(e){}
+  }
+  await ccNoticeLoad();
+  if(!ccChat.banned) await ccChatLoad(true);
+  try{
+    let ch=sb.channel("cc-chat-"+mode+"-"+Date.now())
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"pss_chat"},function(p){ if(p&&p.new) ccChatAdd([p.new]); })
+;
+    ccChat.ch=ch.subscribe(function(st){ ccChat.rtOk=(st==="SUBSCRIBED"); ccLiveState(); });
+  }catch(e){ ccChat.rtOk=false; }
+  ccLiveState();
+  try{ ccChatPeople(); }catch(e){}
+  /* 실시간이 막힌 환경 대비: 실시간이 아니면 4초마다, 실시간이어도 30초마다 확인 */
+  ccChat.poll=setInterval(function(){ ccChat.tick++; if(!ccChat.rtOk||ccChat.tick%8===0){ if(!ccChat.banned) ccChatLoad(false); if(ccChat.mode==="student") ccBanCheck(); if(ccChat.tick%2===0) ccNoticeLoad(); } },4000);
+}
+function ccChatStop(){
+  if(ccChat.poll){ clearInterval(ccChat.poll); ccChat.poll=null; }
+  if(ccChat.ch){ try{ sb.removeChannel(ccChat.ch); }catch(e){} ccChat.ch=null; }
+  ccChat.rtOk=false; ccChat.mode=null;
+}
+async function ccBanCheck(){
+  try{ const r=await sb.rpc("pss_chat_banned"); if(!r.error) ccBanState(r.data===true); }catch(e){}
+}
+function ccBanState(b){
+  if(ccChat.mode!=="student") return;
+  const was=ccChat.banned; ccChat.banned=!!b;
+  const box=document.getElementById("ccBanned"), inp=document.getElementById("ccIn"), list=document.getElementById("ccMsgs");
+  if(box) box.style.display=b?"flex":"none";
+  if(inp) inp.disabled=!!b;
+  if(b){ ccChat.msgs=[]; ccChat.ids={}; if(list) list.innerHTML=""; ccWhisperOff(); }
+  else if(was){ ccChat.lastId=0; ccChatLoad(true); }
+}
+async function ccNoticeLoad(){
+  try{ const r=await sb.from("settings").select("value").eq("key","chat_notice").maybeSingle(); var v=r.data?r.data.value:""; if(v&&typeof v!=="string") v=String(v); ccNoticeShow(v); }catch(e){ ccNoticeShow(""); }
+}
+function ccNoticeShow(v){
+  const el=document.getElementById("ccNotice"); if(!el) return;
+  v=String(v||"").trim();
+  el.innerHTML=v?ccEscC(v).replace(/\n/g,"<br>"):'<span style="color:var(--mute)">등록된 공지가 없습니다</span>';
+  const ed=document.getElementById("ccNoticeEd"); if(ed&&document.activeElement!==ed) ed.value=v;
+}
+async function ccNoticeSave(){
+  const ed=document.getElementById("ccNoticeEd"); if(!ed) return;
+  const r=await sb.from("settings").upsert([{key:"chat_notice",value:ed.value.trim(),updated_at:new Date().toISOString()}],{onConflict:"key"});
+  if(r.error){ alert("공지를 저장하지 못했습니다 — "+ccErr(r.error)); return; }
+  ccNoticeShow(ed.value); toast("공지를 저장했습니다 — 수강생 채팅방 맨 위에 보입니다");
+}
+function ccEscC(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+async function ccChatLoad(initial){
+  try{
+    let q=sb.from("pss_chat").select("*");
+    if(initial||!ccChat.lastId){ q=q.order("id",{ascending:false}).limit(100); }
+    else { q=q.gt("id",ccChat.lastId).order("id",{ascending:true}).limit(200); }
+    const r=await q; if(r.error) throw r.error;
+    let rows=r.data||[]; if(initial||!ccChat.lastId) rows=rows.slice().reverse();
+    ccChatAdd(rows);
+  }catch(e){ console.warn("[채팅] 불러오기 실패",e); }
+}
+function ccChatAdd(rows){
+  if(ccChat.banned&&ccChat.mode==="student") return;
+  const list=document.getElementById("ccMsgs"); if(!list) return;
+  const nearBottom=(list.scrollHeight-list.scrollTop-list.clientHeight)<80;
+  let added=0;
+  rows.forEach(function(m){
+    if(!m||ccChat.ids[m.id]) return;
+    if(ccChat.mode==="student"&&m.to_user&&m.to_user!==ccChat.myId&&m.user_id!==ccChat.myId) return;
+    ccChat.ids[m.id]=1; ccChat.msgs.push(m); if(m.id>ccChat.lastId) ccChat.lastId=m.id;
+    list.insertAdjacentHTML("beforeend",ccMsgHTML(m)); added++;
+  });
+  while(list.children.length>300) list.removeChild(list.firstChild);
+  if(added&&(nearBottom||rows.some(function(m){ return m.user_id===ccChat.myId; }))) list.scrollTop=list.scrollHeight;
+  if(!list.children.length) list.innerHTML='<div class="ccempty">아직 대화가 없습니다 · 첫 인사를 남겨 보세요</div>';
+  else { const e=list.querySelector(".ccempty"); if(e) e.remove(); }
+}
+function ccRealName(uid){
+  if(ccChat.mode!=="admin"||typeof ccProfiles==="undefined") return "";
+  const p=ccProfiles.find(function(x){ return x.id===uid; }); return p?(" <small class=\"ccreal\">"+ccEscC(p.name||"")+" · "+ccEscC(p.login_id)+"</small>"):"";
+}
+function ccMsgHTML(m){
+  const mine=(m.user_id===ccChat.myId), w=!!m.to_user, adm=(ccChat.mode==="admin");
+  let who;
+  if(m.is_admin) who='<b class="ccadm">👑 관리자</b>';
+  else who='<button class="ccname" onclick="ccNameMenu(event,\''+m.user_id+'\',\''+ccEscC(m.name).replace(/'/g,"")+'\')">'+ccEscC(m.name)+(mine&&!adm?" (나)":"")+'</button>'+ccRealName(m.user_id);
+  let wl="";
+  if(w){
+    if(adm) wl='<span class="ccwl">🤫 귓속말 → '+ccEscC(m.to_name||"")+ccRealName(m.to_user)+'</span>';
+    else wl='<span class="ccwl">🤫 '+(mine?ccEscC(m.to_name||"")+"님에게":"나에게")+'</span>';
+  }
+  return '<div class="ccmsg'+(w?" w":"")+(m.is_admin?" a":"")+(mine?" me":"")+'"><div class="ccmeta">'+who+wl+'<span class="cctime">'+ccHM(m.created_at)+'</span></div><div class="cctext">'+ccEscC(m.body)+'</div></div>';
+}
+function ccNameMenu(ev,uid,name){
+  ev.stopPropagation();
+  const old=document.getElementById("ccPop"); if(old) old.remove();
+  let items="";
+  if(ccChat.mode==="student"){
+    if(uid===ccChat.myId) return;
+    items='<button onclick="ccWhisperOn(\''+uid+'\',\''+name+'\')">🤫 '+name+'님에게 귓속말</button>';
+  } else if(ccChat.mode==="admin"){
+    items='<button onclick="ccWhisperOn(\''+uid+'\',\''+name+'\')">🤫 '+name+'님에게 귓속말 (경고)</button>'+
+          '<button onclick="ccKick(\''+uid+'\',\''+name+'\')">⛔ '+name+' 강퇴</button>';
+  }
+  if(!items) return;
+  const pop=document.createElement("div"); pop.id="ccPop"; pop.className="ccpop"; pop.innerHTML=items;
+  document.body.appendChild(pop);
+  const r=ev.target.getBoundingClientRect();
+  pop.style.left=Math.min(r.left,window.innerWidth-220)+"px"; pop.style.top=(r.bottom+4)+"px";
+  setTimeout(function(){ document.addEventListener("click",function f(){ pop.remove(); document.removeEventListener("click",f); }); },0);
+}
+function ccWhisperOn(uid,name){
+  if(ccChat.mode!=="student"&&ccChat.mode!=="admin") return;
+  ccChat.to={uid:uid,name:name};
+  const b=document.getElementById("ccWbar");
+  if(b){ b.style.display="flex"; b.innerHTML='<span>🤫 <b>'+ccEscC(name)+'</b>님에게 귓속말 중'+(ccChat.mode==="admin"?" (관리자 · 이 수강생에게만 보임)":"")+'</span><button class="mini" onclick="ccWhisperOff()">✕ 귓속말 끝내기</button>'; }
+  const i=document.getElementById("ccIn"); if(i){ i.placeholder=name+"님에게만 보이는 귓속말"; i.focus(); }
+}
+function ccWhisperOff(){
+  ccChat.to=null;
+  const b=document.getElementById("ccWbar"); if(b){ b.style.display="none"; b.innerHTML=""; }
+  const i=document.getElementById("ccIn"); if(i) i.placeholder=(ccChat.mode==="admin")?"관리자로 전체에게 쓰기":"메시지 입력 (200자까지) · Enter로 보내기";
+}
+async function ccChatSend(){
+  const i=document.getElementById("ccIn"); if(!i||ccChat.sending) return;
+  const body=i.value.trim(); if(!body) return;
+  if(ccChat.banned){ toast("채팅방에서 내보내진 상태입니다"); return; }
+  ccChat.sending=true;
+  try{
+    const r=await sb.rpc("pss_chat_send",{p_body:body,p_to:ccChat.to?ccChat.to.uid:null});
+    if(r.error) throw r.error;
+    i.value="";
+    if(!ccChat.rtOk) await ccChatLoad(false);
+  }catch(e){ const m=ccErr(e); toast("보내지 못했습니다 — "+m); if(/내보내졌/.test(m)) ccBanState(true); }
+  finally{ ccChat.sending=false; }
+}
+async function ccKick(uid,name){
+  if(ccChat.mode!=="admin") return;
+  if(!confirm(name+" 수강생을 채팅방에서 내보낼까요?\n(채팅을 보지도 쓰지도 못합니다 · 학습 기능은 그대로입니다)")) return;
+  const r=await sb.rpc("pss_chat_ban",{p_user:uid,p_ban:true});
+  if(r.error){ alert("처리하지 못했습니다 — "+ccErr(r.error)); return; }
+  const p=(typeof ccProfiles!=="undefined")?ccProfiles.find(function(x){ return x.id===uid; }):null; if(p) p.chat_banned=true;
+  toast(name+" 수강생을 채팅방에서 내보냈습니다"); ccBanListRender();
+}
+async function ccUnkick(uid){
+  const r=await sb.rpc("pss_chat_ban",{p_user:uid,p_ban:false});
+  if(r.error){ alert("처리하지 못했습니다 — "+ccErr(r.error)); return; }
+  const p=ccProfiles.find(function(x){ return x.id===uid; }); if(p) p.chat_banned=false;
+  toast("강퇴를 풀었습니다"); ccBanListRender();
+}
+function ccBanListRender(){
+  const el=document.getElementById("ccBanList"); if(!el) return;
+  const b=(typeof ccProfiles!=="undefined"?ccProfiles:[]).filter(function(p){ return p.chat_banned; });
+  el.innerHTML=b.length?b.map(function(p){ return '<div class="ccbanrow"><span><b>'+ccEscC(p.name||"")+'</b> · '+ccEscC(p.login_id)+'</span><button class="mini" onclick="ccUnkick(\''+p.id+'\')">강퇴 해제</button></div>'; }).join(""):'<div class="empty-log">강퇴된 수강생이 없습니다.</div>';
+}
+
+function ccMaskName(n){ n=String(n||""); if(n.length<=1) return n||"수강생"; if(n.length===2) return n[0]+"O"; return n[0]+"O".repeat(n.length-2)+n[n.length-1]; }
+
+/* ── 관리자: 채팅 기록 txt 내려받기 (증거 보관용 · 귓속말 포함) ── */
+function ccExpRange(){
+  const v=(document.getElementById("ccExpRange")||{}).value||"all";
+  const box=document.getElementById("ccExpDates"); if(box) box.style.display=(v==="custom")?"flex":"none";
+}
+function ccTs(t){ const d=new Date(t), p=function(n){ return String(n).padStart(2,"0"); };
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds()); }
+async function ccChatExport(){
+  if(ccChat.mode!=="admin") return;
+  const msg=document.getElementById("ccExpMsg"), btn=document.getElementById("ccExpBtn");
+  const v=(document.getElementById("ccExpRange")||{}).value||"all";
+  let from=null, to=null, label="전체 기간";
+  const day0=new Date(); day0.setHours(0,0,0,0);
+  if(v==="today"){ from=day0; label="오늘"; }
+  else if(v==="7"){ from=new Date(day0.getTime()-6*86400000); label="최근 7일"; }
+  else if(v==="30"){ from=new Date(day0.getTime()-29*86400000); label="최근 30일"; }
+  else if(v==="custom"){
+    const a=document.getElementById("ccExpFrom").value, b=document.getElementById("ccExpTo").value;
+    if(!a||!b){ msg.textContent="시작일과 종료일을 고르세요"; return; }
+    from=new Date(a+"T00:00:00"); to=new Date(new Date(b+"T00:00:00").getTime()+86400000); label=a+" ~ "+b;
+  }
+  const lid=((document.getElementById("ccExpId")||{}).value||"").trim().toLowerCase();
+  let target=null;
+  if(lid){ target=ccProfiles.find(function(p){ return (p.login_id||"").toLowerCase()===lid; }); if(!target){ msg.textContent="그 아이디의 수강생이 없습니다"; return; } }
+  btn.disabled=true; msg.textContent="기록을 모으는 중…";
+  try{
+    let all=[], last=0;
+    for(let k=0;k<200;k++){
+      let q=sb.from("pss_chat").select("*").gt("id",last).order("id",{ascending:true}).limit(1000);
+      if(from) q=q.gte("created_at",from.toISOString());
+      if(to) q=q.lt("created_at",to.toISOString());
+      if(target) q=q.or("user_id.eq."+target.id+",to_user.eq."+target.id);
+      const r=await q; if(r.error) throw r.error;
+      const rows=r.data||[]; all=all.concat(rows);
+      if(rows.length<1000) break; last=rows[rows.length-1].id;
+    }
+    const who=function(uid,shown,isAdm){
+      if(isAdm) return "관리자";
+      const p=ccProfiles.find(function(x){ return x.id===uid; });
+      return (shown||"?")+" ("+(p?((p.name||"")+" · "+p.login_id):"탈퇴·삭제된 계정 "+String(uid).slice(0,8))+")";
+    };
+    const lines=all.map(function(m){
+      const head="["+ccTs(m.created_at)+"] "+(m.to_user?"[귓속말] ":"")+who(m.user_id,m.name,m.is_admin)+" → "+(m.to_user?who(m.to_user,m.to_name,false):"전체");
+      return head+"\n    "+String(m.body).replace(/\r?\n/g,"\n    ");
+    });
+    let adm=""; try{ const s=await sb.auth.getSession(); adm=s.data.session.user.email||""; }catch(e){}
+    const body=lines.join("\n");
+    let hash="(이 브라우저에서 계산할 수 없음)";
+    try{ const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(body)); hash=Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join(""); }catch(e){}
+    const now=new Date();
+    const text=[
+      "민사법 덜컥합격 — 채팅 기록",
+      "==================================================",
+      "내려받은 시각 : "+ccTs(now)+" (이 컴퓨터 시각 기준, 한국 표준시)",
+      "내려받은 관리자 : "+adm,
+      "기간 : "+label,
+      "대상 : "+(target?((target.name||"")+" · "+target.login_id+" 이(가) 보내거나 받은 대화"):"전체 대화 (귓속말 포함)"),
+      "건수 : "+all.length+"건",
+      "표기 : [시각] 화면에 보인 이름 (실명 · 아이디) → 받는 사람",
+      "==================================================",
+      "",
+      body,
+      "",
+      "==================================================",
+      "본문 확인값 (SHA-256, 위 본문이 바뀌면 이 값이 달라집니다)",
+      hash,
+      "원본 기록은 서버(Supabase)에 남아 있습니다."
+    ].join("\n");
+    const blob=new Blob(["﻿"+text],{type:"text/plain;charset=utf-8"});
+    const p=function(n){ return String(n).padStart(2,"0"); };
+    const fn="덜컥합격_채팅기록_"+now.getFullYear()+p(now.getMonth()+1)+p(now.getDate())+"-"+p(now.getHours())+p(now.getMinutes())+(target?"_"+target.login_id:"")+".txt";
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=fn; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },2000);
+    msg.textContent=all.length+"건을 "+fn+" 파일로 내려받았습니다";
+  }catch(e){ msg.textContent="내려받지 못했습니다 — "+ccErr(e); }
+  finally{ btn.disabled=false; }
+}
+
+/* ── 가상 강의실: A~E반 · 반마다 50석 · 지금 접속한 사람만 (서버가 A반부터 차례로 배정) ── */
+const CR_CLASSES=["A","B","C","D","E"], CR_CAP=50, CR_STALE=150000;
+const ccRoom={list:[],me:null,view:"A",ping:null,poll:null,ch:null,token:null,watching:false,mode:null};
+function crInit(){ ccRoom.list=[]; ccRoom.me=null; ccRoomDraw(); }
+function crStartSim(){ /* 예시 인원 시뮬레이션은 쓰지 않음 — 실제 접속자만 표시 */ }
+async function crEnterMe(){
+  if(!sb||!user) return;
+  if(window.ccPreview){ ccRoom.me=null; ccRoomWatch("admin"); const lg=document.getElementById("crLog"); if(lg) lg.textContent="관리자 미리보기 — 자리에 앉지 않고 전체 반을 봅니다"; return; }
+  try{
+    const r=await sb.rpc("pss_room_enter"); if(r.error) throw r.error;
+    const row=Array.isArray(r.data)?r.data[0]:r.data;
+    if(row){ ccRoom.me={cls:row.cls,seat:row.seat}; ccRoom.view=row.cls; }
+    const lg=document.getElementById("crLog"); if(lg&&ccRoom.me) lg.textContent="나는 "+ccRoom.me.cls+"반 "+ccRoom.me.seat+"번 자리 ★";
+    if(ccRoom.me) toast("💡 "+ccMaskName(user.name)+"님, "+ccRoom.me.cls+"반 "+ccRoom.me.seat+"번 자리에 앉았습니다");
+  }catch(e){ const lg=document.getElementById("crLog"); if(lg) lg.textContent=ccErr(e); }
+  ccRoomWatch("student");
+  if(ccRoom.ping) clearInterval(ccRoom.ping);
+  ccRoom.ping=setInterval(ccRoomPing,40000);
+  ccRoomToken();
+}
+async function ccRoomToken(){ try{ const s=await sb.auth.getSession(); ccRoom.token=s&&s.data&&s.data.session?s.data.session.access_token:null; }catch(e){} }
+async function ccRoomPing(){
+  if(!sb||!user) return;
+  try{
+    const r=await sb.rpc("pss_room_enter"); if(r.error) throw r.error;
+    const row=Array.isArray(r.data)?r.data[0]:r.data;
+    if(row){ const moved=!ccRoom.me||ccRoom.me.cls!==row.cls||ccRoom.me.seat!==row.seat; ccRoom.me={cls:row.cls,seat:row.seat}; if(moved){ ccRoom.view=row.cls; const lg=document.getElementById("crLog"); if(lg) lg.textContent="나는 "+row.cls+"반 "+row.seat+"번 자리 ★"; } }
+  }catch(e){}
+  ccRoomToken();
+}
+function ccRoomWatch(mode){
+  ccRoom.mode=mode; ccRoom.watching=true;
+  ccRoomLoad();
+  if(ccRoom.poll) clearInterval(ccRoom.poll);
+  ccRoom.poll=setInterval(ccRoomLoad,15000);
+  try{
+    if(ccRoom.ch){ sb.removeChannel(ccRoom.ch); ccRoom.ch=null; }
+    let t=null;
+    ccRoom.ch=sb.channel("cc-room-"+mode+"-"+Date.now())
+      .on("postgres_changes",{event:"*",schema:"public",table:"pss_room"},function(){ clearTimeout(t); t=setTimeout(ccRoomLoad,400); })
+      .subscribe();
+  }catch(e){}
+}
+function ccRoomStop(){
+  if(ccRoom.ping){ clearInterval(ccRoom.ping); ccRoom.ping=null; }
+  if(ccRoom.poll){ clearInterval(ccRoom.poll); ccRoom.poll=null; }
+  if(ccRoom.ch){ try{ sb.removeChannel(ccRoom.ch); }catch(e){} ccRoom.ch=null; }
+  ccRoom.watching=false; ccRoom.list=[]; ccRoom.me=null;
+}
+async function ccRoomLeave(){ if(!sb) return; try{ await sb.rpc("pss_room_leave"); }catch(e){} }
+window.addEventListener("pagehide",function(){
+  if(!ccRoom.me||!ccRoom.token) return;
+  try{ fetch(SITE.server.url+"/rest/v1/rpc/pss_room_leave",{method:"POST",keepalive:true,headers:{"apikey":SITE.server.key,"Authorization":"Bearer "+ccRoom.token,"Content-Type":"application/json"},body:"{}"}); }catch(e){}
+});
+async function ccRoomLoad(){
+  if(!sb) return;
+  try{
+    const r=await sb.rpc("pss_room_list");
+    if(r.error) throw r.error;
+    ccRoom.list=(r.data||[]).slice();
+    ccRoom.err="";
+  }catch(e){
+    ccRoom.err="강의실 목록을 불러오지 못했습니다 — "+ccErr(e);
+    console.warn("[강의실]",e);
+  }
+  /* 내 자리는 목록 결과와 상관없이 항상 표시 */
+  const myId=(ccChat&&ccChat.myId)||ccUid;
+  if(ccRoom.me&&myId&&user&&!ccRoom.list.some(function(x){ return x.user_id===myId; }))
+    ccRoom.list.push({user_id:myId,cls:ccRoom.me.cls,seat:ccRoom.me.seat,name:ccMaskName(user.name)});
+  const lg=document.getElementById("crLog");
+  if(lg) lg.textContent=ccRoom.err?ccRoom.err:(ccRoom.me?"나는 "+ccRoom.me.cls+"반 "+ccRoom.me.seat+"번 자리 ★":(window.ccPreview?"관리자 미리보기 — 자리에 앉지 않고 전체 반을 봅니다":""));
+  ccRoomDraw(); try{ ccChatPeople(); }catch(e){}
+}
+function ccRoomView(c){ ccRoom.view=c; ccRoomDraw(); }
+function ccRoomDraw(){
+  const g=document.getElementById("seatgrid"); if(!g) return;
+  const myId=(ccChat&&ccChat.myId)||ccUid;
+  const by={}; CR_CLASSES.forEach(function(c){ by[c]=[]; });
+  ccRoom.list.forEach(function(x){ if(by[x.cls]) by[x.cls].push(x); });
+  const tabs=document.getElementById("crTabs");
+  if(tabs) tabs.innerHTML=CR_CLASSES.map(function(c){
+    const n=by[c].length, mine=ccRoom.me&&ccRoom.me.cls===c;
+    return '<button class="crtab'+(ccRoom.view===c?" on":"")+(n>=CR_CAP?" full":"")+'" onclick="ccRoomView(\''+c+'\')">'+c+'반'+(mine?" ★":"")+' <small>'+n+'/'+CR_CAP+'</small></button>';
+  }).join("");
+  const seats={}; by[ccRoom.view].forEach(function(x){ seats[x.seat]=x; });
+  let h="";
+  for(let i=1;i<=CR_CAP;i++){
+    const x=seats[i], me=x&&x.user_id===myId;
+    if(!x) h+='<div class="seat" title="'+ccRoom.view+'반 '+i+'번 · 빈자리"></div>';
+    else h+='<div class="seat '+(me?"me":"on")+'" title="'+ccRoom.view+'반 '+i+'번 · '+ccEscC(x.name)+(me?" (나)":" · 누르면 귓속말")+'"'+(me?"":' onclick="ccSeatClick(\''+x.user_id+'\',\''+ccEscC(x.name).replace(/'/g,"")+'\')"')+'>'+(me?"★ ":"")+ccEscC(x.name)+'</div>';
+  }
+  g.innerHTML=h;
+  const c=document.getElementById("crCnt"); if(c) c.textContent=ccRoom.list.length;
+}
+function ccSeatClick(uid,name){
+  if(ccChat.mode!=="student") return;
+  ccWhisperOn(uid,name);
+  const i=document.getElementById("ccIn"); if(i&&i.scrollIntoView) i.scrollIntoView({block:"nearest"});
+}
+/* 채팅창 위 접속자 목록 */
+function ccChatPeople(){
+  const el=document.getElementById("ccPpl"); if(!el) return;
+  const adm=(ccChat.mode==="admin"), myId=ccChat.myId||ccUid;
+  const L=ccRoom.list.slice().sort(function(a,b){ return a.cls===b.cls?a.seat-b.seat:(a.cls<b.cls?-1:1); });
+  const cnt=document.getElementById("ccPplN"); if(cnt) cnt.textContent=L.length;
+  if(!L.length){ el.innerHTML='<span class="ccpnone">지금 강의실에 들어와 있는 수강생이 없습니다</span>'; return; }
+  el.innerHTML=L.map(function(x){
+    const me=x.user_id===myId, nm=ccEscC(x.name).replace(/'/g,"");
+    let real=""; if(adm&&typeof ccProfiles!=="undefined"){ const p=ccProfiles.find(function(q){ return q.id===x.user_id; }); if(p) real=' <small>'+ccEscC(p.name||"")+'·'+ccEscC(p.login_id)+'</small>'; }
+    if(me) return '<span class="ccp me">'+ccEscC(x.name)+' · '+x.cls+'반 (나)</span>';
+    return '<button class="ccp" onclick="ccNameMenu(event,\''+x.user_id+'\',\''+nm+'\')">'+ccEscC(x.name)+' · '+x.cls+'반'+real+'</button>';
+  }).join("");
+}
+
+/* ── 덜컥합격 연결 ── */
+(function(){
+  function member(){ try{ return !!(user&&!user.admin&&(user.plan==="full"||user.plan==="single")); }catch(e){ return false; } }
+  function stuNote(msg){ var h=document.getElementById("ccChatStu"); if(h) h.innerHTML='<div class="ccchat"><div class="cchead">💬 덜컥합격 채팅방</div><div class="ccmsgs"><div class="ccempty">'+msg+'</div></div></div>'; }
+  window.pssChatBoot=async function(){
+    try{ ccChatStop(); ccRoomStop(); }catch(e){}
+    if(typeof user==="undefined"||!user||!window.sb) return;
+    ccUid=user.id||null;
+    if(user.admin){
+      stuNote("관리자는 관리자 대시보드의 「덜컥합격 채팅방 관리」에서 대화합니다");
+      try{ await ccChatStart("admin","ccChatAdm"); }catch(e){ console.warn(e); }
+      try{ ccRoomWatch("admin"); }catch(e){}
+      var lg=document.getElementById("crLog"); if(lg) lg.textContent="관리자 — 자리에 앉지 않고 전체 반을 봅니다";
+      return;
+    }
+    if(!member()){
+      stuNote("학습반·단과반 신청이 승인되면 채팅방과 가상 강의실에 들어올 수 있습니다");
+      ccRoom.list=[]; ccRoomDraw(); var lg2=document.getElementById("crLog"); if(lg2) lg2.textContent="학습반·단과반 승인 후 자리가 배정됩니다";
+      return;
+    }
+    try{ await ccChatStart("student","ccChatStu"); }catch(e){ console.warn(e); }
+    try{ await crEnterMe(); }catch(e){ console.warn(e); }
+  };
+  var oa=window.pssAfterLogin;
+  window.pssAfterLogin=async function(u){ if(oa) await oa.apply(this,arguments); try{ await pssChatBoot(); }catch(e){} };
+  try{ var lo0=logout; logout=async function(){ try{ ccRoomStop(); await ccRoomLeave(); ccChatStop(); }catch(e){} return lo0.apply(this,arguments); }; window.logout=logout; }catch(e){}
+  try{ var al0=adminLogout; adminLogout=async function(){ try{ ccChatStop(); ccRoomStop(); }catch(e){} return al0.apply(this,arguments); }; window.adminLogout=adminLogout; }catch(e){}
+  try{ var ea0=enterAsAdmin; enterAsAdmin=function(){ var r=ea0.apply(this,arguments); setTimeout(function(){ try{ pssChatBoot(); }catch(e){} },300); return r; }; window.enterAsAdmin=enterAsAdmin; }catch(e){}
+  /* 관리자 명단(실명·이메일) — 채팅에서 실명 확인 · 강퇴 목록 */
+  try{ var ra0=renderAdmin; renderAdmin=async function(){ var r=await ra0.apply(this,arguments);
+    try{ ccProfiles=(realRows||[]).map(function(s){ return {id:s.id,name:s.name,login_id:s.email||"",chat_banned:!!s.chat_banned}; }); ccBanListRender(); try{ ccChatPeople(); }catch(e){} }catch(e){}
+    return r; }; window.renderAdmin=renderAdmin; }catch(e){}
+  setTimeout(function(){ try{ ccRoomDraw(); }catch(e){} },0);
 })();
 
 </script>
