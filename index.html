@@ -667,7 +667,7 @@ body.engopen .chat{bottom:168px}
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 1020-O · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
+    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 1020-P · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -2528,7 +2528,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:rgba(6,12,26,.86);z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:#12233f;border:1px solid #2a3a5c;border-radius:16px;padding:26px;color:#fff"><div style="font-size:12px;font-weight:800;color:#C9A227;letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:#c7cedc;line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:#0a1730;border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:#9aa6bd;font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:#C9A227;margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:#C9A227;color:#0D1F3C;font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:#0a1730;border:1px solid #2a3a5c;border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:#C9A227;margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:#fff;font-weight:700"><span data-site="academy">박승수 민사법</span> · <span style="color:#C9A227">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:#9aa6bd;margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:rgba(201,162,39,.16);color:#C9A227;padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid #2a3a5c;border-radius:10px;background:transparent;color:#c7cedc;font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log(SITE.text.brand+" 빌드 1020-O");
+console.log(SITE.text.brand+" 빌드 1020-P");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // AI 조교 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
@@ -3245,7 +3245,7 @@ window.pssBarMode=function(){
 })();
 </script>
 <script>
-/* ═══ 학습 흐름 (빌드 1020-O) ═══ */
+/* ═══ 학습 흐름 (빌드 1020-P) ═══ */
 /* ── 수강 계획: 출발점 → 진단 → 강의매칭 → 학습 로드맵(예상 소요일수) → 에브리데이 학습미션 ──
    과목 · 단계 · 강의마다 '담김 여부'와 수강생이 정한 '하루 수강량'을 하나의 계획으로 두고, 모든 화면이 이것을 읽고 씀.
    · 처음부터: 모든 강의를 담음
@@ -3964,6 +3964,12 @@ window.plRender=plRender;
       if(plBar0()) return r;
       const l=laws[li], t=plTrackOf(l), c=P[cur].cells[li][si], d=document.getElementById("detail"), m=d&&d.querySelector(".meta");
       if(m&&c.s==="paused") m.innerHTML=m.innerHTML.replace(/상태: [^<]*/,"상태: 진행 일시정지 — 듣다가 다른 단계로 옮겨 멈춰 둔 단계입니다");
+      if(d&&c.s!=="now"&&!plTr(t).pset){
+        const box=document.createElement("div"); box.className="plfocus"; const S=CC_STAGES[t];
+        box.innerHTML='🔀 <b>'+plLabel(l)+'</b>을(를) <b>'+S[si]+'</b>부터 들으려면 먼저 <b>출발점</b>을 정해 주세요.<br><small>출발점과 하루 수강량을 정하면 로드맵 칸을 눌러 단계를 옮길 수 있고, 날마다 학습미션이 만들어집니다</small><br>'+
+          '<button onclick="plStartAt(\''+l+'\','+si+')">🧭 '+S[si]+'부터 출발점 정하기</button>';
+        d.appendChild(box);
+      }
       if(d&&c.s!=="now"&&plTr(t).pset){
         const box=document.createElement("div"); box.className="plfocus"; const S=CC_STAGES[t];
         box.innerHTML='🔀 <b>'+plLabel(l)+'</b>을(를) 지금부터 <b>'+S[si]+'</b> 강의로 들을까요?<br><small>오늘 배정부터 이 단계 강의가 먼저 올라옵니다 · 듣던 단계는 「진행 일시정지」로 남고, 들은 기록은 그대로입니다 · 이 단계를 마치면 멈춘 단계로 돌아가 이어 듣습니다</small><br>'+
@@ -3975,6 +3981,10 @@ window.plRender=plRender;
   };
   window.openCell=openCell;
 })();
+window.plStartAt=function(l,si){
+  try{ document.getElementById("detail").classList.remove("open"); }catch(e){}
+  plStart(); const s=document.querySelector('#plStart select[data-l="'+l+'"]'); if(s) s.value=String(si);
+};
 window.plFocus=function(l,si){
   const t=plTrackOf(l);
   if(!ccPlanOf(t).per){ toast("먼저 로드맵 위 「나의 수강 계획」에서 하루 수강량을 정해 주세요"); return; }
@@ -4034,10 +4044,10 @@ window.plStartSave=function(){
   const oe=openEngine;
   openEngine=function(k,b){
     try{
-      if(!plBar0()&&(k==="mission"||k==="match")&&user&&!user.admin&&ccTracks().some(function(t){ return !plTr(t).pset; })&&!window.__plAsked){ window.__plAsked=1; plStart(); return; }
+      if(!plBar0()&&(k==="mission"||k==="match")&&user&&ccTracks().some(function(t){ return !plTr(t).pset; })&&(!window.__plAsked||!ccTracks().some(function(t){ return plTr(t).pset; }))){ window.__plAsked=1; plStart(); return; }
       if(k==="match"&&window.matchSubject) plUse(window.matchSubject);
       /* 학습 측면은 노무사판과 같게: 자가진단 → 출발점 · 수강 계획 짜기·로드맵 계산기 → 로드맵 위 「나의 수강 계획」 */
-      if(!plBar0()&&user&&!user.admin){
+      if(!plBar0()&&user){
         if(k==="schedule"||k==="oxdiag"||k==="mcdiag"||k==="combodiag"){ plStart(); return; }
         if(k==="tocplan"||k==="roadmap"){ ccGoPlan(); return; }
       }
