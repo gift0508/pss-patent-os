@@ -743,7 +743,7 @@ body.engopen .chat{bottom:168px}
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 1020-W · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
+    <div style="text-align:center;font-size:11px;color:#6f7d99;margin-top:8px">빌드 1020-X · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -1741,7 +1741,9 @@ async function fetchProfile(au){
 }
 async function loadUser(){
   const au=await authUser();
-  if(au){ if(await isAdminUser(au)) return adminProfile(au.email); const p=await fetchProfile(au); if(p) return p; return null; }
+  if(au){ if(await isAdminUser(au)) return adminProfile(au.email); const p=await fetchProfile(au); if(p) return p;
+    try{ const m=au.user_metadata||{}; if(m.name&&m.year){ const u={school:m.school||'변리사',exam:m.exam||'변리사',year:m.year,name:m.name,phone:m.phone||null,alarm_ok:!!m.alarm_ok,track:m.track||'1차',plan:'none',subj:null,email:au.email,joined:new Date().toISOString().slice(0,10)}; await saveUser(u); const p2=await fetchProfile(au); return p2||u; } }catch(e){ console.warn(e); }
+    return null; }
   try{ const r=localStorage.getItem('hapgyeok_os_user'); const u=r?JSON.parse(r):null; return null; }catch(e){ return null; }
 }
 async function clearUser(){
@@ -2627,7 +2629,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:rgba(6,12,26,.86);z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:#12233f;border:1px solid #2a3a5c;border-radius:16px;padding:26px;color:#fff"><div style="font-size:12px;font-weight:800;color:#C9A227;letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:#c7cedc;line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:#0a1730;border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:#9aa6bd;font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:#C9A227;margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:#C9A227;color:#0D1F3C;font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:#0a1730;border:1px solid #2a3a5c;border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:#C9A227;margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:#fff;font-weight:700"><span data-site="academy">박승수 민사법</span> · <span style="color:#C9A227">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:#9aa6bd;margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:rgba(201,162,39,.16);color:#C9A227;padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid #2a3a5c;border-radius:10px;background:transparent;color:#c7cedc;font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log(SITE.text.brand+" 빌드 1020-W");
+console.log(SITE.text.brand+" 빌드 1020-X");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // 무시로질의응답 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
@@ -3344,7 +3346,7 @@ window.pssBarMode=function(){
 })();
 </script>
 <script>
-/* ═══ 학습 흐름 (빌드 1020-W) ═══ */
+/* ═══ 학습 흐름 (빌드 1020-X) ═══ */
 /* ── 수강 계획: 출발점 → 진단 → 강의매칭 → 학습 로드맵(예상 소요일수) → 에브리데이 학습미션 ──
    과목 · 단계 · 강의마다 '담김 여부'와 수강생이 정한 '하루 수강량'을 하나의 계획으로 두고, 모든 화면이 이것을 읽고 씀.
    · 처음부터: 모든 강의를 담음
@@ -5094,6 +5096,45 @@ function ccChatPeople(){
     try{ ccProfiles=(realRows||[]).map(function(s){ return {id:s.id,name:s.name,login_id:s.email||"",chat_banned:!!s.chat_banned}; }); ccBanListRender(); try{ ccChatPeople(); }catch(e){} }catch(e){}
     return r; }; window.renderAdmin=renderAdmin; }catch(e){}
   setTimeout(function(){ try{ ccRoomDraw(); }catch(e){} },0);
+})();
+
+/* ═══ 로그인 화면: 한 번 가입·로그인한 기기는 이메일·비밀번호만 ═══ */
+(function(){
+  var KEY="pss_last_email";
+  function last(){ try{ return localStorage.getItem(KEY)||""; }catch(e){ return ""; } }
+  function remember(e){ try{ if(e&&e.indexOf("@")>0) localStorage.setItem(KEY,e); }catch(x){} }
+  function paintGate(){
+    var L=last(), em=document.getElementById("fEmail"), pw=document.getElementById("fPw"), pf=document.getElementById("profileFields"),
+        bs=document.getElementById("btnSignup"), bl=document.getElementById("btnLogin"), sub=document.querySelector("#gate .gsub");
+    if(!em||!pf) return;
+    if(pf.style.display!=="none") return;              /* 회원가입을 펼친 상태면 건드리지 않음 */
+    if(L){
+      if(!em.value) em.value=L;
+      if(sub) sub.innerHTML='다시 오셨네요 · <b style="color:#C9A227">이메일과 비밀번호</b>로 로그인하세요';
+      if(bs){ bs.textContent="다른 이메일로 새로 가입하기"; bs.style.cssText="margin-top:8px;background:transparent;border:none;color:#9aa6bd;font-size:12px;font-weight:600;text-decoration:underline;cursor:pointer;width:100%;padding:6px"; }
+      if(bl){ bl.textContent="로그인 →"; }
+      setTimeout(function(){ try{ if(!pw.value) pw.focus(); }catch(e){} },120);
+    }
+  }
+  window.pssPaintGate=paintGate;
+  /* 로그인·가입에 성공하면 이 기기에 이메일을 기억 */
+  try{ var ap0=applyUser; applyUser=function(u){ try{ if(u&&!u.demo&&u.email&&u.email!=="open-admin") remember(u.email); }catch(e){} return ap0.apply(this,arguments); }; window.applyUser=applyUser; }catch(e){}
+  try{ var ea0=enterAsAdmin; enterAsAdmin=function(e){ remember(e); return ea0.apply(this,arguments); }; window.enterAsAdmin=enterAsAdmin; }catch(e){}
+  /* 확인 메일을 아직 안 누른 경우: 다시 보내기 */
+  window.pssResendConfirm=async function(){
+    var err=document.getElementById("gerr"), email=(document.getElementById("fEmail")||{}).value||"";
+    if(!email){ err.textContent="이메일을 먼저 넣어 주세요"; return; }
+    try{ var r=await sb.auth.resend({type:"signup",email:email.trim()}); if(r.error) throw r.error;
+      err.style.color="var(--gold)"; err.textContent=email+"로 확인 메일을 다시 보냈습니다 — 메일의 링크를 누른 뒤 로그인하세요"; }
+    catch(e){ err.style.color=""; err.textContent="확인 메일을 보내지 못했습니다: "+(e.message||e); }
+  };
+  try{ var lg0=login; login=async function(){ var r=await lg0.apply(this,arguments);
+      try{ var err=document.getElementById("gerr"); if(err&&/이메일 확인이 아직/.test(err.textContent)) err.innerHTML=err.textContent+'<br><button class="quickbtn" style="margin-top:6px" onclick="pssResendConfirm()">확인 메일 다시 보내기</button>';
+        if(err&&/이메일 또는 비밀번호가 올바르지 않습니다/.test(err.textContent)) err.innerHTML='이메일 또는 비밀번호가 올바르지 않습니다<br><small style="color:#9aa6bd">비밀번호가 기억나지 않으면 아래 [비밀번호를 잊으셨나요?]를 누르세요 · 처음이면 [새로 가입하기]</small>'; }catch(e){}
+      return r; }; window.login=login; }catch(e){}
+  /* 로그아웃하면 다시 간단 로그인 화면으로 */
+  try{ var lo0=logout; logout=async function(){ var r=await lo0.apply(this,arguments); setTimeout(paintGate,50); return r; }; window.logout=logout; }catch(e){}
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",paintGate); else paintGate();
 })();
 
 </script>
