@@ -760,7 +760,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 28 · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
+    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 29 · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -2646,7 +2646,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:var(--t-b060c1a_86,rgba(6,12,26,.86));z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:var(--t-b12233f,#12233f);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:16px;padding:26px;color:var(--t-cffffff,#fff)"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:var(--t-cc7cedc,#c7cedc);line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:var(--t-b0a1730,#0a1730);border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:var(--t-c9aa6bd,#9aa6bd);font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:var(--t-cc9a227,#C9A227);margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:var(--t-bc9a227,#C9A227);color:var(--t-c0d1f3c,#0D1F3C);font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:var(--t-b0a1730,#0a1730);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:var(--t-cffffff,#fff);font-weight:700"><span data-site="academy">박승수 민사법</span> · <span style="color:var(--t-cc9a227,#C9A227)">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:var(--t-c9aa6bd,#9aa6bd);margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:var(--t-bc9a227_16,rgba(201,162,39,.16));color:var(--t-cc9a227,#C9A227);padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:10px;background:transparent;color:var(--t-cc7cedc,#c7cedc);font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log(SITE.text.brand+" 빌드 28");
+console.log(SITE.text.brand+" 빌드 29");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // 무시로질의응답 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
@@ -3363,7 +3363,7 @@ window.pssBarMode=function(){
 })();
 </script>
 <script>
-/* ═══ 학습 흐름 (빌드 28) ═══ */
+/* ═══ 학습 흐름 (빌드 29) ═══ */
 /* ── 수강 계획: 출발점 → 진단 → 강의매칭 → 학습 로드맵(예상 소요일수) → 에브리데이 학습미션 ──
    과목 · 단계 · 강의마다 '담김 여부'와 수강생이 정한 '하루 수강량'을 하나의 계획으로 두고, 모든 화면이 이것을 읽고 씀.
    · 처음부터: 모든 강의를 담음
@@ -5499,6 +5499,7 @@ async function ccChatExport(){
       const rows=r.data||[]; all=all.concat(rows);
       if(rows.length<1000) break; last=rows[rows.length-1].id;
     }
+    await ccDelTrash(all);
     const who=function(uid,shown,isAdm){
       if(isAdm) return "관리자";
       const p=ccProfiles.find(function(x){ return x.id===uid; });
@@ -5506,7 +5507,7 @@ async function ccChatExport(){
     };
     const lines=all.map(function(m){
       const head="["+ccTs(m.created_at)+"] "+(m.to_user?"[귓속말] ":"")+who(m.user_id,m.name,m.is_admin)+" → "+(m.to_user?who(m.to_user,m.to_name,false):"전체");
-      return head+"\n    "+String(m.body).replace(/\r?\n/g,"\n    ");
+      return head+"\n    "+ccDelBody(m).replace(/\r?\n/g,"\n    ");
     });
     let adm=""; try{ const s=await sb.auth.getSession(); adm=s.data.session.user.email||""; }catch(e){}
     const body=lines.join("\n");
@@ -5874,6 +5875,79 @@ window.ccfWhisper=function(uid,name){ const p=document.getElementById("ccfPop");
 
 /* 옆에 붙이기·크게보기(z-index 9600) 위에서도 친구찾기·차단 목록·이름 메뉴 창이 보이도록 */
 (function(){ try{ const st=document.createElement("style"); st.textContent=".ccpop{z-index:9700!important}"; document.head.appendChild(st); }catch(e){} })();
+
+/* 🗑 채팅 메시지 삭제 (2026-10-22) — 수강생: 내 메시지만 · 관리자: 모두 · 원문은 서버 보관함(_chat_trash)에 남김 */
+var CCD={T:CCW.P+"_chat", trash:{}};
+function ccDelCan(m){ if(!m||m.deleted||!ccChat.myId) return false; return ccChat.mode==="admin"||m.user_id===ccChat.myId; }
+(function(){
+  const oh=window.ccMsgHTML||ccMsgHTML;
+  window.ccMsgHTML=ccMsgHTML=function(m){
+    let h=oh.apply(this,arguments); if(!m) return h;
+    h=h.replace('<div class="ccmsg','<div data-mid="'+m.id+'" class="ccmsg'+(m.deleted?' ccdeld':''));
+    if(m.deleted){
+      const t=m.deleted==="admin"?"관리자가 삭제한 메시지입니다":"삭제된 메시지입니다";
+      h=h.replace(/<div class="cctext">[\s\S]*?<\/div><\/div>$/,'<div class="cctext ccdelt">🗑 '+t+'</div></div>');
+    } else if(ccDelCan(m)){
+      h=h.replace('<span class="cctime">','<button class="ccdelb" title="이 메시지 삭제" onclick="event.stopPropagation();ccDelMsg('+m.id+')">🗑 삭제</button><span class="cctime">');
+    }
+    return h;
+  };
+})();
+function ccDelApply(row){
+  if(!row||!row.id||!row.deleted) return;
+  const m=ccChat.msgs.find(function(x){ return x.id===row.id; }); if(!m) return;
+  if(m.deleted===row.deleted) return;
+  m.deleted=row.deleted; m.body="";
+  const el=document.querySelector('#ccMsgs [data-mid="'+row.id+'"]'); if(el) el.outerHTML=ccMsgHTML(m);
+}
+window.ccDelMsg=async function(id){
+  const m=ccChat.msgs.find(function(x){ return x.id===id; }); if(!m||!ccDelCan(m)) return;
+  const mine=m.user_id===ccChat.myId;
+  if(!confirm(mine?"이 메시지를 지울까요?\n모든 사람의 채팅창에서 「삭제된 메시지입니다」로 바뀝니다.":"이 메시지를 관리자 권한으로 지울까요?\n모든 사람의 채팅창에서 「관리자가 삭제한 메시지입니다」로 바뀝니다.\n(원문은 채팅 기록 txt에 남습니다)")) return;
+  try{ const r=await sb.rpc(CCW.P+"_chat_delete",{p_id:id}); if(r.error) throw r.error; ccDelApply({id:id,deleted:r.data||(mine?"self":"admin")}); toast("메시지를 지웠습니다"); }
+  catch(e){ toast("지우지 못했습니다 — "+ccErr(e)); }
+};
+async function ccDelSync(){
+  if(!ccChat.mode||!ccChat.msgs.length||(ccChat.banned&&ccChat.mode==="student")) return;
+  const min=ccChat.msgs.reduce(function(a,x){ return Math.min(a,x.id); },Infinity);
+  try{ const r=await sb.from(CCD.T).select("id,deleted").not("deleted","is",null).gte("id",min).limit(1000); if(r.error) return; (r.data||[]).forEach(ccDelApply); }catch(e){}
+}
+/* 관리자 txt 기록: 지운 메시지는 보관함 원문 + [본인 삭제]/[관리자 삭제] */
+async function ccDelTrash(rows){
+  const ids=rows.filter(function(m){ return m.deleted&&!(m.id in CCD.trash); }).map(function(m){ return m.id; });
+  for(let i=0;i<ids.length;i+=200){
+    try{ const r=await sb.from(CCD.T+"_trash").select("chat_id,body").in("chat_id",ids.slice(i,i+200)); (r.data||[]).forEach(function(t){ CCD.trash[t.chat_id]=t.body; }); }catch(e){}
+  }
+}
+function ccDelBody(m){
+  if(!m.deleted) return String(m.body);
+  return (m.deleted==="admin"?"[관리자 삭제] ":"[본인 삭제] ")+(m.id in CCD.trash?String(CCD.trash[m.id]):"(원문 없음)");
+}
+(function(){
+  try{ const st=document.createElement("style"); st.textContent=
+    '.ccdelb{margin-left:auto;font:inherit;font-size:.68rem;padding:1px 7px;border-radius:6px;border:1px solid var(--t-l7f7f7f_35,rgba(127,127,127,.35));background:transparent;color:inherit;cursor:pointer;opacity:0;transition:opacity .15s}'+
+    '.ccdelb+.cctime{margin-left:6px!important}.ccmsg:hover .ccdelb,.ccmsg:focus-within .ccdelb{opacity:.75}.ccdelb:hover{opacity:1!important;border-color:var(--t-lc0392b,#c0392b);color:var(--t-cc0392b,#c0392b)}'+
+    '@media (hover:none){.ccdelb{opacity:.6}}'+
+    '.ccmsg.ccdeld{opacity:.6}.ccdelt{font-style:italic;color:var(--t-c-mute,var(--mute,#888))}'; document.head.appendChild(st); }catch(e){}
+  /* 실시간: 지운 메시지(UPDATE)를 바로 반영 · 실시간이 막혀도 12초마다 확인 */
+  const os=window.ccChatStart||ccChatStart;
+  window.ccChatStart=ccChatStart=async function(){
+    const r=await os.apply(this,arguments);
+    try{
+      if(ccChat.myId&&ccChat.mode){
+        ccChat.delCh=sb.channel("cc-chatdel-"+Date.now()).on("postgres_changes",{event:"UPDATE",schema:"public",table:CCD.T},function(p){ if(p&&p.new) ccDelApply(p.new); }).subscribe();
+        ccChat.delPoll=setInterval(ccDelSync,12000);
+      }
+    }catch(e){}
+    return r;
+  };
+  const ost=window.ccChatStop||ccChatStop;
+  window.ccChatStop=ccChatStop=function(){
+    if(ccChat.delPoll){ clearInterval(ccChat.delPoll); ccChat.delPoll=null; }
+    if(ccChat.delCh){ try{ sb.removeChannel(ccChat.delCh); }catch(e){} ccChat.delCh=null; }
+    return ost.apply(this,arguments);
+  };
+})();
 
 /* ═══ 로그인 화면: 한 번 가입·로그인한 기기는 이메일·비밀번호만 ═══ */
 (function(){
