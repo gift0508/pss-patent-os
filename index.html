@@ -760,7 +760,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 1022-B · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
+    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 1022-D · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -991,7 +991,7 @@ function adminProfile(email){ return {admin:1,name:"관리자",school:SITE.text.
 const laws=SITE.primary.laws.slice();
 const LAW_LABEL=Object.assign({},SITE.primary.label);
 const LL=x=>LAW_LABEL[x]||x;
-const STG=l=>((window.PSS_TRACKS||{})[l]||{}).stages||["기본","암기장단권화특강","진도별","최종"];
+const STG=l=>((window.PSS_TRACKS||{})[l]||{}).stages||["입문","기본","객관식문제풀이","핵심정리"];
 var PSS_PRICE_TOC=SITE.price.toc;
 var PSS_WEAK=SITE.primary.weak;
 var PSS_TRACKS=SITE.primary.tracks;
@@ -2254,7 +2254,7 @@ async function renderAdmin(){
    <div class="track"><div class="fill" style="width:${c/mx*100}%"></div></div>
    <span class="bv">${c}명</span></div>`).join("");
   // ===== 종합 분석 =====
-  const stName=["기본","암기장단권화특강","진도별","최종"];
+  const stName=STG("민법");
   const posOfA=x=>x.me?[0,-1]:x.pos;
   const ratesOfA=x=>x.me?[78,0]:x.rates;
   const cellsNum=x=>parseInt(x.cells);
@@ -2320,7 +2320,7 @@ function openStudent(i){
   const d=x.me?{...x,pos:[1, 1],weak:[],rates:[76, 71],
     lecs:[{t:"민소법 제7강 · 기판력",o:[14,20],c:[9,18],due:"8/10",p:"ok"},{t:"민법 제12강 · 물권변동",o:[11,24],c:[4,15],due:"8/8",p:"warn"}],
     last:"지금 접속 중",feed:"본인 계정"}:x;
-  const stName=["기본","암기장단권화특강","진도별","최종"];
+  const stName=STG("민법");
   const mini=laws.map((l,li)=>{
     const p=d.pos[li]; if(p<0) return "";
     const cells=[0,1,2,3].map(si=>{
@@ -2508,7 +2508,7 @@ async function askAI(){
   const btn=document.getElementById("csend");btn.disabled=true;
   const t=addMsg("ai typing","답변을 작성하고 있습니다…");
   const who=user?`${user.name}(${user.school} ${user.year})`:"수험생";
-  const prof=cur==="A"?"초시생, 현재 암기장단권화특강 단계":"재시생, 민소법 취약, 진도별 단계";
+  const prof=cur==="A"?"초시생, 현재 기본 단계":"재시생, 민소법 취약, 진도별 단계";
   const sys=`당신은 대한민국 변리사시험 온라인 학습반 '민사법 덜컥합격 by 24h 페이스메이커'의 AI 학습 조교입니다. 상대는 ${who}, ${prof}입니다. 변리사 시험 1차 민법·2차 민사소송법의 개념·판례·답안 현출 방법을 강의 흐름에 맞추어 정확하고 간결하게(400자 이내) 한국어로 답하세요. 사례형 질문에는 목차 잡는 법과 채점포인트 관점으로 답합니다. 학습 조언 요청 시 오늘의 해소 과업과 연결해 구체적으로 조언하세요. 확실하지 않은 판례 번호는 만들어내지 말고 쟁점 중심으로 설명하세요.`;
   try{
     const res=await fetch("https://api.anthropic.com/v1/messages",{
@@ -2646,7 +2646,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:var(--t-b060c1a_86,rgba(6,12,26,.86));z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:var(--t-b12233f,#12233f);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:16px;padding:26px;color:var(--t-cffffff,#fff)"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:var(--t-cc7cedc,#c7cedc);line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:var(--t-b0a1730,#0a1730);border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:var(--t-c9aa6bd,#9aa6bd);font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:var(--t-cc9a227,#C9A227);margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:var(--t-bc9a227,#C9A227);color:var(--t-c0d1f3c,#0D1F3C);font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:var(--t-b0a1730,#0a1730);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:var(--t-cffffff,#fff);font-weight:700"><span data-site="academy">박승수 민사법</span> · <span style="color:var(--t-cc9a227,#C9A227)">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:var(--t-c9aa6bd,#9aa6bd);margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:var(--t-bc9a227_16,rgba(201,162,39,.16));color:var(--t-cc9a227,#C9A227);padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:10px;background:transparent;color:var(--t-cc7cedc,#c7cedc);font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log(SITE.text.brand+" 빌드 1022-B");
+console.log(SITE.text.brand+" 빌드 1022-D");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // 무시로질의응답 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
@@ -3363,7 +3363,7 @@ window.pssBarMode=function(){
 })();
 </script>
 <script>
-/* ═══ 학습 흐름 (빌드 1022-B) ═══ */
+/* ═══ 학습 흐름 (빌드 1022-D) ═══ */
 /* ── 수강 계획: 출발점 → 진단 → 강의매칭 → 학습 로드맵(예상 소요일수) → 에브리데이 학습미션 ──
    과목 · 단계 · 강의마다 '담김 여부'와 수강생이 정한 '하루 수강량'을 하나의 계획으로 두고, 모든 화면이 이것을 읽고 씀.
    · 처음부터: 모든 강의를 담음
@@ -3387,7 +3387,7 @@ window.ccNS=ccNS;
 function ccZeros(t){ const a=[]; for(let i=0;i<ccNS(t);i++) a.push(0); return a; }
 /* 자율선택 단계(기본으로 담지 않음): 법무사 2차 '특강' · 노무사 '특강모음' — 시험 설정 CC_AUTO_STAGE가 있으면 그것을 씀 */
 function ccAutoSI(t){ const a=window.CC_AUTO_STAGE; if(a&&a[t]!=null) return a[t]; return t==="2차"?3:-1; }
-window.ccIsAuto=function(t,si){ return si===ccAutoSI(t); };
+window.ccIsAuto=function(t,si){ const a=ccAutoSI(t); return Array.isArray(a)?a.indexOf(si)>=0:si===a; };   /* 여러 칸이면 배열 (덜컥합격 1차: 입문 · 판례특강) */
 /* ── 작년 / 신규 강의 ──
    CC_CATALOG = 신규(올해 편성) · CC_CATALOG_OLD = 작년 편성(있는 칸만) — 둘 다 있는 칸은 수강생이 고름(기본: 작년)
    신규 강의는 관리자가 공개한 강의까지만 배정 (CC_PUB_ON 일 때) */
@@ -3918,7 +3918,9 @@ window.ccOpenSum=function(subj,stage,lec,track){
   window.CC_EXAM="변리사"; window.CC_NUMBERING="강"; window.CC_BRAND=(SITE.text&&SITE.text.brand)||"민사법 덜컥합격";
   window.CC_LAWS={"1차":["민법"],"2차":["민소법"]};
   window.CC_STAGES={"1차":(PRI.tracks["민법"].stages||[]).slice(),"2차":(PRI.tracks["민소법"].stages||[]).slice()};
-  window.CC_AUTO_STAGE={"1차":-1,"2차":-1};
+  /* 1차 민법(2026-10-22): 입문 → 기본 → 객관식문제풀이 → 핵심정리 · 중심은 기본 · 객관식문제풀이 — 입문 · 핵심정리는 자율(기본으로 담지 않고 골라 담기 · 강의만 + 강의노트) */
+  window.CC_AUTO_STAGE={"1차":[0,3],"2차":-1};
+  window.CC_LIGHT_SI={"1차":[0,3]};
   window.CC_FLOW3=true; window.CC_MCL5="5지택일 · 선다형"; window.CC_OPEN_ALL=true; window.CC_NO_PLAY=true;
   window.CC_D0_TEXT="오늘 들을 진도 강의를 듣고 오세요. 들은 다음에 강의마다 ① 학습요약 → ② OX풀이 → ③ 문제풀이로 오늘 수강내용을 복습합니다.";
   window.CC_QTABLE="pss_questions";
@@ -3938,7 +3940,10 @@ window.ccOpenSum=function(subj,stage,lec,track){
 function plBar0(){ try{ return !!(window.PSS_BARMODE||(typeof isBarUser==="function"&&isBarUser())); }catch(e){ return false; } }
 /* ── 상태: 트랙별 계획·출발점 — 기기 저장 + 서버(pss_learn) 동기화 ── */
 var PL_KEY="pss_learn_v1", PL_LS=["cc_learnlog","cc_qb_res","cc_qb_hist","cc_sum_v1","cc_note_v1","cc_combo_v1"];
-window.PL=(function(){ try{ const v=JSON.parse(localStorage.getItem(PL_KEY)||"null"); if(v&&v.tracks) return v; }catch(e){} return {tracks:{},at:0}; })();
+/* 1차 단계 개편(2026-10-22: 기본·암기장단권화특강·진도별·최종 → 입문·기본·객관식문제풀이·핵심정리) 전에 저장된 1차 계획은 하루 수강량만 남기고 새로 */
+var PL_STAGE_VER=2;
+function plMigrate(v){ if(!v||!v.tracks) return v; if((v.sv||1)<PL_STAGE_VER){ const t1=v.tracks["1차"]; if(t1){ const per=t1.plan&&t1.plan.per; v.tracks["1차"]={plan:Object.assign(ccPlanNew(),per?{per:per}:{}),path:{},pset:false}; } v.sv=PL_STAGE_VER; } return v; }
+window.PL=(function(){ try{ const v=JSON.parse(localStorage.getItem(PL_KEY)||"null"); if(v&&v.tracks) return plMigrate(v); }catch(e){} return {tracks:{},at:0,sv:PL_STAGE_VER}; })();
 function plTr(t){ PL.tracks[t]=PL.tracks[t]||{plan:ccPlanNew(),path:{},pset:false}; const x=PL.tracks[t]; x.plan=x.plan||ccPlanNew(); x.path=x.path||{}; return x; }
 var plSaveT=null;
 function plSave(){
@@ -3958,7 +3963,7 @@ window.plPull=async function(){
   try{
     const r=await sb.from("pss_learn").select("data").eq("user_id",user.id).maybeSingle(); if(r.error) throw r.error;
     const d=r.data&&r.data.data; if(!d||!d.pl) return;
-    if((d.pl.at||0)>=(PL.at||0)){ window.PL=d.pl; try{ localStorage.setItem(PL_KEY,JSON.stringify(PL)); }catch(e){} }
+    if((d.pl.at||0)>=(PL.at||0)){ window.PL=plMigrate(d.pl); try{ localStorage.setItem(PL_KEY,JSON.stringify(PL)); }catch(e){} }
     Object.keys(d.ls||{}).forEach(function(k){ try{ localStorage.setItem(k,d.ls[k]); }catch(e){} });
   }catch(e){ console.warn("[pss_learn] 불러오기",e); }
 };
