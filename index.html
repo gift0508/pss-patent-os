@@ -6049,6 +6049,11 @@ function ccDelBody(m){
   var BK="veritas";
   var VCATS=["민법 사례형","민사소송법 사례형","상법 사례형","기록형","민법 선택형","민사소송법 선택형","상법 선택형"];
   window.vCatSel="";
+  var VTYPES=[["문제지","common"],["해설(채점기준표)","common"],["공통자료","common"],["점수판(익명)","common"],["개인성적표","personal"],["6단 채점표","personal"],["첨삭답안","personal"],["재작성 지시사항","personal"]];
+  function vKindOf(t){ var x=VTYPES.filter(function(v){ return v[0]===t; })[0]; return x?x[1]:""; }
+  function vTypeIdx(t){ for(var i=0;i<VTYPES.length;i++) if(VTYPES[i][0]===t) return i; return 99; }
+  function typeOpts(id,only,onch){ return '<select id="'+id+'"'+(onch?' onchange="'+onch+'"':'')+'><option value="">자료 종류 고르기</option>'+VTYPES.filter(function(v){ return !only||v[1]===only; }).map(function(v){ return '<option value="'+v[0]+'">'+v[0]+' — '+(v[1]==="common"?"공통":"개인")+'</option>'; }).join("")+'</select>'; }
+  window.vTypePick=function(){ var t=(document.getElementById("vTitle")||{}).value, el=document.getElementById("vPer"); if(el) el.style.display=vKindOf(t)==="personal"?"flex":"none"; };
   var QCATS=["민법 사례형","민사소송법 사례형","상법 사례형","민법 선택형","민사소송법 선택형","상법 선택형","기록형"];
   function catOpts(id){ return '<select id="'+id+'"><option value="">과목·유형 고르기</option>'+VCATS.map(function(c){ return '<option>'+c+'</option>'; }).join("")+'</select>'; }
   try{ var sj0=sjL; window.sjL=function(x){ return VCATS.indexOf(x)>=0?"["+x+"]":sj0(x); }; }catch(e){}
@@ -6070,7 +6075,7 @@ function ccDelBody(m){
     var m=/(\d{4})\s*-?\s*(\d{4})/.exec(base);
     var vid=m?(m[1]+m[2]):"";
     var rest=m?base.replace(m[0],""):base;
-    var nm=(/[가-힣]{2,6}/.exec(rest)||[""])[0];
+    var hs=rest.match(/[가-힣]{2,5}/g)||[], nm=hs.length?hs[hs.length-1]:"";
     return {vid:vid,name:nm};
   };
 
@@ -6112,6 +6117,19 @@ function ccDelBody(m){
       return r;
     };
   }
+  /* 이미 로그인된 채로 페이지를 열 때(새로고침)도 베리타스 화면이 되도록 — 0.4초마다 상태 맞춤 */
+  var vLastId=null;
+  function vSync(){
+    try{
+      var on=!!(typeof user!=="undefined"&&user)&&isBar()&&!isAdm();
+      if(document.body.classList.contains("vmode")!==on) document.body.classList.toggle("vmode",on);
+      var b=document.getElementById("vNavBtn"); if(b){ var d=(typeof user!=="undefined"&&user&&canSee())?"":"none"; if(b.style.display!==d) b.style.display=d; }
+      var id=(typeof user!=="undefined"&&user&&user.id)||null;
+      if(id&&id!==vLastId){ vLastId=id; vSaveJoinVid(); }
+      if(!id) vLastId=null;
+    }catch(e){}
+  }
+  vSync(); setInterval(vSync,400);
   var lo0=window.logout; if(typeof lo0==="function"){ window.logout=function(){ try{ document.body.classList.remove("vmode"); }catch(e){} return lo0.apply(this,arguments); }; }
   async function vSaveJoinVid(){
     try{
@@ -6145,6 +6163,7 @@ function ccDelBody(m){
   function byRound(L){
     var order=[], G={};
     L.forEach(function(d){ if(!G[d.round]){ G[d.round]=[]; order.push(d.round); } G[d.round].push(d); });
+    order.forEach(function(r){ G[r].sort(function(a,b){ return vTypeIdx(a.title)-vTypeIdx(b.title); }); });
     return {order:order,G:G};
   }
   function dlBtn(d){ return '<button class="btn3" onclick="vDown(\''+d.id+'\')">내려받기</button>'; }
@@ -6201,12 +6220,11 @@ function ccDelBody(m){
     var up='<div class="bx"><b>① 자료 올리기</b> <span class="muted">PDF 등 파일 하나씩</span>'+dl+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+
       catOpts('vCat')+'<input id="vRound" list="vRounds" placeholder="회차 (예: 1회 모의고사)" style="min-width:170px">'+
-      '<input id="vTitle" placeholder="자료 이름 (예: 문제지 · 해설 · 개인성적표)" style="min-width:220px">'+
-      '<select id="vKind" onchange="document.getElementById(\'vPer\').style.display=this.value===\'personal\'?\'flex\':\'none\'"><option value="common">공통자료 — 모두에게</option><option value="personal">개인자료 — 한 학생에게</option></select></div>'+
+      typeOpts('vTitle','','vTypePick()')+'<span class="muted">공통은 모두에게 · 개인은 그 학생에게만</span></div>'+
       '<div id="vPer" style="display:none;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input id="vVid" inputmode="numeric" placeholder="고유번호 2622-0043" style="width:150px" oninput="vFillName()"><input id="vSname" placeholder="이름" style="width:110px"><span class="muted" id="vWho"></span></div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vFile"><button class="btn2" onclick="vUpOne()">올리기</button></div></div>';
     var bulk='<div class="bx"><b>② 개인자료 한꺼번에 올리기</b> <span class="muted">파일 이름에 이름과 고유번호를 넣어 주세요 — 예: <b>김광현 (2622-0043).pdf</b></span>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+catOpts('vBCat')+'<input id="vBRound" list="vRounds" placeholder="회차" style="min-width:170px"><input id="vBTitle" placeholder="자료 이름 (예: 개인성적표)" style="min-width:200px"></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+catOpts('vBCat')+'<input id="vBRound" list="vRounds" placeholder="회차" style="min-width:170px">'+typeOpts('vBTitle','personal')+'</div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vBFiles" multiple onchange="vBulkPreview()"><button class="btn2" onclick="vBulkUp()">모두 올리기</button></div><div id="vBPrev" style="margin-top:6px"></div></div>';
     var list='<div class="bx"><b>③ 올린 자료</b>'+(R.order.length?'':'<div class="muted" style="margin-top:4px">아직 없습니다</div>');
     R.order.forEach(function(rd){
@@ -6235,9 +6253,9 @@ function ccDelBody(m){
   }
   window.vUpOne=async function(){
     var g=function(id){ return ((document.getElementById(id)||{}).value||"").trim(); };
-    var round=g("vRound"), title=g("vTitle"), kind=g("vKind"), cat=g("vCat"), f=(document.getElementById("vFile")||{}).files;
+    var round=g("vRound"), title=g("vTitle"), kind=vKindOf(g("vTitle")), cat=g("vCat"), f=(document.getElementById("vFile")||{}).files;
     if(!cat){ toast("과목·유형을 골라 주세요"); return; }
-    if(!round||!title){ toast("회차와 자료 이름을 넣어 주세요"); return; }
+    if(!round||!title){ toast("회차와 자료 종류를 넣어 주세요"); return; }
     if(!f||!f[0]){ toast("파일을 골라 주세요"); return; }
     var row={round:round,title:title,kind:kind,cat:cat,fname:f[0].name};
     if(kind==="personal"){
