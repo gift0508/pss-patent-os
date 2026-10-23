@@ -6074,8 +6074,10 @@ function ccDelBody(m){
     var base=String(fn||"").replace(/\.[^.]+$/,"");
     var m=/(\d{4})\s*-?\s*(\d{4})/.exec(base);
     var vid=m?(m[1]+m[2]):"";
-    var rest=m?base.replace(m[0],""):base;
-    var hs=rest.match(/[가-힣]{2,5}/g)||[], nm=hs.length?hs[hs.length-1]:"";
+    /* 이름: 고유번호 바로 뒤의 한글(…_2622-0043_김광현) → 없으면 고유번호 앞의 마지막 한글(김광현 (2622-0043)) */
+    var after=m?base.slice(m.index+m[0].length):"", before=m?base.slice(0,m.index):base;
+    var ha=after.match(/[가-힣]{2,5}/g)||[], hb=before.match(/[가-힣]{2,5}/g)||[];
+    var nm=ha.length?ha[0]:(hb.length?hb[hb.length-1]:"");
     return {vid:vid,name:nm};
   };
 
