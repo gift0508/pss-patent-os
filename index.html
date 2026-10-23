@@ -6156,6 +6156,15 @@ function ccDelBody(m){
     if(r.error||!r.data){ toast("내려받기 실패: "+((r.error&&r.error.message)||"권한이 없습니다")); return; }
     var a=document.createElement("a"); a.href=r.data.signedUrl; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
   };
+  /* 보기: 내려받지 않고 새 창(브라우저 PDF 보기)으로 열기 */
+  window.vView=async function(id){
+    var d=VD[id]; if(!d) return;
+    if(!real()){ toast("로그인한 뒤 볼 수 있습니다"); return; }
+    var w=null; try{ w=window.open("about:blank","_blank"); if(w) w.document.write('<p style="font-family:sans-serif;padding:20px">자료를 여는 중…</p>'); }catch(e){}
+    var r=await sb.storage.from(BK).createSignedUrl(d.path,1800);
+    if(r.error||!r.data){ try{ if(w) w.close(); }catch(e){} toast("열기 실패: "+((r.error&&r.error.message)||"권한이 없습니다")); return; }
+    if(w&&!w.closed) w.location.href=r.data.signedUrl; else window.open(r.data.signedUrl,"_blank","noopener");
+  };
   async function loadDocs(){
     var r=await sb.from("vdocs").select("*").order("created_at",{ascending:false});
     if(r.error) throw r.error;
@@ -6168,7 +6177,7 @@ function ccDelBody(m){
     order.forEach(function(r){ G[r].sort(function(a,b){ return vTypeIdx(a.title)-vTypeIdx(b.title); }); });
     return {order:order,G:G};
   }
-  function dlBtn(d){ return '<button class="btn3" onclick="vDown(\''+d.id+'\')">내려받기</button>'; }
+  function dlBtn(d){ return '<span style="white-space:nowrap"><button class="btn3" onclick="vView(\''+d.id+'\')">보기</button> <button class="btn3" onclick="vDown(\''+d.id+'\')">내려받기</button></span>'; }
 
   /* ── 수강생 화면 ── */
   async function vStudent(){
