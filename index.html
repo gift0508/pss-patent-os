@@ -716,7 +716,12 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <label class="gl2">응시 시험</label>
     <select id="fExam" onchange="examPick(this.value)">
       <option value="변리사">변리사시험</option>
+      <option value="변호사">변호사시험</option>
     </select>
+    <div id="fVidBox" style="display:none">
+    <label class="gl2">베리타스 학생고유번호 <small style="color:var(--t-c9aa6bd,#9aa6bd);font-weight:400">(베리타스 수강생 · 예: 2622-0043)</small></label>
+    <input id="fVid" type="text" inputmode="numeric" placeholder="2622-0043" maxlength="12" autocomplete="off">
+    </div>
     <label class="gl2">수험 차수</label>
     <select id="fYear">
       <option value="">선택하세요</option>
@@ -833,7 +838,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <div class="brand" style="cursor:pointer" onclick="showHome()"><span data-site="brand">민사법 덜컥합격</span><button class="thbtn thttl" onclick="event.stopPropagation();pssThemeToggle()" title="밝은 화면/어두운 화면 바꾸기" aria-label="밝은 화면/어두운 화면 바꾸기">☀</button> <small data-site="topSub">by 24h 페이스메이커 · 믿음직한 합격동반자 · 나의 학습 일정 관리</small></div>
     <div class="engmenu"><button class="mini" onclick="openEngine('schedule')">🧭 출발점</button><span class="fa">→</span><button class="mini" onclick="openEngine('match')">🎯 강의매칭</button><span class="fa">→</span><button class="mini" onclick="showRoadmap()">🗺️ 학습 로드맵</button><span class="fa">→</span><button class="mini" onclick="openEngine('mission')">✅ 에브리데이 학습미션</button><span class="fa">→</span><button class="mini" onclick="pickExam()">🎓 시험·과목 고르기</button><span class="fa">→</span><button class="mini" onclick="pickFbType()">📊 실전첨삭</button>
 <div style="flex-basis:100%;height:0"></div>
-<button class="mini" onclick="pickTeukgang()">🎓 특강</button><button class="mini" onclick="openMyRoom()">📚 내 강의실</button><button class="mini" onclick="openComm()">💬 소통</button><button class="mini" onclick="openEngine('admin')">🏃 페이스메이커</button></div>
+<button class="mini" onclick="pickTeukgang()">🎓 특강</button><button class="mini" onclick="openMyRoom()">📚 내 강의실</button><button class="mini" onclick="openComm()">💬 소통</button><button class="mini" id="vNavBtn" style="display:none" onclick="openComm('veritas')">📂 베리타스 자료</button><button class="mini" onclick="openEngine('admin')">🏃 페이스메이커</button></div>
     <div class="userchip" id="userchip" style="display:none">
       <span id="uinfo"></span>
       <span class="ubadge"></span>
@@ -932,8 +937,8 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <div class="pairlabel">일일 과업을 실행하는 두 학습엔진 — 선택형과 사례는 한 세트</div>
     <div class="pairrow">
       <a class="realbtn" href="#" onclick="openEngine('mission');return false">✅ 에브리데이 학습미션 — 오늘의 학습 체크</a> 
-       <a class="realbtn" href="#" onclick="pickExam();return false">🎓 학습엔진 고르기 — 1차 민법 · 2차 민사소송법</a>
-        <a class="realbtn" href="#" onclick="pickFbType();return false">📊 실전첨삭 — 2차 민사소송법</a>
+       <a class="realbtn" href="#" onclick="pickExam();return false">🎓 시험·과목 고르기 — 변리사 · 변호사시험</a>
+        <a class="realbtn" href="#" onclick="pickFbType();return false">📊 실전첨삭 — 변리사 · 변호사 전 과목</a>
     </div>
   </section>
 
@@ -1477,7 +1482,7 @@ function pickFbType(){
   var banner=document.getElementById("ecBanner");
   if(banner) banner.innerHTML='<b style="color:var(--t-cc9a227,#C9A227)">🎫 이용권</b> — 학습반·단과반 모두 이용권으로 응시합니다. 시험지를 고르면 이용권이 쓰입니다 ('+(window.pssTkRuleText?pssTkRuleText('fb'):'')+').';
   var isAdmF=!!(typeof user!=="undefined"&&user&&(user.admin||user.email==="open-admin"));
-  var FBL=FB_ENGINES.filter(function(c){ return c.key!=="barcase"; });
+  var FBL=FB_ENGINES.slice();
   document.getElementById("ecGrid").innerHTML=FBL.map(function(c){
     return '<button class="eccard ready" onclick="openFbEngine(\''+c.eng+'\')"><span class="ecnm">'+c.name+'</span><span class="ecsub">'+c.sub+'</span><span class="ecgo">열기 →</span></button>';
   }).join("");
@@ -1754,7 +1759,7 @@ async function fetchProfile(au){
   if(!data||!data.name) return null;
   return {id:data.id,school:(data.exam||"변리사"),exam:(data.exam||(data.track==="bar"?"변호사":"변리사")),year:data.exam_round||"",name:data.name,plan:data.plan||"none",subj:data.subj,subjs:data.subjs,joined:(data.created_at||"").slice(0,10),email:au.email,
     phone:data.phone,track:data.track,alarm_ok:data.alarm_ok,pay_plan:data.pay_plan,is_admin:data.is_admin,
-    applied_plan:data.applied_plan,applied_subjs:data.applied_subjs,applied_at:data.applied_at,approved_at:data.approved_at};
+    applied_plan:data.applied_plan,applied_subjs:data.applied_subjs,applied_at:data.applied_at,approved_at:data.approved_at,vid:data.vid||""};
 }
 async function loadUser(){
   const au=await authUser();
@@ -1835,6 +1840,7 @@ function examPick(v){
   var lb=document.getElementById("fTrackLbl"), tr=document.getElementById("fTrack");
   if(lb) lb.style.display=isBar?"none":"";
   if(tr) tr.style.display=isBar?"none":"";
+  var vb=document.getElementById("fVidBox"); if(vb) vb.style.display=isBar?"":"none";
   var pl=document.getElementById("fPlan");
   if(pl){ pl.options[0].text=isBar?"학습반 — 변호사시험 민사법·행정법 전체 + 관리·1:1 상담 (35% 할인)":"학습반 — 트랙 강의 전체 + 관리·1:1 상담 (35% 할인)"; }
 }
@@ -1847,7 +1853,8 @@ function readProfileFields(){
   if(!school||!year||!name||!phone) return null;
   const exam=(document.getElementById("fExam")||{}).value||"변리사";
   const track=exam==="변호사"?"bar":((document.getElementById("fTrack")||{}).value||"1차");
-  return {school,year,name,phone,alarm_ok,track,exam,plan:"none",subj:null};
+  const vid=exam==="변호사"?((window.vNorm?vNorm((document.getElementById("fVid")||{}).value):"")||""):"";
+  return {school,year,name,phone,alarm_ok,track,exam,vid,plan:"none",subj:null};
 }
 /* ▼ 오픈 로그인 스위치 — 결정되면 false 로 바꾸면 이메일·비밀번호 로그인이 다시 잠깁니다 */
 const OPEN_LOGIN=!!SITE.openLogin;
@@ -1921,7 +1928,7 @@ async function signup(){
     }catch(e){ console.warn("[supabase] dup check",e); }
   }
   err.style.color="";
-  try{ localStorage.setItem('pss_join_plan',(document.getElementById('fPlan')||{}).value||'full'); localStorage.setItem('pss_join_exam',(document.getElementById('fExam')||{}).value||'변리사'); }catch(e){}
+  try{ localStorage.setItem('pss_join_plan',(document.getElementById('fPlan')||{}).value||'full'); localStorage.setItem('pss_join_exam',(document.getElementById('fExam')||{}).value||'변리사'); if(pf.vid) localStorage.setItem('pss_join_vid',pf.vid); }catch(e){}
   const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:pf}});
   if(error){
     err.textContent=/already registered/i.test(error.message)?"이미 가입된 이메일입니다. [로그인]을 눌러 주세요":"가입 실패: "+error.message;
@@ -4800,8 +4807,7 @@ try{ teukPick=function(nm){ closeChooser(); window.matchSubject="특강"; window
 /* 학습미션 알림 버튼(아직 연결 전): 상태만 */
 window.osNotifyState=window.osNotifyState||function(){ return {on:false,time:"07:30",perm:"default"}; };
 
-/* 변호사 과정 숨김: 수강생에게는 변리사 화면만 (관리자는 그대로) */
-try{ const pe0=pickExam; pickExam=function(){ try{ return pickPatentExam(); }catch(e){} return pe0.apply(this,arguments); }; window.pickExam=pickExam; }catch(e){}
+/* 변호사 과정 다시 개방(2026-10-23): 숨김 해제 */
 
 /* ═══ 실제 운영 — 시연용 가짜 자료를 모두 비움 ═══ */
 /* 홈 보드의 시연 강의·누적·주간 수치 비우기 (해당 영역은 화면에서도 내림) */
@@ -6011,6 +6017,241 @@ function ccDelBody(m){
   apply(saved()||sys());
 })();
 
+</script>
+<script>
+/* ═══ 📂 베리타스 민사법 자료 — 공통자료 · 개인자료 (2026-10-23) ═══
+   수강생: 변호사시험으로 가입하면 공통자료가 열리고, 고유번호+이름이 맞으면 내 개인자료가 열림
+   관리자: 회차별로 공통자료 · 개인자료를 올리고 지움 (비공개 저장소 'veritas') */
+(function(){
+  var BK="veritas";
+  function E(x){ return String(x==null?"":x).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  /* 고유번호: 숫자만 남겨 비교 (2622-0043 = 26220043) */
+  window.vNorm=function(v){ return String(v||"").replace(/\D/g,""); };
+  window.vShow=function(v){ v=vNorm(v); return v.length===8?v.slice(0,4)+"-"+v.slice(4):v; };
+  function real(){ return !!(window.sb&&typeof user!=="undefined"&&user&&!user.demo&&user.email!=="open-admin"); }
+  function isAdm(){ return !!(typeof user!=="undefined"&&user&&user.admin); }
+  function isBar(){ try{ return typeof isBarUser==="function"&&isBarUser(); }catch(e){ return false; } }
+  function canSee(){ return isAdm()||isBar(); }
+  function uid(){ try{ if(crypto&&crypto.randomUUID) return crypto.randomUUID(); }catch(e){} return Date.now().toString(36)+Math.random().toString(36).slice(2,10); }
+  function ext(n){ var m=/\.([A-Za-z0-9]{1,6})$/.exec(String(n||"")); return m?m[1].toLowerCase():"bin"; }
+  function body(){ return document.getElementById("acadBody"); }
+  /* 파일 이름에서 이름·고유번호 읽기: "김광현 (2622-0043).pdf" · "2622-0043_김광현.pdf" 등 */
+  window.vParseName=function(fn){
+    var base=String(fn||"").replace(/\.[^.]+$/,"");
+    var m=/(\d{4})\s*-?\s*(\d{4})/.exec(base);
+    var vid=m?(m[1]+m[2]):"";
+    var rest=m?base.replace(m[0],""):base;
+    var nm=(/[가-힣]{2,6}/.exec(rest)||[""])[0];
+    return {vid:vid,name:nm};
+  };
+
+  /* ── 소통에 '베리타스 자료' 탭 ── */
+  var oc=window.openComm;
+  if(typeof oc==="function"){
+    window.openComm=function(tab){
+      try{
+        var has=COMTABS.some(function(t){ return t[0]==="veritas"; });
+        if(canSee()&&!has) COMTABS.unshift(["veritas","📂 베리타스 자료"]);
+        if(!canSee()&&has) COMTABS=COMTABS.filter(function(t){ return t[0]!=="veritas"; });
+      }catch(e){}
+      if(tab==="veritas"){
+        if(!canSee()) return oc("notice");
+        acad("💬 소통",COMTABS,"veritas","openComm");
+        return isAdm()?vAdmin():vStudent();
+      }
+      return oc(tab);
+    };
+  }
+
+  /* ── 홈 바로가기 단추 · 가입 때 넣은 고유번호 저장 ── */
+  var au0=window.applyUser;
+  if(typeof au0==="function"){
+    window.applyUser=function(u){
+      var r=au0.apply(this,arguments);
+      setTimeout(function(){
+        try{ var b=document.getElementById("vNavBtn"); if(b) b.style.display=canSee()?"":"none"; }catch(e){}
+        vSaveJoinVid();
+      },700);
+      return r;
+    };
+  }
+  async function vSaveJoinVid(){
+    try{
+      if(!real()||isAdm()||!isBar()||vNorm(user.vid)) return;
+      var v=vNorm(localStorage.getItem("pss_join_vid")||"");
+      if(!v){ try{ var a=await sb.auth.getUser(); v=vNorm(((a.data&&a.data.user&&a.data.user.user_metadata)||{}).vid||""); }catch(e){} }
+      if(!v) return;
+      var r=await sb.from("profiles").update({vid:v}).eq("id",user.id);
+      localStorage.removeItem("pss_join_vid");
+      if(r.error){ toast(/duplicate|unique/i.test(r.error.message)?"이미 등록된 베리타스 고유번호입니다 — 운영팀에 문의해 주세요":"고유번호 저장 실패: "+r.error.message); return; }
+      user.vid=v;
+    }catch(e){ console.warn("[veritas] vid",e); }
+  }
+
+  /* ── 내려받기 ── */
+  var VD={};
+  window.vDown=async function(id){
+    var d=VD[id]; if(!d) return;
+    if(!real()){ toast("로그인한 뒤 내려받을 수 있습니다"); return; }
+    var r=await sb.storage.from(BK).createSignedUrl(d.path,600,{download:d.fname||true});
+    if(r.error||!r.data){ toast("내려받기 실패: "+((r.error&&r.error.message)||"권한이 없습니다")); return; }
+    var a=document.createElement("a"); a.href=r.data.signedUrl; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
+  };
+  async function loadDocs(){
+    var r=await sb.from("vdocs").select("*").order("created_at",{ascending:false});
+    if(r.error) throw r.error;
+    VD={}; (r.data||[]).forEach(function(d){ VD[d.id]=d; });
+    return r.data||[];
+  }
+  function byRound(L){
+    var order=[], G={};
+    L.forEach(function(d){ if(!G[d.round]){ G[d.round]=[]; order.push(d.round); } G[d.round].push(d); });
+    return {order:order,G:G};
+  }
+  function dlBtn(d){ return '<button class="btn3" onclick="vDown(\''+d.id+'\')">내려받기</button>'; }
+
+  /* ── 수강생 화면 ── */
+  async function vStudent(){
+    var B=body(); if(!B) return;
+    if(!real()){ B.innerHTML='<div class="muted">로그인한 뒤 이용할 수 있습니다</div>'; return; }
+    var v=vNorm(user.vid);
+    var head='<div class="bx" style="line-height:1.8"><b>베리타스 민사법 자료</b><div class="muted">강의는 베리타스에서, 자료는 여기서 받습니다 · <b>공통자료</b>는 모두에게, <b>내 개인자료</b>(성적표·첨삭 등)는 본인에게만 열립니다</div>'+
+      (v?'<div style="margin-top:6px">내 베리타스 고유번호 <b>'+E(vShow(v))+'</b> · 이름 <b>'+E(user.name)+'</b> <span class="muted">(바꿔야 하면 고객센터로 문의해 주세요)</span></div>'
+        :'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span>내 베리타스 고유번호</span><input id="vMyVid" inputmode="numeric" placeholder="2622-0043" maxlength="12" style="width:130px"><button class="btn2" onclick="vRegVid()">등록</button><span class="muted">등록해야 내 개인자료가 열립니다 · 베리타스 이름(<b>'+E(user.name)+'</b>)과 같아야 합니다</span></div>')+'</div>';
+    B.innerHTML=head+'<div class="muted" id="vLoading">자료를 불러오는 중…</div>';
+    var L;
+    try{ L=await loadDocs(); }catch(e){ B.innerHTML=head+'<div class="muted">자료를 불러오지 못했습니다 ('+E(e.message)+')</div>'; return; }
+    var R=byRound(L), h='';
+    if(!R.order.length) h='<div class="muted">아직 올라온 자료가 없습니다</div>';
+    R.order.forEach(function(rd){
+      var C=R.G[rd].filter(function(d){ return d.kind==="common"; }), P=R.G[rd].filter(function(d){ return d.kind==="personal"; });
+      h+='<div class="bx"><b style="font-size:15px">'+E(rd)+'</b>'+
+        '<table style="margin-top:6px"><tr><th>구분</th><th>자료</th><th></th></tr>'+
+        C.map(function(d){ return '<tr><td><span class="pill gray">공통</span></td><td>'+E(d.title)+'</td><td>'+dlBtn(d)+'</td></tr>'; }).join('')+
+        P.map(function(d){ return '<tr><td><span class="pill ok">내 자료</span></td><td><b>'+E(d.title)+'</b></td><td>'+dlBtn(d)+'</td></tr>'; }).join('')+
+        '</table></div>';
+    });
+    B.innerHTML=head+h;
+  }
+  window.vRegVid=async function(){
+    var v=vNorm((document.getElementById("vMyVid")||{}).value);
+    if(v.length<6){ toast("고유번호를 확인해 주세요 (예: 2622-0043)"); return; }
+    var r=await sb.from("profiles").update({vid:v}).eq("id",user.id);
+    if(r.error){ toast(/duplicate|unique/i.test(r.error.message)?"이미 등록된 고유번호입니다 — 고객센터로 문의해 주세요":"등록 실패: "+r.error.message); return; }
+    user.vid=v; toast("고유번호를 등록했습니다"); vStudent();
+  };
+
+  /* ── 관리자 화면 ── */
+  var VS=[];   /* 변호사시험 가입자 */
+  async function loadStudents(){
+    try{ var r=await sb.from("profiles").select("id,name,email,vid,exam,track,created_at,is_admin").order("created_at",{ascending:false});
+      VS=(r.data||[]).filter(function(s){ return !s.is_admin&&(s.exam==="변호사"||s.track==="bar"); }); }catch(e){ VS=[]; }
+    return VS;
+  }
+  function stuByVid(v){ v=vNorm(v); return VS.filter(function(s){ return vNorm(s.vid)===v; })[0]||null; }
+  async function vAdmin(){
+    var B=body(); if(!B) return;
+    if(!real()){ B.innerHTML='<div class="muted">관리자 계정으로 로그인해야 자료를 올릴 수 있습니다</div>'; return; }
+    B.innerHTML='<div class="muted">불러오는 중…</div>';
+    var L=[]; try{ L=await loadDocs(); }catch(e){ B.innerHTML='<div class="bx"><b>서버 준비가 필요합니다</b><div class="muted" style="margin-top:4px">veritas_setup.sql을 Supabase SQL Editor에서 먼저 Run 해 주세요 ('+E(e.message)+')</div></div>'; return; }
+    await loadStudents();
+    var R=byRound(L);
+    var dl='<datalist id="vRounds">'+R.order.map(function(r){ return '<option value="'+E(r)+'">'; }).join('')+'</datalist>';
+    var up='<div class="bx"><b>① 자료 올리기</b> <span class="muted">PDF 등 파일 하나씩</span>'+dl+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+
+      '<input id="vRound" list="vRounds" placeholder="회차 (예: 1회 모의고사)" style="min-width:170px">'+
+      '<input id="vTitle" placeholder="자료 이름 (예: 문제지 · 해설 · 개인성적표)" style="min-width:220px">'+
+      '<select id="vKind" onchange="document.getElementById(\'vPer\').style.display=this.value===\'personal\'?\'flex\':\'none\'"><option value="common">공통자료 — 모두에게</option><option value="personal">개인자료 — 한 학생에게</option></select></div>'+
+      '<div id="vPer" style="display:none;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input id="vVid" inputmode="numeric" placeholder="고유번호 2622-0043" style="width:150px" oninput="vFillName()"><input id="vSname" placeholder="이름" style="width:110px"><span class="muted" id="vWho"></span></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vFile"><button class="btn2" onclick="vUpOne()">올리기</button></div></div>';
+    var bulk='<div class="bx"><b>② 개인자료 한꺼번에 올리기</b> <span class="muted">파일 이름에 이름과 고유번호를 넣어 주세요 — 예: <b>김광현 (2622-0043).pdf</b></span>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center"><input id="vBRound" list="vRounds" placeholder="회차" style="min-width:170px"><input id="vBTitle" placeholder="자료 이름 (예: 개인성적표)" style="min-width:200px"></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vBFiles" multiple onchange="vBulkPreview()"><button class="btn2" onclick="vBulkUp()">모두 올리기</button></div><div id="vBPrev" style="margin-top:6px"></div></div>';
+    var list='<div class="bx"><b>③ 올린 자료</b>'+(R.order.length?'':'<div class="muted" style="margin-top:4px">아직 없습니다</div>');
+    R.order.forEach(function(rd){
+      var A=R.G[rd], nc=A.filter(function(d){ return d.kind==="common"; }).length, np=A.length-nc;
+      list+='<div style="margin-top:10px"><b>'+E(rd)+'</b> <span class="muted">공통 '+nc+' · 개인 '+np+'</span><table style="margin-top:4px"><tr><th>구분</th><th>자료</th><th>학생</th><th>파일</th><th></th></tr>'+
+        A.map(function(d){ var s=d.kind==="personal"?stuByVid(d.vid):null;
+          return '<tr><td><span class="pill '+(d.kind==="common"?'gray':'ok')+'">'+(d.kind==="common"?'공통':'개인')+'</span></td><td>'+E(d.title)+'</td><td>'+(d.kind==="personal"?E(d.sname)+' ('+E(vShow(d.vid))+')'+(s?'':' <span class="pill wait">미가입</span>'):'—')+'</td><td class="muted">'+E(d.fname)+'</td><td style="white-space:nowrap">'+dlBtn(d)+' <button class="btn3" onclick="vDel(\''+d.id+'\')">삭제</button></td></tr>'; }).join('')+'</table></div>';
+    });
+    list+='</div>';
+    var stu='<div class="bx"><b>④ 변호사시험 가입자</b> <span class="muted">'+VS.length+'명 · 고유번호와 이름이 베리타스 명단과 같아야 개인자료가 열립니다</span><table style="margin-top:6px"><tr><th>이름</th><th>고유번호</th><th>이메일</th><th>가입일</th><th></th></tr>'+
+      VS.map(function(s){ return '<tr><td>'+E(s.name)+'</td><td>'+(s.vid?E(vShow(s.vid)):'<span class="muted">미등록</span>')+'</td><td class="muted">'+E(s.email)+'</td><td class="muted">'+E(String(s.created_at||"").slice(0,10))+'</td><td><button class="btn3" onclick="vEditVid(\''+s.id+'\')">고유번호 수정</button></td></tr>'; }).join('')+'</table></div>';
+    B.innerHTML=up+bulk+list+stu;
+  }
+  window.vFillName=function(){
+    var s=stuByVid((document.getElementById("vVid")||{}).value), w=document.getElementById("vWho"), n=document.getElementById("vSname");
+    if(s&&n&&!n.value) n.value=s.name||"";
+    if(w) w.textContent=s?("가입자: "+s.name):"아직 가입하지 않은 번호 — 올려 두면 가입 후 열립니다";
+  };
+  async function putFile(file,path){
+    return await sb.storage.from(BK).upload(path,file,{upsert:false,contentType:file.type||"application/octet-stream"});
+  }
+  async function addDoc(row,file){
+    var u=await putFile(file,row.path); if(u.error) return u.error;
+    var r=await sb.from("vdocs").insert(row); if(r.error){ try{ await sb.storage.from(BK).remove([row.path]); }catch(e){} return r.error; }
+    return null;
+  }
+  window.vUpOne=async function(){
+    var g=function(id){ return ((document.getElementById(id)||{}).value||"").trim(); };
+    var round=g("vRound"), title=g("vTitle"), kind=g("vKind"), f=(document.getElementById("vFile")||{}).files;
+    if(!round||!title){ toast("회차와 자료 이름을 넣어 주세요"); return; }
+    if(!f||!f[0]){ toast("파일을 골라 주세요"); return; }
+    var row={round:round,title:title,kind:kind,fname:f[0].name};
+    if(kind==="personal"){
+      var v=vNorm(g("vVid")), nm=g("vSname");
+      if(v.length<6||!nm){ toast("개인자료는 고유번호와 이름을 모두 넣어 주세요"); return; }
+      row.vid=v; row.sname=nm; row.path="personal/"+v+"/"+uid()+"."+ext(f[0].name);
+    } else row.path="common/"+uid()+"."+ext(f[0].name);
+    toast("올리는 중…");
+    var err=await addDoc(row,f[0]);
+    if(err){ toast("올리기 실패: "+err.message); return; }
+    toast("올렸습니다 — "+title); vAdmin();
+  };
+  window.vBulkPreview=function(){
+    var F=[].slice.call((document.getElementById("vBFiles")||{}).files||[]), P=document.getElementById("vBPrev"); if(!P) return;
+    if(!F.length){ P.innerHTML=""; return; }
+    var bad=0;
+    P.innerHTML='<table><tr><th>파일</th><th>이름</th><th>고유번호</th><th>가입</th></tr>'+F.map(function(f){ var p=vParseName(f.name), s=p.vid?stuByVid(p.vid):null, ok=p.vid.length===8&&p.name;
+      if(!ok) bad++;
+      return '<tr><td class="muted">'+E(f.name)+'</td><td>'+(p.name?E(p.name):'<span class="pill wait">못 읽음</span>')+'</td><td>'+(p.vid?E(vShow(p.vid)):'<span class="pill wait">못 읽음</span>')+'</td><td>'+(s?(s.name===p.name?'<span class="pill ok">가입</span>':'<span class="pill wait">이름 다름: '+E(s.name)+'</span>'):'<span class="muted">미가입</span>')+'</td></tr>'; }).join('')+'</table>'+
+      (bad?'<div class="muted" style="margin-top:4px">⚠ 이름이나 고유번호를 못 읽은 파일 '+bad+'개는 건너뜁니다</div>':'');
+  };
+  window.vBulkUp=async function(){
+    var round=((document.getElementById("vBRound")||{}).value||"").trim(), title=((document.getElementById("vBTitle")||{}).value||"").trim();
+    var F=[].slice.call((document.getElementById("vBFiles")||{}).files||[]);
+    if(!round||!title){ toast("회차와 자료 이름을 넣어 주세요"); return; }
+    if(!F.length){ toast("파일을 골라 주세요"); return; }
+    var ok=0, skip=0, fail=[];
+    for(var i=0;i<F.length;i++){
+      var f=F[i], p=vParseName(f.name);
+      if(p.vid.length!==8||!p.name){ skip++; continue; }
+      toast("올리는 중… "+(i+1)+" / "+F.length);
+      var err=await addDoc({round:round,title:title,kind:"personal",vid:p.vid,sname:p.name,fname:f.name,path:"personal/"+p.vid+"/"+uid()+"."+ext(f.name)},f);
+      if(err) fail.push(f.name+" ("+err.message+")"); else ok++;
+    }
+    toast("올림 "+ok+"개"+(skip?" · 건너뜀 "+skip+"개":"")+(fail.length?" · 실패 "+fail.length+"개":""));
+    if(fail.length) alert("올리지 못한 파일\n\n"+fail.join("\n"));
+    vAdmin();
+  };
+  window.vDel=async function(id){
+    var d=VD[id]; if(!d) return;
+    if(!confirm("「"+d.round+" · "+d.title+(d.sname?" · "+d.sname:"")+"」을(를) 지울까요? 되돌릴 수 없습니다")) return;
+    var r=await sb.from("vdocs").delete().eq("id",id);
+    if(r.error){ toast("삭제 실패: "+r.error.message); return; }
+    try{ await sb.storage.from(BK).remove([d.path]); }catch(e){}
+    toast("지웠습니다"); vAdmin();
+  };
+  window.vEditVid=async function(id){
+    var s=VS.filter(function(x){ return x.id===id; })[0]; if(!s) return;
+    var v=prompt(s.name+"님의 베리타스 고유번호 (예: 2622-0043) — 비우면 지웁니다",s.vid?vShow(s.vid):"");
+    if(v===null) return;
+    v=vNorm(v);
+    var r=await sb.from("profiles").update({vid:v||null}).eq("id",id);
+    if(r.error){ toast(/duplicate|unique/i.test(r.error.message)?"다른 학생이 이미 쓰는 고유번호입니다":"수정 실패: "+r.error.message); return; }
+    toast("고유번호를 고쳤습니다"); vAdmin();
+  };
+})();
 </script>
 </body>
 
