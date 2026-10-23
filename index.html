@@ -733,6 +733,10 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <div id="fVidBox" style="display:none">
     <label class="gl2">베리타스 학생고유번호 <small style="color:var(--t-c9aa6bd,#9aa6bd);font-weight:400">(베리타스 수강생 · 예: 2622-0043)</small></label>
     <input id="fVid" type="text" inputmode="numeric" placeholder="2622-0043" maxlength="12" autocomplete="off">
+    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:12.5px;line-height:1.55;cursor:pointer">
+      <input type="checkbox" id="fUseOk" style="width:auto;margin-top:3px;flex:none">
+      <span><b>[필수]</b> 이름·고유번호를 지운 제출 답안과 파생저작물은 교육 자료 제작에 활용될 수 있습니다. 이에 동의합니다.</span>
+    </label>
     </div>
     <div id="fNonBar1">
     <label class="gl2">수험 차수</label>
@@ -1875,7 +1879,8 @@ function readProfileFields(){
   if(exam==="변호사"){
     const vid=window.vNorm?vNorm((document.getElementById("fVid")||{}).value):"";
     if(!name||vid.length!==8) return null;
-    return {school:"변호사",year:"베리타스",name,phone:null,alarm_ok:false,track:"bar",exam,vid,plan:"none",subj:null};
+    const use_ok=!!(document.getElementById("fUseOk")||{}).checked;
+    return {school:"변호사",year:"베리타스",name,phone:null,alarm_ok:false,track:"bar",exam,vid,use_ok,use_ok_at:use_ok?new Date().toISOString():null,plan:"none",subj:null};
   }
   if(!school||!year||!name||!phone) return null;
   const track=exam==="변호사"?"bar":((document.getElementById("fTrack")||{}).value||"1차");
@@ -1940,6 +1945,7 @@ async function signup(){
   }
   const pf=readProfileFields();
   if(!pf){err.textContent=((document.getElementById("fExam")||{}).value==="변호사")?"성명과 베리타스 학생고유번호(8자리, 예: 2622-0043)를 입력해 주세요":"수험 차수·성명·휴대폰 번호를 모두 입력해 주세요";return;}
+  if(pf.exam==="변호사"&&!pf.use_ok){err.textContent="제출 답안·파생저작물 활용 안내에 동의해 주세요";return;}
   if(pf.exam!=="변호사"&&!phoneOk(pf.phone)){err.textContent="휴대폰 번호를 010-0000-0000 형식으로 입력해 주세요";return;}
   const dupKey=pf.school+"|"+pf.year+"|"+pf.name;
   if(dupWarned!==dupKey){
