@@ -722,30 +722,36 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <label class="gl2">베리타스 학생고유번호 <small style="color:var(--t-c9aa6bd,#9aa6bd);font-weight:400">(베리타스 수강생 · 예: 2622-0043)</small></label>
     <input id="fVid" type="text" inputmode="numeric" placeholder="2622-0043" maxlength="12" autocomplete="off">
     </div>
+    <div id="fNonBar1">
     <label class="gl2">수험 차수</label>
     <select id="fYear">
       <option value="">선택하세요</option>
       <option>1년차</option><option>2년차</option><option>3년차 이상</option>
     </select>
+    </div>
     <label class="gl2" id="fTrackLbl">준비 과목</label>
     <select id="fTrack">
       <option value="1차">민법 (1차)</option>
       <option value="동차">민법 + 민소법 (1·2차 동차)</option>
       <option value="2차">민소법 (2차)</option>
     </select>
+    <div id="fNonBar2">
     <label class="gl2">신청할 반</label>
       <select id="fPlan">
         <option value="full">학습반 — 트랙 강의 전체 + 관리·1:1 상담 (35% 할인)</option>
         <option value="single">단과반 — 목차 단위로 골라 결제</option>
       </select>
+    </div>
       <label class="gl2">성명</label>
     <input id="fName" type="text" placeholder="이름을 입력하세요" maxlength="10" onkeydown="if(event.key==='Enter')signup()">
+    <div id="fNonBar3">
     <label class="gl2">휴대폰 번호 <small style="color:var(--t-c9aa6bd,#9aa6bd);font-weight:400">(학습 알림 발송용)</small></label>
     <input id="fPhone" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13" autocomplete="tel" oninput="fmtPhone(this)">
     <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:12.5px;color:var(--t-cc9d2e3,#c9d2e3);line-height:1.55;cursor:pointer">
       <input type="checkbox" id="fAlarm" style="width:auto;margin-top:3px;flex:none">
       <span>학습 알림(문자·카카오 알림톡) 수신에 동의합니다<br><small style="color:var(--t-c9aa6bd,#9aa6bd)">휴대폰 번호는 학습 알림과 입금 안내에만 쓰입니다 · 동의하지 않아도 가입할 수 있습니다</small></span>
     </label>
+    </div>
     <div style="display:none">
     <label class="gl2">수강 상품</label>
     <div class="planrow">
@@ -756,7 +762,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
       <option value="민법">1차 민법</option><option value="민소법">2차 민사소송법</option>
     </select>
     </div>
-    <div style="font-size:12px;color:var(--t-c9aa6bd,#9aa6bd);margin-top:10px">가입은 무료입니다 · 학습반/단과반은 입장 후 <b style="color:var(--t-c-gold,var(--gold))">신청 → 입금 → 관리자 승인</b>으로 열립니다</div>
+    <div id="fNonBar4" style="font-size:12px;color:var(--t-c9aa6bd,#9aa6bd);margin-top:10px">가입은 무료입니다 · 학습반/단과반은 입장 후 <b style="color:var(--t-c-gold,var(--gold))">신청 → 입금 → 관리자 승인</b>으로 열립니다</div>
     </div>
     <div class="gerr" id="gerr"></div>
     <button class="btn gbtn" id="btnLogin" onclick="login()">로그인 →</button>
@@ -1841,6 +1847,7 @@ function examPick(v){
   if(lb) lb.style.display=isBar?"none":"";
   if(tr) tr.style.display=isBar?"none":"";
   var vb=document.getElementById("fVidBox"); if(vb) vb.style.display=isBar?"":"none";
+  ["fNonBar1","fNonBar2","fNonBar3","fNonBar4"].forEach(function(id){ var x=document.getElementById(id); if(x) x.style.display=isBar?"none":""; });
   var pl=document.getElementById("fPlan");
   if(pl){ pl.options[0].text=isBar?"학습반 — 변호사시험 민사법·행정법 전체 + 관리·1:1 상담 (35% 할인)":"학습반 — 트랙 강의 전체 + 관리·1:1 상담 (35% 할인)"; }
 }
@@ -1850,8 +1857,13 @@ function readProfileFields(){
   const name=document.getElementById("fName").value.trim();
   const phone=document.getElementById("fPhone").value.trim();
   const alarm_ok=document.getElementById("fAlarm").checked;
-  if(!school||!year||!name||!phone) return null;
   const exam=(document.getElementById("fExam")||{}).value||"변리사";
+  if(exam==="변호사"){
+    const vid=window.vNorm?vNorm((document.getElementById("fVid")||{}).value):"";
+    if(!name||vid.length!==8) return null;
+    return {school:"변호사",year:"베리타스",name,phone:null,alarm_ok:false,track:"bar",exam,vid,plan:"none",subj:null};
+  }
+  if(!school||!year||!name||!phone) return null;
   const track=exam==="변호사"?"bar":((document.getElementById("fTrack")||{}).value||"1차");
   const vid=exam==="변호사"?((window.vNorm?vNorm((document.getElementById("fVid")||{}).value):"")||""):"";
   return {school,year,name,phone,alarm_ok,track,exam,vid,plan:"none",subj:null};
@@ -1913,8 +1925,8 @@ async function signup(){
     return;
   }
   const pf=readProfileFields();
-  if(!pf){err.textContent="수험 차수·성명·휴대폰 번호를 모두 입력해 주세요";return;}
-  if(!phoneOk(pf.phone)){err.textContent="휴대폰 번호를 010-0000-0000 형식으로 입력해 주세요";return;}
+  if(!pf){err.textContent=((document.getElementById("fExam")||{}).value==="변호사")?"성명과 베리타스 학생고유번호(8자리, 예: 2622-0043)를 입력해 주세요":"수험 차수·성명·휴대폰 번호를 모두 입력해 주세요";return;}
+  if(pf.exam!=="변호사"&&!phoneOk(pf.phone)){err.textContent="휴대폰 번호를 010-0000-0000 형식으로 입력해 주세요";return;}
   const dupKey=pf.school+"|"+pf.year+"|"+pf.name;
   if(dupWarned!==dupKey){
     try{
@@ -1928,7 +1940,7 @@ async function signup(){
     }catch(e){ console.warn("[supabase] dup check",e); }
   }
   err.style.color="";
-  try{ localStorage.setItem('pss_join_plan',(document.getElementById('fPlan')||{}).value||'full'); localStorage.setItem('pss_join_exam',(document.getElementById('fExam')||{}).value||'변리사'); if(pf.vid) localStorage.setItem('pss_join_vid',pf.vid); }catch(e){}
+  try{ if(pf.exam!=='변호사') localStorage.setItem('pss_join_plan',(document.getElementById('fPlan')||{}).value||'full'); else localStorage.removeItem('pss_join_plan'); localStorage.setItem('pss_join_exam',(document.getElementById('fExam')||{}).value||'변리사'); if(pf.vid) localStorage.setItem('pss_join_vid',pf.vid); }catch(e){}
   const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:pf}});
   if(error){
     err.textContent=/already registered/i.test(error.message)?"이미 가입된 이메일입니다. [로그인]을 눌러 주세요":"가입 실패: "+error.message;
@@ -6077,8 +6089,9 @@ function ccDelBody(m){
   }
   async function vSaveJoinVid(){
     try{
-      if(!real()||isAdm()||!isBar()||vNorm(user.vid)) return;
-      var v=vNorm(localStorage.getItem("pss_join_vid")||"");
+      if(!real()||isAdm()||!isBar()) return;
+      try{ var cur=await sb.from("profiles").select("vid").eq("id",user.id).maybeSingle(); if(cur.data&&vNorm(cur.data.vid)){ user.vid=cur.data.vid; localStorage.removeItem("pss_join_vid"); return; } }catch(e){}
+      var v=vNorm(localStorage.getItem("pss_join_vid")||user.vid||"");
       if(!v){ try{ var a=await sb.auth.getUser(); v=vNorm(((a.data&&a.data.user&&a.data.user.user_metadata)||{}).vid||""); }catch(e){} }
       if(!v) return;
       var r=await sb.from("profiles").update({vid:v}).eq("id",user.id);
