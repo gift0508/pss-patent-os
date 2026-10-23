@@ -278,6 +278,9 @@ footer{margin-top:70px;padding-top:18px;border-top:1px solid var(--t-l-line,var(
   background:linear-gradient(160deg,var(--t-b-navy,var(--navy)) 0%,var(--t-b-navy2,var(--navy2)) 60%,var(--t-b16264a,#16264a) 100%);padding:20px;
 }
 .gate.hidden{display:none}
+/* 가입 칸이 화면보다 길면 위·아래가 잘리지 않고 스크롤되게 (2026-10-23) */
+.gate{overflow-y:auto;align-items:flex-start;-webkit-overflow-scrolling:touch}
+.gate>.gatecard{margin:auto 0;flex:none}
 .gatecard{
   width:100%;max-width:400px;background:var(--t-bffffff_045,rgba(255,255,255,.045));border:1px solid var(--t-l-line,var(--line));
   border-radius:18px;padding:34px 32px 28px;box-shadow:0 20px 60px var(--t-l000000_4,rgba(0,0,0,.4));
