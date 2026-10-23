@@ -278,6 +278,10 @@ footer{margin-top:70px;padding-top:18px;border-top:1px solid var(--t-l-line,var(
   background:linear-gradient(160deg,var(--t-b-navy,var(--navy)) 0%,var(--t-b-navy2,var(--navy2)) 60%,var(--t-b16264a,#16264a) 100%);padding:20px;
 }
 .gate.hidden{display:none}
+/* 베리타스 수강생 화면 — 자료 메뉴만 (2026-10-23) */
+body.vmode .topbar>.engmenu:not(#vMenu){display:none!important}
+body.vmode #vMenu{display:flex!important}
+body.vmode .ubadge,body.vmode #upgTop,body.vmode .top-stats,body.vmode #homeHero .hero-sub,body.vmode #dashSections{display:none!important}
 /* 가입 칸이 화면보다 길면 위·아래가 잘리지 않고 스크롤되게 (2026-10-23) */
 .gate{overflow-y:auto;align-items:flex-start;-webkit-overflow-scrolling:touch}
 .gate>.gatecard{margin:auto 0;flex:none}
@@ -851,6 +855,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <div class="engmenu"><button class="mini" onclick="openEngine('schedule')">🧭 출발점</button><span class="fa">→</span><button class="mini" onclick="openEngine('match')">🎯 강의매칭</button><span class="fa">→</span><button class="mini" onclick="showRoadmap()">🗺️ 학습 로드맵</button><span class="fa">→</span><button class="mini" onclick="openEngine('mission')">✅ 에브리데이 학습미션</button><span class="fa">→</span><button class="mini" onclick="pickExam()">🎓 시험·과목 고르기</button><span class="fa">→</span><button class="mini" onclick="pickFbType()">📊 실전첨삭</button>
 <div style="flex-basis:100%;height:0"></div>
 <button class="mini" onclick="pickTeukgang()">🎓 특강</button><button class="mini" onclick="openMyRoom()">📚 내 강의실</button><button class="mini" onclick="openComm()">💬 소통</button><button class="mini" id="vNavBtn" style="display:none" onclick="openComm('veritas')">📂 베리타스 자료</button><button class="mini" onclick="openEngine('admin')">🏃 페이스메이커</button></div>
+    <div class="engmenu" id="vMenu" style="display:none"><button class="mini" onclick="vOpenCat('민법 사례형')">📘 민법 사례형</button><button class="mini" onclick="vOpenCat('민사소송법 사례형')">📗 민사소송법 사례형</button><button class="mini" onclick="vOpenCat('상법 사례형')">📙 상법 사례형</button><button class="mini" onclick="vOpenCat('기록형')">📑 기록형</button><button class="mini" onclick="vOpenCat('민법 선택형')">📘 민법 선택형</button><button class="mini" onclick="vOpenCat('민사소송법 선택형')">📗 민사소송법 선택형</button><button class="mini" onclick="vOpenCat('상법 선택형')">📙 상법 선택형</button><div style="flex-basis:100%;height:0"></div><button class="mini" onclick="vOpenCat('')">📂 베리타스 자료 전체</button><button class="mini" onclick="openComm('qna')">❓ 학습질의</button><button class="mini" onclick="openComm()">💬 소통</button></div>
     <div class="userchip" id="userchip" style="display:none">
       <span id="uinfo"></span>
       <span class="ubadge"></span>
@@ -6042,6 +6047,12 @@ function ccDelBody(m){
    관리자: 회차별로 공통자료 · 개인자료를 올리고 지움 (비공개 저장소 'veritas') */
 (function(){
   var BK="veritas";
+  var VCATS=["민법 사례형","민사소송법 사례형","상법 사례형","기록형","민법 선택형","민사소송법 선택형","상법 선택형"];
+  window.vCatSel="";
+  var QCATS=["민법 사례형","민사소송법 사례형","상법 사례형","민법 선택형","민사소송법 선택형","상법 선택형","기록형"];
+  function catOpts(id){ return '<select id="'+id+'"><option value="">과목·유형 고르기</option>'+VCATS.map(function(c){ return '<option>'+c+'</option>'; }).join("")+'</select>'; }
+  try{ var sj0=sjL; window.sjL=function(x){ return VCATS.indexOf(x)>=0?"["+x+"]":sj0(x); }; }catch(e){}
+  window.vOpenCat=function(c){ window.vCatSel=c||""; openComm("veritas"); };
   function E(x){ return String(x==null?"":x).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
   /* 고유번호: 숫자만 남겨 비교 (2622-0043 = 26220043) */
   window.vNorm=function(v){ return String(v||"").replace(/\D/g,""); };
@@ -6072,6 +6083,13 @@ function ccDelBody(m){
         if(canSee()&&!has) COMTABS.unshift(["veritas","📂 베리타스 자료"]);
         if(!canSee()&&has) COMTABS=COMTABS.filter(function(t){ return t[0]!=="veritas"; });
       }catch(e){}
+      if(tab==="qna"){
+        var vm=document.body.classList.contains("vmode"), q0=window.pssQna;
+        window.pssQna=function(){ var L=q0()||[]; if(isAdm()) return L; return L.filter(function(x){ var v=VCATS.indexOf(x.subj)>=0; return vm?v:!v; }); };
+        try{ oc("qna"); } finally { window.pssQna=q0; }
+        if(vm){ var sel=document.getElementById("qSubj"); if(sel){ sel.innerHTML=QCATS.map(function(c){ return "<option>"+c+"</option>"; }).join(""); sel.title="머리말"; var lb=document.createElement("b"); lb.textContent="머리말"; lb.style.cssText="align-self:center;font-size:13px"; sel.parentNode.insertBefore(lb,sel); } var tq=document.getElementById("qToc"); if(tq) tq.placeholder="관련 논점 (예: 채권자대위권)"; }
+        return;
+      }
       if(tab==="veritas"){
         if(!canSee()) return oc("notice");
         acad("💬 소통",COMTABS,"veritas","openComm");
@@ -6088,11 +6106,13 @@ function ccDelBody(m){
       var r=au0.apply(this,arguments);
       setTimeout(function(){
         try{ var b=document.getElementById("vNavBtn"); if(b) b.style.display=canSee()?"":"none"; }catch(e){}
+        try{ document.body.classList.toggle("vmode",isBar()&&!isAdm()); }catch(e){}
         vSaveJoinVid();
       },700);
       return r;
     };
   }
+  var lo0=window.logout; if(typeof lo0==="function"){ window.logout=function(){ try{ document.body.classList.remove("vmode"); }catch(e){} return lo0.apply(this,arguments); }; }
   async function vSaveJoinVid(){
     try{
       if(!real()||isAdm()||!isBar()) return;
@@ -6140,14 +6160,16 @@ function ccDelBody(m){
     B.innerHTML=head+'<div class="muted" id="vLoading">자료를 불러오는 중…</div>';
     var L;
     try{ L=await loadDocs(); }catch(e){ B.innerHTML=head+'<div class="muted">자료를 불러오지 못했습니다 ('+E(e.message)+')</div>'; return; }
-    var R=byRound(L), h='';
-    if(!R.order.length) h='<div class="muted">아직 올라온 자료가 없습니다</div>';
+    var cs=window.vCatSel||"";
+    if(cs) L=L.filter(function(d){ return d.cat===cs; });
+    var R=byRound(L), h='<div style="display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 8px">'+[""].concat(VCATS).map(function(c){ return '<button class="mini'+(c===cs?' on':'')+'" style="'+(c===cs?'border-color:var(--t-l-gold,var(--gold));color:var(--t-c-gold,var(--gold));font-weight:800':'')+'" onclick="vOpenCat(\''+c+'\')">'+(c||'전체')+'</button>'; }).join('')+'</div>';
+    if(!R.order.length) h+='<div class="muted">'+(cs?E(cs)+' 자료가 아직 없습니다':'아직 올라온 자료가 없습니다')+'</div>';
     R.order.forEach(function(rd){
       var C=R.G[rd].filter(function(d){ return d.kind==="common"; }), P=R.G[rd].filter(function(d){ return d.kind==="personal"; });
       h+='<div class="bx"><b style="font-size:15px">'+E(rd)+'</b>'+
         '<table style="margin-top:6px"><tr><th>구분</th><th>자료</th><th></th></tr>'+
-        C.map(function(d){ return '<tr><td><span class="pill gray">공통</span></td><td>'+E(d.title)+'</td><td>'+dlBtn(d)+'</td></tr>'; }).join('')+
-        P.map(function(d){ return '<tr><td><span class="pill ok">내 자료</span></td><td><b>'+E(d.title)+'</b></td><td>'+dlBtn(d)+'</td></tr>'; }).join('')+
+        C.map(function(d){ return '<tr><td><span class="pill gray">공통</span></td><td>'+(d.cat&&!cs?'<span class="muted">'+E(d.cat)+' · </span>':'')+E(d.title)+'</td><td>'+dlBtn(d)+'</td></tr>'; }).join('')+
+        P.map(function(d){ return '<tr><td><span class="pill ok">내 자료</span></td><td>'+(d.cat&&!cs?'<span class="muted">'+E(d.cat)+' · </span>':'')+'<b>'+E(d.title)+'</b></td><td>'+dlBtn(d)+'</td></tr>'; }).join('')+
         '</table></div>';
     });
     B.innerHTML=head+h;
@@ -6178,20 +6200,20 @@ function ccDelBody(m){
     var dl='<datalist id="vRounds">'+R.order.map(function(r){ return '<option value="'+E(r)+'">'; }).join('')+'</datalist>';
     var up='<div class="bx"><b>① 자료 올리기</b> <span class="muted">PDF 등 파일 하나씩</span>'+dl+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+
-      '<input id="vRound" list="vRounds" placeholder="회차 (예: 1회 모의고사)" style="min-width:170px">'+
+      catOpts('vCat')+'<input id="vRound" list="vRounds" placeholder="회차 (예: 1회 모의고사)" style="min-width:170px">'+
       '<input id="vTitle" placeholder="자료 이름 (예: 문제지 · 해설 · 개인성적표)" style="min-width:220px">'+
       '<select id="vKind" onchange="document.getElementById(\'vPer\').style.display=this.value===\'personal\'?\'flex\':\'none\'"><option value="common">공통자료 — 모두에게</option><option value="personal">개인자료 — 한 학생에게</option></select></div>'+
       '<div id="vPer" style="display:none;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input id="vVid" inputmode="numeric" placeholder="고유번호 2622-0043" style="width:150px" oninput="vFillName()"><input id="vSname" placeholder="이름" style="width:110px"><span class="muted" id="vWho"></span></div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vFile"><button class="btn2" onclick="vUpOne()">올리기</button></div></div>';
     var bulk='<div class="bx"><b>② 개인자료 한꺼번에 올리기</b> <span class="muted">파일 이름에 이름과 고유번호를 넣어 주세요 — 예: <b>김광현 (2622-0043).pdf</b></span>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center"><input id="vBRound" list="vRounds" placeholder="회차" style="min-width:170px"><input id="vBTitle" placeholder="자료 이름 (예: 개인성적표)" style="min-width:200px"></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+catOpts('vBCat')+'<input id="vBRound" list="vRounds" placeholder="회차" style="min-width:170px"><input id="vBTitle" placeholder="자료 이름 (예: 개인성적표)" style="min-width:200px"></div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vBFiles" multiple onchange="vBulkPreview()"><button class="btn2" onclick="vBulkUp()">모두 올리기</button></div><div id="vBPrev" style="margin-top:6px"></div></div>';
     var list='<div class="bx"><b>③ 올린 자료</b>'+(R.order.length?'':'<div class="muted" style="margin-top:4px">아직 없습니다</div>');
     R.order.forEach(function(rd){
       var A=R.G[rd], nc=A.filter(function(d){ return d.kind==="common"; }).length, np=A.length-nc;
       list+='<div style="margin-top:10px"><b>'+E(rd)+'</b> <span class="muted">공통 '+nc+' · 개인 '+np+'</span><table style="margin-top:4px"><tr><th>구분</th><th>자료</th><th>학생</th><th>파일</th><th></th></tr>'+
         A.map(function(d){ var s=d.kind==="personal"?stuByVid(d.vid):null;
-          return '<tr><td><span class="pill '+(d.kind==="common"?'gray':'ok')+'">'+(d.kind==="common"?'공통':'개인')+'</span></td><td>'+E(d.title)+'</td><td>'+(d.kind==="personal"?E(d.sname)+' ('+E(vShow(d.vid))+')'+(s?'':' <span class="pill wait">미가입</span>'):'—')+'</td><td class="muted">'+E(d.fname)+'</td><td style="white-space:nowrap">'+dlBtn(d)+' <button class="btn3" onclick="vDel(\''+d.id+'\')">삭제</button></td></tr>'; }).join('')+'</table></div>';
+          return '<tr><td><span class="pill '+(d.kind==="common"?'gray':'ok')+'">'+(d.kind==="common"?'공통':'개인')+'</span></td><td>'+(d.cat?'<span class="muted">'+E(d.cat)+' · </span>':'')+E(d.title)+'</td><td>'+(d.kind==="personal"?E(d.sname)+' ('+E(vShow(d.vid))+')'+(s?'':' <span class="pill wait">미가입</span>'):'—')+'</td><td class="muted">'+E(d.fname)+'</td><td style="white-space:nowrap">'+dlBtn(d)+' <button class="btn3" onclick="vDel(\''+d.id+'\')">삭제</button></td></tr>'; }).join('')+'</table></div>';
     });
     list+='</div>';
     var stu='<div class="bx"><b>④ 변호사시험 가입자</b> <span class="muted">'+VS.length+'명 · 고유번호와 이름이 베리타스 명단과 같아야 개인자료가 열립니다</span><table style="margin-top:6px"><tr><th>이름</th><th>고유번호</th><th>이메일</th><th>가입일</th><th></th></tr>'+
@@ -6213,10 +6235,11 @@ function ccDelBody(m){
   }
   window.vUpOne=async function(){
     var g=function(id){ return ((document.getElementById(id)||{}).value||"").trim(); };
-    var round=g("vRound"), title=g("vTitle"), kind=g("vKind"), f=(document.getElementById("vFile")||{}).files;
+    var round=g("vRound"), title=g("vTitle"), kind=g("vKind"), cat=g("vCat"), f=(document.getElementById("vFile")||{}).files;
+    if(!cat){ toast("과목·유형을 골라 주세요"); return; }
     if(!round||!title){ toast("회차와 자료 이름을 넣어 주세요"); return; }
     if(!f||!f[0]){ toast("파일을 골라 주세요"); return; }
-    var row={round:round,title:title,kind:kind,fname:f[0].name};
+    var row={round:round,title:title,kind:kind,cat:cat,fname:f[0].name};
     if(kind==="personal"){
       var v=vNorm(g("vVid")), nm=g("vSname");
       if(v.length<6||!nm){ toast("개인자료는 고유번호와 이름을 모두 넣어 주세요"); return; }
@@ -6237,7 +6260,8 @@ function ccDelBody(m){
       (bad?'<div class="muted" style="margin-top:4px">⚠ 이름이나 고유번호를 못 읽은 파일 '+bad+'개는 건너뜁니다</div>':'');
   };
   window.vBulkUp=async function(){
-    var round=((document.getElementById("vBRound")||{}).value||"").trim(), title=((document.getElementById("vBTitle")||{}).value||"").trim();
+    var round=((document.getElementById("vBRound")||{}).value||"").trim(), title=((document.getElementById("vBTitle")||{}).value||"").trim(), cat=((document.getElementById("vBCat")||{}).value||"");
+    if(!cat){ toast("과목·유형을 골라 주세요"); return; }
     var F=[].slice.call((document.getElementById("vBFiles")||{}).files||[]);
     if(!round||!title){ toast("회차와 자료 이름을 넣어 주세요"); return; }
     if(!F.length){ toast("파일을 골라 주세요"); return; }
@@ -6246,7 +6270,7 @@ function ccDelBody(m){
       var f=F[i], p=vParseName(f.name);
       if(p.vid.length!==8||!p.name){ skip++; continue; }
       toast("올리는 중… "+(i+1)+" / "+F.length);
-      var err=await addDoc({round:round,title:title,kind:"personal",vid:p.vid,sname:p.name,fname:f.name,path:"personal/"+p.vid+"/"+uid()+"."+ext(f.name)},f);
+      var err=await addDoc({round:round,title:title,cat:cat,kind:"personal",vid:p.vid,sname:p.name,fname:f.name,path:"personal/"+p.vid+"/"+uid()+"."+ext(f.name)},f);
       if(err) fail.push(f.name+" ("+err.message+")"); else ok++;
     }
     toast("올림 "+ok+"개"+(skip?" · 건너뜀 "+skip+"개":"")+(fail.length?" · 실패 "+fail.length+"개":""));
