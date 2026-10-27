@@ -787,7 +787,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 34 · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
+    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 35 · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -2232,13 +2232,25 @@ function renderApproveList(){
     const btns=(pending?'<button class="mini" style="background:var(--t-b-gold,var(--gold));color:var(--t-c1a1f2e,#1a1f2e);font-weight:700" onclick="approve(\''+s.id+'\',\'applied\')">✔ 신청대로 승인</button> ':'')+
       '<button class="mini" onclick="approve(\''+s.id+'\',\'full\')">학습반</button> '+
       '<button class="mini" onclick="approveSingle(\''+s.id+'\')">단과반…</button> '+
-      (s.plan!=="none"?'<button class="mini" style="opacity:.6" onclick="approve(\''+s.id+'\',\'none\')">미결제로</button>':'');
+      (s.plan!=="none"?'<button class="mini" style="opacity:.6" onclick="approve(\''+s.id+'\',\'none\')">미결제로</button>':'')+
+      ' <button class="mini" style="color:#e74c3c;border-color:rgba(231,76,60,.5)" onclick="pssDelBar(\''+s.id+'\')">삭제</button>';
     return '<div style="display:grid;grid-template-columns:1.3fr 1fr .7fr 1.6fr 1fr 1.4fr 2.2fr;gap:8px;padding:9px 4px;border-top:1px solid var(--t-lffffff_06,rgba(255,255,255,.06));align-items:center'+(pending?';background:var(--t-bc9a227_08,rgba(201,162,39,.08))':'')+'">'+
       '<span><b>'+s.name+'</b>'+(s.dup?' <span title="같은 수험 차수·이름이 둘 이상">⚠</span>':'')+'</span><span>'+s.school+'</span><span>'+s.year+'</span>'+
       '<span style="font-size:.78rem;word-break:break-all">'+(s.email||"")+'<br>'+(s.phone||'<span style="color:var(--t-c-mute,var(--mute))">전화 미입력</span>')+'</span>'+
       '<span style="color:'+(s.plan==="none"?"var(--mute)":"var(--gold)")+'">'+cur+'</span><span>'+app+'</span><span>'+btns+'</span></div>';
   }).join("");
 }
+/* 수강생 삭제(변리사·변호사) — 강퇴·차단이 아닌 계정 삭제: 같은 이메일로 다시 가입 가능 · 결제·주문·환불 기록과 베리타스 개인자료는 남음 */
+async function pssDelBar(id){
+  const s=realRows.find(x=>x.id===id); if(!s) return;
+  const msg=s.isBar?"이 변호사시험(베리타스) 수강생의 로그인 계정과 가입 정보를 지웁니다.\n올려 둔 베리타스 개인자료는 지우지 않습니다.":"이 변리사 수강생의 로그인 계정·가입 정보·학습 기록을 지웁니다.\n결제·주문·환불 기록은 이름과 함께 그대로 남습니다(매출 정산 유지).";
+  if(!confirm(s.name+" ("+(s.email||"")+")\n\n"+msg+"\n강퇴·차단이 아니라서 같은 이메일로 다시 가입할 수 있습니다. 계속할까요?")) return;
+  const r=await sb.rpc("pss_delete_student",{p_id:id});
+  if(r.error){ toast(/function|_delete_student/i.test(r.error.message)?"서버 준비가 필요합니다 — pss_delete_student.sql을 먼저 Run 해 주세요":"삭제 실패: "+r.error.message); return; }
+  toast(s.name+" 님 계정을 지웠습니다 — 다시 가입할 수 있습니다");
+  try{ renderAdmin(); }catch(e){}
+}
+window.pssDelBar=pssDelBar;
 async function approve(id,mode){
   const s=realRows.find(x=>x.id===id); if(!s)return;
   let patch;
@@ -2685,7 +2697,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:var(--t-b060c1a_86,rgba(6,12,26,.86));z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:var(--t-b12233f,#12233f);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:16px;padding:26px;color:var(--t-cffffff,#fff)"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:var(--t-cc7cedc,#c7cedc);line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:var(--t-b0a1730,#0a1730);border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:var(--t-c9aa6bd,#9aa6bd);font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:var(--t-cc9a227,#C9A227);margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:var(--t-bc9a227,#C9A227);color:var(--t-c0d1f3c,#0D1F3C);font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:var(--t-b0a1730,#0a1730);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:var(--t-cffffff,#fff);font-weight:700"><span data-site="academy">박승수 민사법</span> · <span style="color:var(--t-cc9a227,#C9A227)">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:var(--t-c9aa6bd,#9aa6bd);margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:var(--t-bc9a227_16,rgba(201,162,39,.16));color:var(--t-cc9a227,#C9A227);padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:10px;background:transparent;color:var(--t-cc7cedc,#c7cedc);font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log(SITE.text.brand+" 빌드 34");
+console.log(SITE.text.brand+" 빌드 35");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // 무시로질의응답 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
@@ -3402,7 +3414,7 @@ window.pssBarMode=function(){
 })();
 </script>
 <script>
-/* ═══ 학습 흐름 (빌드 34) ═══ */
+/* ═══ 학습 흐름 (빌드 35) ═══ */
 window.CC_RV_LAG={0:0,2:2,4:6,8:14};
 /* ── 수강 계획: 출발점 → 진단 → 강의매칭 → 학습 로드맵(예상 소요일수) → 에브리데이 학습미션 ──
    과목 · 단계 · 강의마다 '담김 여부'와 수강생이 정한 '하루 수강량'을 하나의 계획으로 두고, 모든 화면이 이것을 읽고 씀.
@@ -4885,7 +4897,7 @@ renderAdmin=async function(){
   try{
     var r=await sb.from('profiles').select('*').order('created_at',{ascending:false});
     if(r.error) throw r.error;
-    var data=(r.data||[]).filter(function(s){ return !s.is_admin&&s.email!==ADMIN_EMAIL; }).map(function(s){ return Object.assign({},s,{school:"변리사",year:s.exam_round||""}); });
+    var data=(r.data||[]).filter(function(s){ return !s.is_admin&&s.email!==ADMIN_EMAIL; }).map(function(s){ var bar=(s.exam==="변호사"||s.track==="bar"); return Object.assign({},s,{school:bar?"변호사":"변리사",year:s.exam_round||(bar?"베리타스":""),isBar:bar}); });
     var kc={}; data.forEach(function(s){ var k=s.school+"|"+s.year+"|"+s.name; kc[k]=(kc[k]||0)+1; });
     realRows=data.map(function(s){ return Object.assign({},s,{dup:kc[s.school+"|"+s.year+"|"+s.name]>1}); });
     rows=realRows;
@@ -5888,8 +5900,9 @@ window.ccfGo=function(){
   const q=(document.getElementById("ccfQ")||{}).value||"", R=document.getElementById("ccfRes"); if(!R) return;
   const L=ccfFind(q), myId=(ccChat&&ccChat.myId)||null, nm0=String(q).trim();
   if(!nm0){ R.innerHTML='<div class="ccwpf">이름을 입력해 주세요</div>'; return; }
-  if(!L.length){ R.innerHTML='<div class="ccfmsg">'+ccEscC(ccfMask(nm0))+'님은 지금 가상강의실에 없습니다.</div>'; return; }
-  R.innerHTML=L.map(function(x){ const me=x.user_id===myId, nm=ccEscC(x.name);
+  const qh='<div class="ccfq">「'+ccEscC(nm0)+'」(으)로 찾은 결과</div>';
+  if(!L.length){ R.innerHTML=qh+'<div class="ccfmsg">'+ccEscC(ccfMask(nm0))+'님은 지금 가상강의실에 없습니다.</div>'; return; }
+  R.innerHTML=qh+L.map(function(x){ const me=x.user_id===myId, nm=ccEscC(x.name);
     return '<div class="ccfmsg">'+(me?'내 자리는 <b>'+ccfPos(x)+'</b>입니다.':nm+'님은 <b>'+ccfPos(x)+'</b>에서 공부 중입니다.')+'</div><div class="ccfbt"><button onclick="ccfShow(\''+x.cls+'\','+x.seat+')">🪑 자리 보기</button>'+(me?'':'<button onclick="ccfWhisper(\''+x.user_id+'\',\''+nm.replace(/'/g,"")+'\')">🤫 귓속말</button>')+'</div>'; }).join("");
 };
 window.ccfShow=function(cls,seat){
@@ -6256,13 +6269,13 @@ function ccDelBody(m){
           return '<tr><td><span class="pill '+(d.kind==="common"?'gray':'ok')+'">'+(d.kind==="common"?'공통':'개인')+'</span></td><td>'+(d.cat?'<span class="muted">'+E(d.cat)+' · </span>':'')+E(d.title)+'</td><td>'+(d.kind==="personal"?E(d.sname)+' ('+E(vShow(d.vid))+')'+(s?'':' <span class="pill wait">미가입</span>'):'—')+'</td><td class="muted">'+E(d.fname)+'</td><td style="white-space:nowrap">'+dlBtn(d)+' <button class="btn3" onclick="vDel(\''+d.id+'\')">삭제</button></td></tr>'; }).join('')+'</table></div>';
     });
     list+='</div>';
-    var stu='<div class="bx"><b>④ 변호사시험 가입자</b> <span class="muted">'+VS.length+'명 · 고유번호와 이름이 베리타스 명단과 같아야 개인자료가 열립니다</span><table style="margin-top:6px"><tr><th>이름</th><th>고유번호</th><th>이메일</th><th>가입일</th><th></th></tr>'+
-      VS.map(function(s){ return '<tr><td>'+E(s.name)+'</td><td>'+(s.vid?E(vShow(s.vid)):'<span class="muted">미등록</span>')+'</td><td class="muted">'+E(s.email)+'</td><td class="muted">'+E(String(s.created_at||"").slice(0,10))+'</td><td><button class="btn3" onclick="vEditVid(\''+s.id+'\')">고유번호 수정</button></td></tr>'; }).join('')+'</table></div>';
+    var stu='<div class="bx"><b>👥 베리타스 변호사 수강생 명단</b> <span class="muted">'+VS.length+'명 · 고유번호와 이름이 베리타스 명단과 같아야 개인자료가 열립니다</span><table style="margin-top:6px"><tr><th>이름</th><th>고유번호</th><th>이메일</th><th>가입일</th><th></th></tr>'+
+      VS.map(function(s){ return '<tr><td>'+E(s.name)+'</td><td>'+(s.vid?E(vShow(s.vid)):'<span class="muted">미등록</span>')+'</td><td class="muted">'+E(s.email)+'</td><td class="muted">'+E(String(s.created_at||"").slice(0,10))+'</td><td style="white-space:nowrap"><button class="btn3" onclick="vEditVid(\''+s.id+'\')">고유번호 수정</button> <button class="btn3" style="color:var(--t-c-alert,#c0392b)" onclick="vDelStu(\''+s.id+'\')">삭제</button></td></tr>'; }).join('')+(VS.length?'':'<tr><td colspan="5" class="muted">아직 변호사시험으로 가입한 수강생이 없습니다</td></tr>')+'</table><div class="muted" style="margin-top:6px">삭제 = 로그인 계정과 가입 정보만 지웁니다(강퇴·차단 아님) — 같은 이메일로 다시 가입할 수 있고, 올려 둔 개인자료는 고유번호로 다시 연결됩니다</div></div>';
     var purge='<div class="bx" style="border-color:var(--t-c-alert,#c0392b)"><b>⑤ 시험 후 일괄 삭제</b> <span class="muted">변호사시험 응시일 + 5일에 실행</span>'+
       '<div style="line-height:1.8;margin-top:6px">변호사시험(베리타스)으로 가입한 수강생 <b>'+VS.length+'명</b>의 <b>로그인 계정과 가입 정보</b>를 한 번에 지웁니다. 지운 뒤에는 되돌릴 수 없습니다.<br>'+
       '<span class="muted">남는 것: 올린 자료(공통·개인 — 실명·고유번호 그대로 관리자 보관) · 변리사 수강생 · 관리자 계정</span></div>'+
       '<button class="btn2" style="margin-top:8px;background:var(--t-c-alert,#c0392b);color:#fff;border-color:transparent" onclick="vPurge()">베리타스 수강생 계정 일괄 삭제</button></div>';
-    B.innerHTML=up+bulk+list+stu+purge;
+    B.innerHTML=stu+up+bulk+list+purge;
   }
   window.vFillName=function(){
     var s=stuByVid((document.getElementById("vVid")||{}).value), w=document.getElementById("vWho"), n=document.getElementById("vSname");
@@ -6398,6 +6411,13 @@ function ccDelBody(m){
     if(F.length) msg+="\n\n다른 기록에 묶여 지우지 못한 계정 "+F.length+"개:\n"+F.map(function(x){ return "· "+x.name+(x.blocked?" — 로그인 영구 차단함":" — 차단도 실패: "+x.error); }).join("\n");
     alert(msg); vAdmin();
   };
+  window.vDelStu=async function(id){
+    var s=VS.filter(function(x){ return x.id===id; })[0]; if(!s) return;
+    if(!confirm(s.name+" ("+(s.vid?vShow(s.vid):"고유번호 미등록")+" · "+(s.email||"")+")\n\n이 수강생의 로그인 계정과 가입 정보를 지웁니다.\n강퇴·차단이 아니라서 같은 이메일로 다시 가입할 수 있습니다.\n올려 둔 개인자료는 지우지 않습니다. 계속할까요?")) return;
+    var r=await sb.rpc("veritas_delete_student",{p_id:id});
+    if(r.error){ toast(/function|_delete_student/i.test(r.error.message)?"서버 준비가 필요합니다 — pss_delete_student.sql을 먼저 Run 해 주세요":"삭제 실패: "+r.error.message); return; }
+    toast(s.name+" 님 계정을 지웠습니다 — 다시 가입할 수 있습니다"); vAdmin();
+  };
   window.vEditVid=async function(id){
     var s=VS.filter(function(x){ return x.id===id; })[0]; if(!s) return;
     var v=prompt(s.name+"님의 베리타스 고유번호 (예: 2622-0043) — 비우면 지웁니다",s.vid?vShow(s.vid):"");
@@ -6409,6 +6429,18 @@ function ccDelBody(m){
   };
 })();
 </script>
+<style>
+/* 친구찾기 창 — 다른 화면 규칙에 눌려 입력칸이 줄어들지 않게 */
+#ccfPop .ccwph{font-size:15px;padding:8px 14px}
+#ccfPop .ccfin{display:flex!important;width:100%;gap:8px;padding:4px 14px 10px;box-sizing:border-box;align-items:stretch}
+#ccfPop .ccfin input{flex:1 1 auto!important;width:auto!important;min-width:170px!important;height:40px;padding:0 12px!important;border-radius:9px!important;border:1.5px solid var(--t-cc9a227,#C9A227)!important;background:#fff!important;color:#14213d!important;font-size:15px!important;-webkit-text-fill-color:#14213d}
+#ccfPop .ccfin input::placeholder{color:#8a93a6;-webkit-text-fill-color:#8a93a6}
+#ccfPop{min-width:310px!important}
+#ccfPop .ccfin button{flex:none!important;width:auto!important;min-width:0!important;max-width:none;height:40px;margin:0!important;padding:0 16px!important;border:0!important;border-radius:9px!important;background:var(--t-cc9a227,#C9A227)!important;color:#1a1f2e!important;font-size:14px!important;font-weight:800;cursor:pointer}
+#ccfPop .ccfq{font-size:12.5px;opacity:.75;padding:2px 14px 0}
+#ccfPop .ccfmsg{font-size:14px;padding:6px 14px 4px}
+#ccfPop .ccwpf{font-size:12.5px;opacity:.75;padding:4px 14px 8px}
+</style>
 <script>
 /* 가입 칸을 펼친 뒤에도 로그인 화면으로 돌아갈 수 있게 */
 (function(){
