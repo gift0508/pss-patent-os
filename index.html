@@ -783,7 +783,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <button class="quickbtn" onclick="openRefundPolicy()">강의 환불 정책 보기</button>
     
     <div class="gnote">강의는 <b>필요한 목차만 골라 결제</b>합니다 — 이곳은 나의 로드맵과 누적을 관리하는 학습 일정 관리 공간입니다.<br>등록 정보로 오프라인 특강 연계 시 <b>5% 추가 할인</b>이 적용됩니다.</div>
-    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 35 · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
+    <div style="text-align:center;font-size:11px;color:var(--t-c6f7d99,#6f7d99);margin-top:8px">빌드 36 · 서버 연결: <span data-site="serverName">PSS PATENT ACADEMY</span></div>
     <div class="gdivider"></div>
     <div class="gadmin">
       <button class="galink" onclick="document.getElementById('fAdmin').focus()">관리자 입장 →</button>
@@ -1768,7 +1768,7 @@ async function saveUser(u){
         if(!error&&!data){ ({data,error}=await sb.from('profiles').insert({id:au.id,...row}).select().single()); }
         if(error)throw error;
         if(data){ u.id=data.id; u.plan=data.plan; u.subj=data.subj; u.subjs=data.subjs; u.approved_at=data.approved_at; } // plan은 서버(관리자 승인)가 결정
-      }catch(e){ console.error("[supabase] saveUser",e); toast("서버 저장 실패: "+e.message); }
+      }catch(e){ console.error("[supabase] saveUser",e); toast(/PSS_BANNED/.test(e.message||"")?"운영 규정 위반으로 이용이 제한된 사용자입니다":"서버 저장 실패: "+e.message); }
     }
   }
   try{ localStorage.setItem('hapgyeok_os_user',JSON.stringify(u)); }catch(e){}
@@ -1958,7 +1958,7 @@ async function signup(){
   try{ if(pf.exam!=='변호사') localStorage.setItem('pss_join_plan',(document.getElementById('fPlan')||{}).value||'full'); else localStorage.removeItem('pss_join_plan'); localStorage.setItem('pss_join_exam',(document.getElementById('fExam')||{}).value||'변리사'); if(pf.vid) localStorage.setItem('pss_join_vid',pf.vid); }catch(e){}
   const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:pf}});
   if(error){
-    err.textContent=/already registered/i.test(error.message)?"이미 가입된 이메일입니다. [로그인]을 눌러 주세요":"가입 실패: "+error.message;
+    err.textContent=/already registered/i.test(error.message)?"이미 가입된 이메일입니다. [로그인]을 눌러 주세요":(/PSS_BANNED|Database error saving new user/i.test(error.message)?"운영 규정 위반으로 가입이 제한된 사용자입니다. 문의는 관리자에게 해 주세요.":"가입 실패: "+error.message);
     return;
   }
   if(data.session){
@@ -2217,6 +2217,7 @@ let realRows=[];
 function planLabel(s){ return s.plan==="full"?"학습반":(s.plan==="single"?"단과반("+(s.subjs||[s.subj]).filter(Boolean).join("·")+")":"미결제"); }
 function renderApproveList(){
   const el=document.getElementById("approveList"); if(!el)return;
+  try{ if(typeof user!=="undefined"&&user&&user.admin&&user.email!=="open-admin") setTimeout(pssRenderBans,0); }catch(e){}
   if(!realRows.length){el.innerHTML='<div class="empty-log">아직 가입한 학생이 없습니다.</div>';return;}
   const head='<div style="display:grid;grid-template-columns:1.3fr 1fr .7fr 1.6fr 1fr 1.4fr 2.2fr;gap:8px;padding:8px 4px;font-size:.68rem;color:var(--t-c-mute,var(--mute));letter-spacing:.08em">'+
     '<span>성명</span><span>구분</span><span>수험 차수</span><span>이메일 / 전화</span><span>현재</span><span>신청</span><span>처리</span></div>';
@@ -2228,7 +2229,8 @@ function renderApproveList(){
       '<button class="mini" onclick="approve(\''+s.id+'\',\'full\')">학습반</button> '+
       '<button class="mini" onclick="approveSingle(\''+s.id+'\')">단과반…</button> '+
       (s.plan!=="none"?'<button class="mini" style="opacity:.6" onclick="approve(\''+s.id+'\',\'none\')">미결제로</button>':'')+
-      ' <button class="mini" style="color:#e74c3c;border-color:rgba(231,76,60,.5)" onclick="pssDelBar(\''+s.id+'\')">삭제</button>';
+      ' <button class="mini" style="color:#e74c3c;border-color:rgba(231,76,60,.5)" onclick="pssDelBar(\''+s.id+'\')">삭제</button>'+
+      ' <button class="mini" style="background:#c0392b;color:#fff;border-color:transparent;font-weight:700" title="다시 가입하지 못하게 내보냅니다" onclick="pssBan(\''+s.id+'\')">🚫 강퇴</button>';
     return '<div style="display:grid;grid-template-columns:1.3fr 1fr .7fr 1.6fr 1fr 1.4fr 2.2fr;gap:8px;padding:9px 4px;border-top:1px solid var(--t-lffffff_06,rgba(255,255,255,.06));align-items:center'+(pending?';background:var(--t-bc9a227_08,rgba(201,162,39,.08))':'')+'">'+
       '<span><b>'+s.name+'</b>'+(s.dup?' <span title="같은 수험 차수·이름이 둘 이상">⚠</span>':'')+'</span><span>'+s.school+'</span><span>'+s.year+'</span>'+
       '<span style="font-size:.78rem;word-break:break-all">'+(s.email||"")+'<br>'+(s.phone||'<span style="color:var(--t-c-mute,var(--mute))">전화 미입력</span>')+'</span>'+
@@ -2236,6 +2238,43 @@ function renderApproveList(){
   }).join("");
 }
 /* 수강생 삭제(변리사·변호사) — 강퇴·차단이 아닌 계정 삭제: 같은 이메일로 다시 가입 가능 · 결제·주문·환불 기록과 베리타스 개인자료는 남음 */
+/* 🚫 강퇴 — 계정 삭제 + 이메일·휴대폰·베리타스 고유번호로 재가입 차단 (결제 기록은 남음) */
+async function pssBan(id){
+  const s=realRows.find(x=>x.id===id); if(!s) return;
+  const reason=prompt(s.name+" ("+(s.email||"")+")\n\n강퇴하면 계정이 지워지고, 같은 이메일·휴대폰 번호·베리타스 고유번호로는 다시 가입할 수 없습니다.\n결제·주문·환불 기록은 남습니다.\n\n강퇴 사유를 적어 주세요 (관리자만 봅니다):");
+  if(reason===null) return;
+  if(!reason.trim()){ toast("강퇴 사유를 적어 주세요"); return; }
+  if(!confirm(s.name+" 님을 강퇴할까요?\n사유: "+reason.trim())) return;
+  const r=await sb.rpc("pss_ban_student",{p_id:id,p_reason:reason.trim()});
+  if(r.error){ toast(/function|pss_ban_student/i.test(r.error.message)?"서버 준비가 필요합니다 — pss_ban_setup.sql을 먼저 Run 해 주세요":"강퇴 실패: "+r.error.message); return; }
+  toast(s.name+" 님을 강퇴했습니다 — 다시 가입할 수 없습니다");
+  try{ renderAdmin(); }catch(e){}
+}
+window.pssBan=pssBan;
+/* 강퇴 명단 — 실등록 학생 표 아래 */
+async function pssRenderBans(){
+  const host=document.getElementById("approveList"); if(!host||!window.sb) return;
+  let box=document.getElementById("banList");
+  if(!box){ box=document.createElement("div"); box.id="banList"; box.style.cssText="margin-top:18px;font-size:.85rem"; host.parentNode.insertBefore(box,host.nextSibling); }
+  let L=[];
+  try{ const r=await window.sb.from("pss_banned").select("*").order("banned_at",{ascending:false}); if(r.error) throw r.error; L=r.data||[]; }
+  catch(e){ box.innerHTML='<div style="color:var(--t-c-mute,var(--mute));font-size:.78rem">🚫 강퇴 명단: 서버 준비 전입니다 (pss_ban_setup.sql을 Run 하면 보입니다)</div>'; return; }
+  const E=function(x){ return String(x==null?"":x).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  const vs=function(v){ v=String(v||""); return v.length===8?v.slice(0,4)+"-"+v.slice(4):v; };
+  const ph=function(p){ p=String(p||""); return p.length===11?p.slice(0,3)+"-"+p.slice(3,7)+"-"+p.slice(7):p; };
+  box.innerHTML='<div style="font-weight:800;margin-bottom:6px">🚫 강퇴 명단 <span style="font-weight:400;color:var(--t-c-mute,var(--mute));font-size:.78rem">'+L.length+'명 · 아래 이메일·휴대폰·고유번호로는 다시 가입할 수 없습니다</span></div>'+
+    (L.length?L.map(function(b){ return '<div style="display:grid;grid-template-columns:1fr 1.6fr 1.3fr 2fr .9fr auto;gap:8px;padding:7px 4px;border-top:1px solid var(--t-lffffff_06,rgba(255,255,255,.06));align-items:center">'+
+      '<b>'+E(b.name)+'</b><span style="word-break:break-all">'+E(b.email)+'</span><span>'+E(b.phone?ph(b.phone):(b.vid?"고유번호 "+vs(b.vid):"—"))+'</span><span>'+E(b.reason)+'</span><span style="color:var(--t-c-mute,var(--mute))">'+E(String(b.banned_at||"").slice(0,10))+'</span>'+
+      '<button class="mini" onclick="pssUnban('+b.id+',\''+E(b.name).replace(/'/g,"")+'\')">차단 해제</button></div>'; }).join(""):'<div style="color:var(--t-c-mute,var(--mute))">아직 강퇴한 사람이 없습니다</div>');
+}
+window.pssRenderBans=pssRenderBans;
+async function pssUnban(bid,name){
+  if(!confirm(name+" 님의 재가입 차단을 풉니다. 풀면 다시 가입할 수 있습니다(지운 계정은 되살아나지 않습니다). 계속할까요?")) return;
+  const r=await sb.rpc("pss_unban",{p_ban_id:bid});
+  if(r.error){ toast("해제 실패: "+r.error.message); return; }
+  toast(name+" 님의 차단을 풀었습니다"); pssRenderBans();
+}
+window.pssUnban=pssUnban;
 async function pssDelBar(id){
   const s=realRows.find(x=>x.id===id); if(!s) return;
   const msg=s.isBar?"이 변호사시험(베리타스) 수강생의 로그인 계정과 가입 정보를 지웁니다.\n올려 둔 베리타스 개인자료는 지우지 않습니다.":"이 변리사 수강생의 로그인 계정·가입 정보·학습 기록을 지웁니다.\n결제·주문·환불 기록은 이름과 함께 그대로 남습니다(매출 정산 유지).";
@@ -2692,7 +2731,7 @@ function closeEngine(){
 <script>window.openLecture=function(name){ if(window.pssGate&&!window.pssGate("lecture",name)) return; try{ window.pssSetCtx("강의 학습 · "+name); }catch(e){} try{ if(!window.PSS_CUR||window.PSS_CUR.course!==name){ var P=window.OSPICKS||{},hit=null; Object.keys(P).forEach(function(k){(P[k]||[]).forEach(function(x){ if(x.toc===name) hit=x; });}); window.PSS_CUR=hit?{course:hit.course+' · '+hit.toc,url:hit.url}:{course:name,url:null}; } }catch(e){}  var e=ENGINES['lecture']; if(!e){return;} var _sj=window.PSS_CUR_SUBJ||'민법'; var _rv=(window.PSS_REVIEW_MODE&&window.PSS_REVIEW_DAYS>0)?('간격복습 · '+window.PSS_REVIEW_DAYS+'일 전 수강 · '):''; document.getElementById('engtitle').textContent=_rv+'강의 학습 · '+(_sj==='민소법'?'2차 민사소송법':'1차 민법')+' · '+(name||'')+' · 복습 → '+(_sj==='민소법'?'사례형':'선택형'); document.getElementById('engframe').srcdoc=b64utf8(e.b); document.getElementById('engview').classList.add('open'); };</script>
 <div id="engPayGate" style="position:fixed;inset:0;background:var(--t-b060c1a_86,rgba(6,12,26,.86));z-index:10000;display:none;align-items:center;justify-content:center;padding:24px"><div style="max-width:440px;width:100%;background:var(--t-b12233f,#12233f);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:16px;padding:26px;color:var(--t-cffffff,#fff)"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);letter-spacing:1px;margin-bottom:6px">학습엔진 · 단과 이용</div><h2 id="engPayTitle" style="font-size:20px;margin:2px 0 8px">학습엔진 결제</h2><p style="font-size:12.5px;color:var(--t-cc7cedc,#c7cedc);line-height:1.6;margin:0 0 14px">단과반은 스스로 학습하는 반으로, 학습엔진을 하나 열 때마다 이용료를 결제합니다. 학습반(관리형 스터디)은 관리비에 모든 학습엔진이 포함됩니다.</p><div style="background:var(--t-b0a1730,#0a1730);border-radius:12px;padding:16px;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:var(--t-c9aa6bd,#9aa6bd);font-size:12.5px">학습엔진 1개</span><b id="engPayAmt" style="font-size:26px;color:var(--t-cc9a227,#C9A227);margin-left:auto">28,000원</b></div><button onclick="engPayGo()" style="width:100%;padding:13px;border:none;border-radius:11px;background:var(--t-bc9a227,#C9A227);color:var(--t-c0d1f3c,#0D1F3C);font-weight:800;font-size:14.5px;cursor:pointer">입금 후 열기 →</button><div style="margin-top:16px;background:var(--t-b0a1730,#0a1730);border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:12px;padding:14px 16px"><div style="font-size:12px;font-weight:800;color:var(--t-cc9a227,#C9A227);margin-bottom:6px">계좌이체 · 무통장입금</div><div style="font-size:13.5px;color:var(--t-cffffff,#fff);font-weight:700"><span data-site="academy">박승수 민사법</span> · <span style="color:var(--t-cc9a227,#C9A227)">○○은행 000-0000-0000-00</span> · 예금주 ○○○</div><div style="font-size:11.5px;color:var(--t-c9aa6bd,#9aa6bd);margin-top:6px">입금자명을 수험번호로 기재 · 입금 확인 후 처리됩니다 <span style="background:var(--t-bc9a227_16,rgba(201,162,39,.16));color:var(--t-cc9a227,#C9A227);padding:1px 7px;border-radius:9px;font-weight:700;margin-left:4px">계좌 확정 예정</span></div></div><button onclick="engPayClose()" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--t-l2a3a5c,#2a3a5c);border-radius:10px;background:transparent;color:var(--t-cc7cedc,#c7cedc);font-weight:700;cursor:pointer">취소</button></div></div>
 <script>
-console.log(SITE.text.brand+" 빌드 35");
+console.log(SITE.text.brand+" 빌드 36");
 window.AI_READY=false;
 try{ window.sb=sb; }catch(e){}  // 페이스메이커(내부 화면)에서 서버를 쓰기 위해 공개 // 무시로질의응답 연결이 끝나면 true 로 바꾸면 바로 작동
 /* ===== 서버 연동: 결제 신청(orders) · 수강 권한(enrollments) · 화면 잠금 ===== */
@@ -3409,7 +3448,7 @@ window.pssBarMode=function(){
 })();
 </script>
 <script>
-/* ═══ 학습 흐름 (빌드 35) ═══ */
+/* ═══ 학습 흐름 (빌드 36) ═══ */
 window.CC_RV_LAG={0:0,2:2,4:6,8:14};
 /* ── 수강 계획: 출발점 → 진단 → 강의매칭 → 학습 로드맵(예상 소요일수) → 에브리데이 학습미션 ──
    과목 · 단계 · 강의마다 '담김 여부'와 수강생이 정한 '하루 수강량'을 하나의 계획으로 두고, 모든 화면이 이것을 읽고 씀.
