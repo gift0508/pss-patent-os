@@ -6644,6 +6644,185 @@ function ccDelBody(m){
 })();
 
 </script>
+<script>
+/* ═══ 📂 베리타스 자료 — 학생별 QR 코드 (2026-11-03) ═══
+   · 관리자: ⑤ QR 코드 — 학생 명단(올린 개인자료 · 가입자 · 직접 입력)으로 QR 만들기 → 「수험생번호 / 수험생이름 / QR코드」 인쇄 · 끊기 · 새로 발급
+   · 학생: QR을 찍으면 이 사이트가 「○○○ 님의 베리타스 자료」로 바로 열림 (가입 · 로그인 없음 · 이름 없는 임시 계정)
+   · QR 화면은 사이트 본 화면과 따로 움직임(별도 접속) — 같은 기기에서 평소 로그인에 영향 없음
+   · 서버: veritas_qr_setup.sql + Supabase 「Allow anonymous sign-ins」 켜기 */
+(function(){
+  var BK="veritas";
+  function E(x){ return String(x==null?"":x).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function vS(v){ v=String(v||"").replace(/\D/g,""); return v.length===8?v.slice(0,4)+"-"+v.slice(4):v; }
+  function base(){ return location.origin+location.pathname; }
+  window.vqrLink=function(t){ return base()+"?vq="+t; };
+  function loadQR(){ return new Promise(function(res,rej){ if(window.QRCode) return res(window.QRCode);
+    var s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+    s.onload=function(){ res(window.QRCode); }; s.onerror=function(){ rej(new Error("QR 도구를 불러오지 못했습니다")); }; document.head.appendChild(s); }); }
+  /* QR 그림(dataURL) 만들기 */
+  async function qrImg(text,size){
+    var Q=await loadQR(), d=document.createElement("div"); d.style.cssText="position:fixed;left:-9999px;top:0";
+    document.body.appendChild(d);
+    new Q(d,{text:text,width:size||220,height:size||220,correctLevel:Q.CorrectLevel.M});
+    await new Promise(function(r){ setTimeout(r,60); });
+    var c=d.querySelector("canvas"), im=d.querySelector("img"), u=c?c.toDataURL("image/png"):(im?im.src:"");
+    d.remove(); return u;
+  }
+
+  /* ══════════ 학생: QR로 들어온 화면 ══════════ */
+  var m=/[?&]vq=([A-Za-z0-9]{16,64})/.exec(location.search);
+  if(m) setTimeout(function(){ vqrStudent(m[1]); },0);
+  async function vqrStudent(tok){
+    var ov=document.createElement("div"); ov.id="vqrView";
+    ov.style.cssText="position:fixed;inset:0;z-index:2147483000;overflow:auto;background:#f6f4ee;color:#16213a;font-family:'Noto Sans KR',system-ui,sans-serif";
+    ov.innerHTML='<div style="max-width:760px;margin:0 auto;padding:20px 16px 40px"><div style="font-weight:800;color:#8a6a10;font-size:13px;letter-spacing:.5px">덜컥합격 민사법연구소</div><h2 style="margin:4px 0 14px;font-size:22px">📂 베리타스 민사법 자료</h2><div id="vqrBody" style="font-size:14px">자료를 여는 중…</div></div>';
+    document.body.appendChild(ov); document.documentElement.style.overflow="hidden";
+    var B=function(h){ var b=document.getElementById("vqrBody"); if(b) b.innerHTML=h; };
+    var c;
+    try{
+      var S=(window.SITE&&SITE.server)||{};
+      c=window.supabase.createClient(S.url,S.key,{auth:{storageKey:"pss-vqr",persistSession:true,autoRefreshToken:true}});
+      var ss=await c.auth.getSession();
+      if(!(ss.data&&ss.data.session)){ var a=await c.auth.signInAnonymously(); if(a.error) throw a.error; }
+      var r=await c.rpc("veritas_qr_claim",{p_token:tok});
+      if(r.error&&/JWT|session|token/i.test(r.error.message||"")){ await c.auth.signOut(); var a2=await c.auth.signInAnonymously(); if(a2.error) throw a2.error; r=await c.rpc("veritas_qr_claim",{p_token:tok}); }
+      if(r.error) throw r.error;
+      var me=r.data||{};
+      var L=await c.from("vdocs").select("*").order("created_at",{ascending:false});
+      if(L.error) throw L.error;
+      var D=(L.data||[]).filter(function(d){ return d.kind==="common"||String(d.vid||"")===String(me.vid); });
+      window.__vqrC=c; window.__vqrD={}; D.forEach(function(d){ window.__vqrD[d.id]=d; });
+      var order=[], G={}; D.forEach(function(d){ if(!G[d.round]){ G[d.round]=[]; order.push(d.round); } G[d.round].push(d); });
+      var btn='style="padding:6px 12px;border-radius:8px;border:1px solid #c9cfdb;background:#fff;color:#16213a;font:inherit;font-size:13px;font-weight:700;cursor:pointer"';
+      var h='<div style="background:#fff;border:1.5px solid #e2c56b;border-radius:12px;padding:12px 14px;margin-bottom:12px;line-height:1.7"><b style="font-size:17px">'+E(me.sname)+'</b> 님 <span style="color:#6a7385">(수험생번호 '+E(vS(me.vid))+')</span><br>'+
+        '<span style="color:#5a6478;font-size:13px"><b>내 자료</b>(성적표 · 첨삭 등)는 나에게만, <b>공통자료</b>는 모두에게 열립니다 · 이 QR은 나만 쓰는 열쇠이니 다른 사람에게 보여 주지 마세요</span><br>'+
+        '<span style="color:#b03a2e;font-size:13px">📢 변호사시험 응시일로부터 5일 이내에 모든 자료가 닫힙니다 — 필요한 자료는 미리 <b>내려받아</b> 두세요.</span></div>';
+      if(!order.length) h+='<div style="color:#6a7385">아직 올라온 자료가 없습니다.</div>';
+      order.forEach(function(rd){
+        var P=G[rd].filter(function(d){ return d.kind!=="common"; }), C=G[rd].filter(function(d){ return d.kind==="common"; });
+        h+='<div style="background:#fff;border:1px solid #e3e1d8;border-radius:12px;padding:10px 14px;margin:10px 0"><b style="font-size:15px">'+E(rd)+'</b>'+
+          P.concat(C).map(function(d){ var mine=d.kind!=="common";
+            return '<div style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:8px 0;border-top:1px solid #eeece5">'+
+              '<span style="font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;'+(mine?'background:#e6f4ea;color:#2f7d4f':'background:#eef0f4;color:#5a6478')+'">'+(mine?'내 자료':'공통')+'</span>'+
+              '<span style="flex:1;min-width:160px">'+(d.cat?'<span style="color:#8a93a5">'+E(d.cat)+' · </span>':'')+(mine?'<b>':'')+E(d.title)+(mine?'</b>':'')+'</span>'+
+              '<span style="white-space:nowrap"><button '+btn+' onclick="vqrOpen(\''+d.id+'\',0)">보기</button> <button '+btn+' onclick="vqrOpen(\''+d.id+'\',1)">내려받기</button></span></div>'; }).join("")+'</div>';
+      });
+      B(h);
+    }catch(e){
+      var msg=String((e&&e.message)||e);
+      B('<div style="background:#fff;border:1px solid #f0c4be;border-radius:12px;padding:14px;line-height:1.7"><b>자료를 열 수 없습니다</b><br>'+
+        (/끊겼|기한/.test(msg)?'이 QR은 끊겼거나 사용 기한이 지났습니다. 새 QR이 필요하면 운영팀에 문의해 주세요.':(/anonymous|Anonymous/.test(msg)?'서버 설정(익명 접속 허용)이 아직 켜지지 않았습니다. 운영팀에 알려 주세요.':'잠시 뒤 다시 찍어 보세요. 계속 안 되면 운영팀에 문의해 주세요.'))+
+        '<div style="color:#8a93a5;font-size:12px;margin-top:6px">('+E(msg)+')</div></div>');
+    }
+  }
+  window.vqrOpen=async function(id,dl){
+    var d=(window.__vqrD||{})[id], c=window.__vqrC; if(!d||!c) return;
+    var w=null; if(!dl){ try{ w=window.open("about:blank","_blank"); if(w) w.document.write('<p style="font-family:sans-serif;padding:20px">자료를 여는 중…</p>'); }catch(e){} }
+    var r=await c.storage.from(BK).createSignedUrl(d.path,dl?600:1800,dl?{download:d.fname||true}:undefined);
+    if(r.error||!r.data){ try{ if(w) w.close(); }catch(e){} alert("자료를 열지 못했습니다 — "+((r.error&&r.error.message)||"권한이 없습니다")); return; }
+    if(dl){ var a=document.createElement("a"); a.href=r.data.signedUrl; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove(); }
+    else if(w&&!w.closed) w.location.href=r.data.signedUrl; else location.href=r.data.signedUrl;
+  };
+
+  /* ══════════ 관리자: ⑤ QR 코드 ══════════ */
+  var VQ={rows:[],live:{},sel:{},extra:{}};
+  function admOK(){ try{ return typeof user!=="undefined"&&user&&user.admin&&window.sb; }catch(e){ return false; } }
+  async function vqLoad(){
+    var M={};
+    try{ var d=await sb.from("vdocs").select("vid,sname").eq("kind","personal"); (d.data||[]).forEach(function(x){ var v=String(x.vid||"").replace(/\D/g,""); if(v&&!M[v]) M[v]={vid:v,sname:x.sname||"",src:"자료"}; }); }catch(e){}
+    try{ var p=await sb.from("profiles").select("vid,name,exam,track,is_admin"); (p.data||[]).forEach(function(x){ var v=String(x.vid||"").replace(/\D/g,""); if(v&&!x.is_admin){ if(!M[v]) M[v]={vid:v,sname:x.name||"",src:"가입"}; else M[v].src="자료 · 가입"; } }); }catch(e){}
+    VQ.live={}; VQ.err=null;
+    try{ var q=await sb.from("vqr").select("*").order("created_at",{ascending:false}); if(q.error) throw q.error;
+      (q.data||[]).forEach(function(x){ if(!x.revoked&&!VQ.live[x.vid]) VQ.live[x.vid]=x; if(!M[x.vid]) M[x.vid]={vid:x.vid,sname:x.sname,src:"QR"}; }); }
+    catch(e){ VQ.err=e.message||String(e); }
+    Object.keys(VQ.extra).forEach(function(v){ if(!M[v]) M[v]=VQ.extra[v]; });
+    VQ.rows=Object.keys(M).map(function(k){ return M[k]; }).sort(function(a,b){ return a.vid<b.vid?-1:1; });
+  }
+  window.vqPanel=async function(){
+    var host=document.getElementById("vqPanel"); if(!host) return;
+    host.innerHTML='<div class="muted">불러오는 중…</div>';
+    await vqLoad();
+    if(VQ.err){ host.innerHTML='<div class="muted">서버 준비가 필요합니다 — veritas_qr_setup.sql을 Supabase SQL Editor에서 먼저 Run 해 주세요 ('+E(VQ.err)+')</div>'; return; }
+    var n=VQ.rows.length, live=Object.keys(VQ.live).length;
+    host.innerHTML='<div class="muted" style="margin:4px 0 8px">학생마다 그 학생 자료만 열리는 QR을 만듭니다 · 찍으면 가입 · 로그인 없이 바로 열립니다 · 인쇄해서 그 학생에게만 나눠 주세요 · 잃어버리면 「끊기」 후 「새로 발급」</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px">'+
+        '<button class="btn2" onclick="vqMake(false)">🔳 고른 학생 QR 만들기 · 인쇄</button>'+
+        '<label class="muted" style="display:flex;gap:4px;align-items:center">사용 기한 <input type="date" id="vqExp" style="width:150px"></label>'+
+        '<button class="btn3" onclick="vqAll(true)">모두 고르기</button><button class="btn3" onclick="vqAll(false)">모두 풀기</button>'+
+        '<span class="muted">명단 '+n+'명 · 살아 있는 QR '+live+'개</span></div>'+
+      '<details style="margin-bottom:8px"><summary class="muted" style="cursor:pointer">✍️ 명단에 없는 학생 직접 넣기</summary><textarea id="vqAdd" rows="3" placeholder="한 줄에 한 명 — 예: 2622-0043 김광현" style="width:100%;margin-top:6px"></textarea><button class="btn3" onclick="vqAddRows()">명단에 넣기</button></details>'+
+      (n?'<table><tr><th></th><th>수험생번호</th><th>수험생이름</th><th>QR</th><th></th></tr>'+VQ.rows.map(function(r){ var q=VQ.live[r.vid];
+        return '<tr><td><input type="checkbox" '+(VQ.sel[r.vid]?'checked':'')+' onchange="VQ_SEL(\''+r.vid+'\',this.checked)"></td><td>'+E(vS(r.vid))+'</td><td>'+E(r.sname)+' <span class="muted" style="font-size:11px">('+E(r.src)+')</span></td>'+
+          '<td>'+(q?'<span class="pill ok">있음</span> <span class="muted" style="font-size:11px">'+(q.used_at?'마지막 사용 '+String(q.used_at).slice(5,16).replace("T"," "):'아직 안 찍음')+(q.expires_at?' · 기한 '+String(q.expires_at).slice(0,10):'')+'</span>':'<span class="muted">없음</span>')+'</td>'+
+          '<td style="white-space:nowrap">'+(q?'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">인쇄</button> <button class="btn3" onclick="vqOne(\''+r.vid+'\',true)">새로 발급</button> <button class="btn3" onclick="vqCut(\''+r.vid+'\')">끊기</button>':'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">만들기</button>')+'</td></tr>'; }).join("")+'</table>'
+        :'<div class="muted">아직 명단이 없습니다 — 개인자료를 올리거나 위 「직접 넣기」로 학생을 넣어 주세요</div>')+
+      '<div style="margin-top:8px"><button class="btn3" onclick="vqCut(null)">⛔ 모든 QR 끊기</button> <span class="muted">시험이 끝나 자료를 닫을 때</span></div>';
+  };
+  window.VQ_SEL=function(v,on){ if(on) VQ.sel[v]=1; else delete VQ.sel[v]; };
+  window.vqAll=function(on){ VQ.sel={}; if(on) VQ.rows.forEach(function(r){ VQ.sel[r.vid]=1; }); vqPanel(); };
+  window.vqAddRows=function(){
+    var t=((document.getElementById("vqAdd")||{}).value||"").split(/\n/), k=0;
+    t.forEach(function(l){ var p=window.vParseName?vParseName(l):null, v=p&&p.vid, nm=p&&p.name; if(v&&nm){ VQ.extra[v]={vid:v,sname:nm,src:"직접"}; VQ.sel[v]=1; k++; } });
+    if(!k){ toast("「2622-0043 김광현」처럼 한 줄에 한 명씩 넣어 주세요"); return; }
+    toast(k+"명을 명단에 넣었습니다 — 「QR 만들기」를 누르세요"); vqPanel();
+  };
+  function expISO(){ var d=(document.getElementById("vqExp")||{}).value; return d?new Date(d+"T23:59:59+09:00").toISOString():null; }
+  async function issue(r,fresh){
+    var x=await sb.rpc("veritas_qr_issue",{p_vid:r.vid,p_name:r.sname,p_new:!!fresh,p_expires:expISO()});
+    if(x.error) throw x.error; return x.data;
+  }
+  window.vqOne=async function(v,fresh){
+    var r=VQ.rows.filter(function(x){ return x.vid===v; })[0]; if(!r) return;
+    if(fresh&&!confirm(r.sname+" ("+vS(v)+")의 지금 QR을 끊고 새 QR을 만들까요?\n옛 QR은 더 이상 열리지 않습니다.")) return;
+    try{ var t=await issue(r,fresh); await vqPrint([{vid:v,sname:r.sname,token:t}]); }catch(e){ toast("QR을 만들지 못했습니다 — "+(e.message||e)); }
+    vqPanel();
+  };
+  window.vqMake=async function(){
+    var L=VQ.rows.filter(function(r){ return VQ.sel[r.vid]; });
+    if(!L.length){ toast("QR을 만들 학생을 골라 주세요"); return; }
+    var out=[], fail=[];
+    for(var i=0;i<L.length;i++){ toast("QR 만드는 중… "+(i+1)+" / "+L.length); try{ out.push({vid:L[i].vid,sname:L[i].sname,token:await issue(L[i],false)}); }catch(e){ fail.push(L[i].sname+" ("+(e.message||e)+")"); } }
+    if(fail.length) alert("만들지 못한 학생\n\n"+fail.join("\n"));
+    if(out.length) await vqPrint(out);
+    vqPanel();
+  };
+  window.vqCut=async function(v){
+    if(!confirm(v?("이 학생의 QR을 끊을까요? 끊은 QR은 더 이상 열리지 않습니다."):"모든 학생의 QR을 끊을까요? 이후 어떤 QR로도 자료가 열리지 않습니다.")) return;
+    var x=await sb.rpc("veritas_qr_revoke",{p_vid:v}); if(x.error){ toast("끊지 못했습니다 — "+x.error.message); return; }
+    toast("QR "+(x.data||0)+"개를 끊었습니다"); vqPanel();
+  };
+  /* 인쇄: 수험생번호 / 수험생이름 / QR코드 */
+  window.vqPrint=async function(L){
+    var w=window.open("","_blank"); if(!w){ toast("팝업이 막혀 있습니다 — 팝업을 허용해 주세요"); return; }
+    w.document.write('<p style="font-family:sans-serif;padding:20px">QR을 그리는 중…</p>');
+    var rows=[];
+    for(var i=0;i<L.length;i++) rows.push('<tr><td class="n">'+E(vS(L[i].vid))+'</td><td class="m">'+E(L[i].sname)+'</td><td class="q"><img src="'+(await qrImg(vqrLink(L[i].token),240))+'"><div class="h">휴대폰 카메라로 찍으면 내 자료가 바로 열립니다 · 본인만 사용</div></td></tr>');
+    w.document.open();
+    w.document.write('<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>베리타스 자료 QR</title><style>'+
+      'body{font-family:"Noto Sans KR",system-ui,sans-serif;margin:24px;color:#111}h2{margin:0 0 4px;font-size:18px}.s{color:#666;font-size:12px;margin-bottom:12px}'+
+      'table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:10px 12px;text-align:center;vertical-align:middle}th{background:#f0f0f0;font-size:13px}'+
+      'td.n{font-size:18px;font-weight:700;width:26%}td.m{font-size:20px;font-weight:800;width:24%}td.q img{width:150px;height:150px;display:block;margin:0 auto}td.q .h{font-size:10.5px;color:#555;margin-top:4px}'+
+      'tr{page-break-inside:avoid}.bar{margin-bottom:12px}@media print{.bar{display:none}body{margin:10mm}}</style></head><body>'+
+      '<div class="bar"><button onclick="print()" style="padding:8px 16px;font-size:14px">🖨 인쇄 · PDF로 저장</button></div>'+
+      '<h2>덜컥합격 민사법연구소 · 베리타스 민사법 자료 QR</h2><div class="s">학생마다 그 학생 자료만 열립니다 · 가위로 잘라 본인에게만 나눠 주세요 · '+new Date().toLocaleDateString("ko-KR")+' 발급</div>'+
+      '<table><tr><th>수험생번호</th><th>수험생이름</th><th>QR코드</th></tr>'+rows.join("")+'</table></body></html>');
+    w.document.close();
+  };
+
+  /* 관리자 「📂 베리타스 자료」 화면 맨 아래에 ⑤ QR 코드 칸 붙이기 */
+  setInterval(function(){
+    try{
+      if(!admOK()) return;
+      var B=document.getElementById("acadBody"); if(!B) return;
+      if(!/① 자료 올리기/.test(B.textContent||"")) return;
+      if(document.getElementById("vqPanel")) return;
+      B.insertAdjacentHTML("beforeend",'<div class="bx"><b>⑤ 학생별 QR 코드</b> <span class="muted">수험생번호 / 수험생이름 / QR코드로 인쇄해 나눠 주기</span><div id="vqPanel" style="margin-top:6px"></div></div>');
+      vqPanel();
+    }catch(e){}
+  },600);
+})();
+
+</script>
 </body>
 
 </html>
