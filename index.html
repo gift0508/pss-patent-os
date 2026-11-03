@@ -6835,7 +6835,7 @@ function ccDelBody(m){
     try{
       if(!admOK()) return;
       var B=document.getElementById("acadBody"); if(!B) return;
-      if(!/① 자료 올리기/.test(B.textContent||"")) return;
+      if(!/① 자료 (올리기|종류)/.test(B.textContent||"")) return;
       if(document.getElementById("vqPanel")) return;
       B.insertAdjacentHTML("beforeend",'<div class="bx"><b>⑥ 학생별 QR 코드</b> <span class="muted">수험생번호 / 수험생이름 / QR코드로 인쇄해 나눠 주기</span><div id="vqPanel" style="margin-top:6px"></div></div>');
       vqPanel();
