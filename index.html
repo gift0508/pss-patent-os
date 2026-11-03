@@ -6743,7 +6743,7 @@ function ccDelBody(m){
       (q.data||[]).forEach(function(x){ if(!x.revoked&&!VQ.live[x.vid]) VQ.live[x.vid]=x; if(!M[x.vid]) M[x.vid]={vid:x.vid,sname:x.sname,src:"QR"}; }); }
     catch(e){ VQ.err=e.message||String(e); }
     Object.keys(VQ.extra).forEach(function(v){ if(!M[v]) M[v]=VQ.extra[v]; });
-    VQ.rows=Object.keys(M).map(function(k){ return M[k]; }).sort(function(a,b){ return a.vid<b.vid?-1:1; });
+    VQ.rows=Object.keys(M).map(function(k){ return M[k]; }).sort(function(a,b){ return String(a.sname||"").localeCompare(String(b.sname||""),"ko")||(a.vid<b.vid?-1:1); });
   }
   window.vqPanel=async function(){
     var host=document.getElementById("vqPanel"); if(!host) return;
@@ -6759,7 +6759,7 @@ function ccDelBody(m){
         '<button class="btn3" onclick="vqAll(true)">모두 고르기</button><button class="btn3" onclick="vqAll(false)">모두 풀기</button>'+
         '<span class="muted">명단 '+n+'명 · 살아 있는 QR '+live+'개</span></div>'+
       '<details style="margin-bottom:8px"><summary class="muted" style="cursor:pointer">✍️ 명단에 없는 학생 직접 넣기</summary><textarea id="vqAdd" rows="3" placeholder="한 줄에 한 명 — 예: 2622-0043 김광현" style="width:100%;margin-top:6px"></textarea><button class="btn3" onclick="vqAddRows()">명단에 넣기</button></details>'+
-      (n?'<table><tr><th></th><th>수험생번호</th><th>수험생이름</th><th>QR</th><th></th></tr>'+VQ.rows.map(function(r){ var q=VQ.live[r.vid];
+      (n?'<table><tr><th></th><th>수험생번호</th><th>수험생이름 ▲</th><th>QR</th><th></th></tr>'+VQ.rows.map(function(r){ var q=VQ.live[r.vid];
         return '<tr><td><input type="checkbox" '+(VQ.sel[r.vid]?'checked':'')+' onchange="VQ_SEL(\''+r.vid+'\',this.checked)"></td><td>'+E(vS(r.vid))+'</td><td>'+E(r.sname)+' <span class="muted" style="font-size:11px">('+E(r.src)+')</span></td>'+
           '<td>'+(q?'<span class="pill ok">있음</span> <span class="muted" style="font-size:11px">'+(q.used_at?'마지막 사용 '+String(q.used_at).slice(5,16).replace("T"," "):'아직 안 찍음')+(q.expires_at?' · 기한 '+String(q.expires_at).slice(0,10):'')+' · 보이기 '+(q.since?new Date(q.since).toLocaleDateString('sv-SE',{timeZone:'Asia/Seoul'})+'부터':'전체')+'</span>':'<span class="muted">없음</span>')+'</td>'+
           '<td style="white-space:nowrap">'+(q?'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">인쇄</button> <button class="btn3" onclick="vqOne(\''+r.vid+'\',true)">새로 발급</button> <button class="btn3" onclick="vqSince(\''+r.vid+'\')">기간 바꾸기</button> <button class="btn3" onclick="vqCut(\''+r.vid+'\')">끊기</button>':'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">만들기</button>')+'</td></tr>'; }).join("")+'</table>'
