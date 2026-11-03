@@ -6295,12 +6295,12 @@ function ccDelBody(m){
     var bulk='<div class="bx"><b>② 개인자료 한꺼번에 올리기</b> <span class="muted"><b>zip 파일</b> 또는 PDF 여러 개 · 파일 이름에 고유번호와 이름 — 예: <b>08_기록형_제2회_특강_첨삭답안_2622-0043_김광현.pdf</b></span>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+catOpts('vBCat').replace('<select id="vBCat">','<select id="vBCat" onchange="vBulkPreview()">').replace('과목·유형 고르기','과목·유형 — 파일 이름으로 자동')+'<input id="vBRound" list="vRounds" placeholder="회차 — 비우면 파일 이름으로 자동" style="min-width:220px" oninput="vBulkPreview()">'+typeOpts('vBTitle','personal','vBulkPreview()').replace('자료 종류 고르기','자료 종류 — 파일 이름으로 자동')+'</div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vBFiles" multiple accept=".zip,.pdf,application/zip,application/pdf" onchange="vBulkLoad()"><button class="btn2" onclick="vBulkUp()">모두 올리기</button></div><div id="vBPrev" style="margin-top:6px"></div></div>';
-    var list='<div class="bx"><b>③ 올린 자료</b>'+(R.order.length?'':'<div class="muted" style="margin-top:4px">아직 없습니다</div>');
+    var list='<div class="bx"><b>③ 올린 자료</b>'+(R.order.length?' <span style="margin-left:8px;white-space:nowrap"><button class="btn3" onclick="vdAll(true)">모두 고르기</button> <button class="btn3" onclick="vdAll(false)">모두 풀기</button> <button class="btn3" style="color:var(--t-c-alert,#c0392b);font-weight:700" onclick="vDelMany()">🗑 고른 자료 삭제 <span id="vdN">(0)</span></button></span><div class="muted" style="margin-top:4px">회차 제목 옆 칸을 누르면 그 회차 자료가 한꺼번에 골라집니다</div>':'<div class="muted" style="margin-top:4px">아직 없습니다</div>');
     R.order.forEach(function(rd){
       var A=R.G[rd], nc=A.filter(function(d){ return d.kind==="common"; }).length, np=A.length-nc;
-      list+='<div style="margin-top:10px"><b>'+E(rd)+'</b> <span class="muted">공통 '+nc+' · 개인 '+np+'</span><table style="margin-top:4px"><tr><th>구분</th><th>자료</th><th>학생</th><th>파일</th><th></th></tr>'+
+      list+='<div style="margin-top:10px"><label style="cursor:pointer"><input type="checkbox" onchange="vdRound(this)"> <b>'+E(rd)+'</b></label> <span class="muted">공통 '+nc+' · 개인 '+np+'</span><table style="margin-top:4px"><tr><th></th><th>구분</th><th>자료</th><th>학생</th><th>파일</th><th></th></tr>'+
         A.map(function(d){ var s=d.kind==="personal"?stuByVid(d.vid):null;
-          return '<tr><td><span class="pill '+(d.kind==="common"?'gray':'ok')+'">'+(d.kind==="common"?'공통':'개인')+'</span></td><td>'+(d.cat?'<span class="muted">'+E(d.cat)+' · </span>':'')+E(d.title)+'</td><td>'+(d.kind==="personal"?E(d.sname)+' ('+E(vShow(d.vid))+')'+(s?'':' <span class="pill wait">미가입</span>'):'—')+'</td><td class="muted">'+E(d.fname)+'</td><td style="white-space:nowrap">'+dlBtn(d)+' <button class="btn3" onclick="vDel(\''+d.id+'\')">삭제</button></td></tr>'; }).join('')+'</table></div>';
+          return '<tr><td><input type="checkbox" class="vdChk" value="'+d.id+'" onchange="vdCount()"></td><td><span class="pill '+(d.kind==="common"?'gray':'ok')+'">'+(d.kind==="common"?'공통':'개인')+'</span></td><td>'+(d.cat?'<span class="muted">'+E(d.cat)+' · </span>':'')+E(d.title)+'</td><td>'+(d.kind==="personal"?E(d.sname)+' ('+E(vShow(d.vid))+')'+(s?'':' <span class="pill wait">미가입</span>'):'—')+'</td><td class="muted">'+E(d.fname)+'</td><td style="white-space:nowrap">'+dlBtn(d)+' <button class="btn3" onclick="vDel(\''+d.id+'\')">삭제</button></td></tr>'; }).join('')+'</table></div>';
     });
     list+='</div>';
     var stu='<div class="bx"><b>👥 베리타스 변호사 수강생 명단</b> <span class="muted">'+VS.length+'명 · 고유번호와 이름이 베리타스 명단과 같아야 개인자료가 열립니다</span><table style="margin-top:6px"><tr><th>이름</th><th>고유번호</th><th>이메일</th><th>가입일</th><th></th></tr>'+
@@ -6816,7 +6816,7 @@ function ccDelBody(m){
       var B=document.getElementById("acadBody"); if(!B) return;
       if(!/① 자료 올리기/.test(B.textContent||"")) return;
       if(document.getElementById("vqPanel")) return;
-      B.insertAdjacentHTML("beforeend",'<div class="bx"><b>⑤ 학생별 QR 코드</b> <span class="muted">수험생번호 / 수험생이름 / QR코드로 인쇄해 나눠 주기</span><div id="vqPanel" style="margin-top:6px"></div></div>');
+      B.insertAdjacentHTML("beforeend",'<div class="bx"><b>⑥ 학생별 QR 코드</b> <span class="muted">수험생번호 / 수험생이름 / QR코드로 인쇄해 나눠 주기</span><div id="vqPanel" style="margin-top:6px"></div></div>');
       vqPanel();
     }catch(e){}
   },600);
@@ -6897,6 +6897,25 @@ function ccDelBody(m){
   };
 })();
 
+</script>
+<script>
+/* ═══ ③ 올린 자료 — 골라서 한꺼번에 삭제 (2026-11-03) ═══ */
+window.vdCount=function(){ var n=document.querySelectorAll(".vdChk:checked").length, e=document.getElementById("vdN"); if(e) e.textContent="("+n+")"; };
+window.vdAll=function(on){ [].forEach.call(document.querySelectorAll(".vdChk"),function(c){ c.checked=on; }); [].forEach.call(document.querySelectorAll('input[onchange="vdRound(this)"]'),function(c){ c.checked=on; }); vdCount(); };
+window.vdRound=function(el){ var box=el.closest("div"); if(!box) return; [].forEach.call(box.querySelectorAll(".vdChk"),function(c){ c.checked=el.checked; }); vdCount(); };
+window.vDelMany=async function(){
+  var ids=[].map.call(document.querySelectorAll(".vdChk:checked"),function(c){ return c.value; });
+  if(!ids.length){ toast("지울 자료를 골라 주세요"); return; }
+  if(!confirm("고른 자료 "+ids.length+"개를 지울까요?\n학생 화면과 QR 화면에서도 사라지며, 되돌릴 수 없습니다.")) return;
+  toast("지우는 중… "+ids.length+"개");
+  var r0=await sb.from("vdocs").select("id,path").in("id",ids);
+  var paths=(r0.data||[]).map(function(d){ return d.path; }).filter(Boolean);
+  var fail=0;
+  for(var i=0;i<ids.length;i+=100){ var r=await sb.from("vdocs").delete().in("id",ids.slice(i,i+100)); if(r.error){ fail++; toast("삭제 실패: "+r.error.message); } }
+  for(var j=0;j<paths.length;j+=100){ try{ await sb.storage.from("veritas").remove(paths.slice(j,j+100)); }catch(e){} }
+  if(!fail) toast(ids.length+"개를 지웠습니다");
+  try{ openComm("veritas"); }catch(e){}
+};
 </script>
 </body>
 
