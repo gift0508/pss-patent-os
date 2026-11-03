@@ -6286,14 +6286,12 @@ function ccDelBody(m){
     await loadStudents();
     var R=byRound(L);
     var dl='<datalist id="vRounds">'+R.order.map(function(r){ return '<option value="'+E(r)+'">'; }).join('')+'</datalist>';
-    var up='<div class="bx"><b>① 자료 올리기</b> <span class="muted">PDF 등 파일 하나씩</span>'+dl+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+
-      catOpts('vCat')+'<input id="vRound" list="vRounds" placeholder="회차 (예: 1회 모의고사)" style="min-width:170px">'+
-      typeOpts('vTitle','','vTypePick()')+'<span class="muted">공통은 모두에게 · 개인은 그 학생에게만</span></div>'+
-      '<div id="vPer" style="display:none;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input id="vVid" inputmode="numeric" placeholder="고유번호 2622-0043" style="width:150px" oninput="vFillName()"><input id="vSname" placeholder="이름" style="width:110px"><span class="muted" id="vWho"></span></div>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vFile"><button class="btn2" onclick="vUpOne()">올리기</button></div></div>';
-    var bulk='<div class="bx"><b>② 개인자료 한꺼번에 올리기</b> <span class="muted"><b>zip 파일</b> 또는 PDF 여러 개 · 파일 이름에 고유번호와 이름 — 예: <b>08_기록형_제2회_특강_첨삭답안_2622-0043_김광현.pdf</b></span>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+catOpts('vBCat').replace('<select id="vBCat">','<select id="vBCat" onchange="vBulkPreview()">').replace('과목·유형 고르기','과목·유형 — 파일 이름으로 자동')+'<input id="vBRound" list="vRounds" placeholder="회차 — 비우면 파일 이름으로 자동" style="min-width:220px" oninput="vBulkPreview()">'+typeOpts('vBTitle','personal','vBulkPreview()').replace('자료 종류 고르기','자료 종류 — 파일 이름으로 자동')+'</div>'+
+    var up='<div class="bx"><b>① 자료 종류</b> <span class="muted">따로 고를 필요 없이 <b>파일 이름</b>에 아래 낱말이 들어가면 자동으로 나뉩니다 · 고르기만 하면 ②에서 한꺼번에 올라갑니다</span>'+dl+
+      '<table style="margin-top:6px"><tr><th>자료</th><th>구분</th><th>파일 이름에 들어갈 낱말</th></tr>'+
+      [["문제지","공통","문제지"],["해설(채점기준표)","공통","해설 · 채점기준"],["공통자료","공통","공통자료"],["점수판(익명)","공통","점수판"],["개인성적표","개인","성적표"],["6단 채점표","개인","6단"],["첨삭답안","개인","첨삭답안"],["[실전첨삭] 답안지","개인","실전첨삭"],["재작성 지시사항","개인","재작성"]].map(function(x){ return '<tr><td>'+x[0]+'</td><td><span class="pill '+(x[1]==="공통"?'gray':'ok')+'">'+x[1]+'</span></td><td class="muted">'+x[2]+'</td></tr>'; }).join('')+'</table>'+
+      '<div class="muted" style="margin-top:6px">예) 공통: <b>민법_사례형_제3회_문제지.pdf</b> · 개인: <b>민법_사례형_제3회_성적표_2622-0043_김광현.pdf</b> (개인자료는 고유번호와 이름 필수) · 과목(민법·민소·상법·기록형, 선택형/사례형)과 회차(제3회, 제2회 특강)도 파일 이름에서 읽습니다</div></div>';
+    var bulk='<div class="bx"><b>② 파일 골라 올리기</b> <span class="muted">공통 · 개인 모두 · <b>zip 파일</b> 또는 PDF 여러 개 · 파일 이름으로 자료 종류 · 과목 · 회차 · 학생을 자동으로 읽습니다</span>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">'+catOpts('vBCat').replace('<select id="vBCat">','<select id="vBCat" onchange="vBulkPreview()">').replace('과목·유형 고르기','과목·유형 — 파일 이름으로 자동')+'<input id="vBRound" list="vRounds" placeholder="회차 — 비우면 파일 이름으로 자동" style="min-width:220px" oninput="vBulkPreview()">'+typeOpts('vBTitle','','vBulkPreview()').replace('자료 종류 고르기','자료 종류 — 파일 이름으로 자동')+'</div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center"><input type="file" id="vBFiles" multiple accept=".zip,.pdf,application/zip,application/pdf" onchange="vBulkLoad()"><button class="btn2" onclick="vBulkUp()">모두 올리기</button></div><div id="vBPrev" style="margin-top:6px"></div></div>';
     var list='<div class="bx"><b>③ 올린 자료</b>'+(R.order.length?' <span style="margin-left:8px;white-space:nowrap"><button class="btn3" onclick="vdAll(true)">모두 고르기</button> <button class="btn3" onclick="vdAll(false)">모두 풀기</button> <button class="btn3" style="color:var(--t-c-alert,#c0392b);font-weight:700" onclick="vDelMany()">🗑 고른 자료 삭제 <span id="vdN">(0)</span></button></span><div class="muted" style="margin-top:4px">회차 제목 옆 칸을 누르면 그 회차 자료가 한꺼번에 골라집니다</div>':'<div class="muted" style="margin-top:4px">아직 없습니다</div>');
     R.order.forEach(function(rd){
@@ -6379,6 +6377,10 @@ function ccDelBody(m){
     if(/6단/.test(n)) return "6단 채점표";
     if(/성적표/.test(n)) return "개인성적표";
     if(/첨삭답안/.test(n)) return "첨삭답안";
+    if(/점수판/.test(n)) return "점수판(익명)";
+    if(/해설|채점기준/.test(n)) return "해설(채점기준표)";
+    if(/공통자료/.test(n)) return "공통자료";
+    if(/문제지|문제/.test(n)) return "문제지";
     return "";
   }
   function guessCat(n){
@@ -6396,7 +6398,9 @@ function ccDelBody(m){
     var p=vParseName(it.name);
     var r={name:it.name, file:it.file, vid:p.vid, sname:p.name,
       cat:g("vBCat")||guessCat(it.name), round:g("vBRound")||guessRound(it.name), title:g("vBTitle")||guessType(it.name)};
-    r.why=(p.vid.length!==8?"고유번호":"")||(!p.name?"이름":"")||(!r.cat?"과목·유형":"")||(!r.round?"회차":"")||(!r.title?"자료 종류":"");
+    r.kind=vKindOf(r.title)||"";
+    if(r.kind==="common"){ r.vid=""; r.sname=""; }
+    r.why=(!r.title?"자료 종류":"")||(r.kind==="personal"&&p.vid.length!==8?"고유번호":"")||(r.kind==="personal"&&!p.name?"이름":"")||(!r.cat?"과목·유형":"")||(!r.round?"회차":"");
     return r;
   }
   window.vBulkPreview=function(){
@@ -6405,7 +6409,8 @@ function ccDelBody(m){
     var R=VB.map(vbRow), bad=R.filter(function(r){ return r.why; }).length;
     var miss='<span class="pill wait">못 읽음</span>';
     P.innerHTML='<div class="muted" style="margin:2px 0 4px">파일 '+R.length+'개 — 올릴 것 '+(R.length-bad)+'개'+(bad?' · 건너뛸 것 '+bad+'개':'')+'</div><table><tr><th>파일</th><th>이름</th><th>고유번호</th><th>과목·유형</th><th>회차</th><th>자료 종류</th><th>가입</th></tr>'+R.map(function(r){ var s=r.vid?stuByVid(r.vid):null;
-      return '<tr'+(r.why?' style="opacity:.55"':'')+'><td class="muted" style="font-size:12px">'+E(r.name)+'</td><td>'+(r.sname?E(r.sname):miss)+'</td><td>'+(r.vid?E(vShow(r.vid)):miss)+'</td><td>'+(r.cat?E(r.cat):miss)+'</td><td>'+(r.round?E(r.round):miss)+'</td><td>'+(r.title?E(r.title):miss)+'</td><td>'+(s?(s.name===r.sname?'<span class="pill ok">가입</span>':'<span class="pill wait">이름 다름: '+E(s.name)+'</span>'):'<span class="muted">미가입</span>')+'</td></tr>'; }).join('')+'</table>'+
+      var cm=r.kind==="common";
+      return '<tr'+(r.why?' style="opacity:.55"':'')+'><td class="muted" style="font-size:12px">'+E(r.name)+'</td><td>'+(cm?'<span class="pill gray">공통</span>':(r.sname?E(r.sname):miss))+'</td><td>'+(cm?'—':(r.vid?E(vShow(r.vid)):miss))+'</td><td>'+(r.cat?E(r.cat):miss)+'</td><td>'+(r.round?E(r.round):miss)+'</td><td>'+(r.title?E(r.title):miss)+'</td><td>'+(cm?'—':(s?(s.name===r.sname?'<span class="pill ok">가입</span>':'<span class="pill wait">이름 다름: '+E(s.name)+'</span>'):'<span class="muted">미가입</span>'))+'</td></tr>'; }).join('')+'</table>'+
       (bad?'<div class="muted" style="margin-top:4px">⚠ 흐린 줄은 「못 읽음」 칸 때문에 건너뜁니다 — 위에서 과목·유형 · 회차 · 자료 종류를 직접 고르면 함께 올라갑니다</div>':'');
   };
   window.vBulkUp=async function(){
@@ -6416,7 +6421,9 @@ function ccDelBody(m){
     for(var i=0;i<go.length;i++){
       var r=go[i];
       toast("올리는 중… "+(i+1)+" / "+go.length);
-      var err=await addDoc({round:r.round,title:r.title,cat:r.cat,kind:"personal",vid:r.vid,sname:r.sname,fname:r.name,path:"personal/"+r.vid+"/"+uid()+"."+ext(r.name)},r.file);
+      var row=r.kind==="common"?{round:r.round,title:r.title,cat:r.cat,kind:"common",fname:r.name,path:"common/"+uid()+"."+ext(r.name)}
+        :{round:r.round,title:r.title,cat:r.cat,kind:"personal",vid:r.vid,sname:r.sname,fname:r.name,path:"personal/"+r.vid+"/"+uid()+"."+ext(r.name)};
+      var err=await addDoc(row,r.file);
       if(err) fail.push(r.name+" ("+err.message+")"); else ok++;
     }
     var skip=R.length-go.length;
@@ -6748,13 +6755,14 @@ function ccDelBody(m){
       '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px">'+
         '<button class="btn2" onclick="vqMake(false)">🔳 고른 학생 QR 만들기 · 인쇄</button>'+
         '<label class="muted" style="display:flex;gap:4px;align-items:center">사용 기한 <input type="date" id="vqExp" style="width:150px"></label>'+
+        '<label class="muted" style="display:flex;gap:4px;align-items:center" title="이 날짜 이후에 올린 자료만 학생에게 보입니다 · 비우면 전체">보이기 시작일 <input type="date" id="vqSince" style="width:150px"></label>'+
         '<button class="btn3" onclick="vqAll(true)">모두 고르기</button><button class="btn3" onclick="vqAll(false)">모두 풀기</button>'+
         '<span class="muted">명단 '+n+'명 · 살아 있는 QR '+live+'개</span></div>'+
       '<details style="margin-bottom:8px"><summary class="muted" style="cursor:pointer">✍️ 명단에 없는 학생 직접 넣기</summary><textarea id="vqAdd" rows="3" placeholder="한 줄에 한 명 — 예: 2622-0043 김광현" style="width:100%;margin-top:6px"></textarea><button class="btn3" onclick="vqAddRows()">명단에 넣기</button></details>'+
       (n?'<table><tr><th></th><th>수험생번호</th><th>수험생이름</th><th>QR</th><th></th></tr>'+VQ.rows.map(function(r){ var q=VQ.live[r.vid];
         return '<tr><td><input type="checkbox" '+(VQ.sel[r.vid]?'checked':'')+' onchange="VQ_SEL(\''+r.vid+'\',this.checked)"></td><td>'+E(vS(r.vid))+'</td><td>'+E(r.sname)+' <span class="muted" style="font-size:11px">('+E(r.src)+')</span></td>'+
-          '<td>'+(q?'<span class="pill ok">있음</span> <span class="muted" style="font-size:11px">'+(q.used_at?'마지막 사용 '+String(q.used_at).slice(5,16).replace("T"," "):'아직 안 찍음')+(q.expires_at?' · 기한 '+String(q.expires_at).slice(0,10):'')+'</span>':'<span class="muted">없음</span>')+'</td>'+
-          '<td style="white-space:nowrap">'+(q?'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">인쇄</button> <button class="btn3" onclick="vqOne(\''+r.vid+'\',true)">새로 발급</button> <button class="btn3" onclick="vqCut(\''+r.vid+'\')">끊기</button>':'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">만들기</button>')+'</td></tr>'; }).join("")+'</table>'
+          '<td>'+(q?'<span class="pill ok">있음</span> <span class="muted" style="font-size:11px">'+(q.used_at?'마지막 사용 '+String(q.used_at).slice(5,16).replace("T"," "):'아직 안 찍음')+(q.expires_at?' · 기한 '+String(q.expires_at).slice(0,10):'')+' · 보이기 '+(q.since?new Date(q.since).toLocaleDateString('sv-SE',{timeZone:'Asia/Seoul'})+'부터':'전체')+'</span>':'<span class="muted">없음</span>')+'</td>'+
+          '<td style="white-space:nowrap">'+(q?'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">인쇄</button> <button class="btn3" onclick="vqOne(\''+r.vid+'\',true)">새로 발급</button> <button class="btn3" onclick="vqSince(\''+r.vid+'\')">기간 바꾸기</button> <button class="btn3" onclick="vqCut(\''+r.vid+'\')">끊기</button>':'<button class="btn3" onclick="vqOne(\''+r.vid+'\',false)">만들기</button>')+'</td></tr>'; }).join("")+'</table>'
         :'<div class="muted">아직 명단이 없습니다 — 개인자료를 올리거나 위 「직접 넣기」로 학생을 넣어 주세요</div>')+
       '<div style="margin-top:8px"><button class="btn3" onclick="vqCut(null)">⛔ 모든 QR 끊기</button> <span class="muted">시험이 끝나 자료를 닫을 때</span></div>';
   };
@@ -6769,8 +6777,21 @@ function ccDelBody(m){
   function expISO(){ var d=(document.getElementById("vqExp")||{}).value; return d?new Date(d+"T23:59:59+09:00").toISOString():null; }
   async function issue(r,fresh){
     var x=await sb.rpc("veritas_qr_issue",{p_vid:r.vid,p_name:r.sname,p_new:!!fresh,p_expires:expISO()});
-    if(x.error) throw x.error; return x.data;
+    if(x.error) throw x.error;
+    var sd=(document.getElementById("vqSince")||{}).value;
+    if(sd){ var y=await sb.rpc("veritas_qr_set_since",{p_vid:r.vid,p_since:new Date(sd+"T00:00:00+09:00").toISOString()}); if(y.error) toast("보이기 시작일을 저장하지 못했습니다 — veritas_qr_since.sql을 먼저 Run 해 주세요"); }
+    return x.data;
   }
+  window.vqSince=async function(v){
+    var q=VQ.live[v]; if(!q) return;
+    var cur=q.since?new Date(q.since).toLocaleDateString("sv-SE",{timeZone:"Asia/Seoul"}):"";
+    var t=prompt((v?vS(v):"")+" — 이 날짜 이후에 올린 자료만 보입니다\n\n날짜를 넣으세요 (예: 2027-03-01) · 비우면 지금까지 올린 자료 전체가 보입니다",cur);
+    if(t===null) return; t=String(t).trim();
+    if(t&&!/^\d{4}-\d{2}-\d{2}$/.test(t)){ toast("날짜는 2027-03-01처럼 넣어 주세요"); return; }
+    var y=await sb.rpc("veritas_qr_set_since",{p_vid:v,p_since:t?new Date(t+"T00:00:00+09:00").toISOString():null});
+    if(y.error){ toast("저장하지 못했습니다 — "+(/set_since|function/.test(y.error.message)?"veritas_qr_since.sql을 먼저 Run 해 주세요":y.error.message)); return; }
+    toast(t?(t+" 이후 자료만 보이게 했습니다"):"전체 자료가 보이게 했습니다"); vqPanel();
+  };
   window.vqOne=async function(v,fresh){
     var r=VQ.rows.filter(function(x){ return x.vid===v; })[0]; if(!r) return;
     if(fresh&&!confirm(r.sname+" ("+vS(v)+")의 지금 QR을 끊고 새 QR을 만들까요?\n옛 QR은 더 이상 열리지 않습니다.")) return;
