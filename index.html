@@ -6823,6 +6823,81 @@ function ccDelBody(m){
 })();
 
 </script>
+<script>
+/* ═══ 보기 = 내려받지 않고 화면 안에서 바로 보기 (2026-11-03) ═══
+   휴대폰에서 PDF 주소를 열면 저장(다운로드)부터 되는 문제 → 사이트 안 보기 창에서 쪽마다 그려 보여 줌(pdf.js)
+   · 확대/축소 · 내려받기 단추 · 그림 파일은 그대로 표시 */
+(function(){
+  function E(x){ return String(x==null?"":x).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  var PJ="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  function loadPdf(){ return new Promise(function(res,rej){ if(window.pdfjsLib) return res(window.pdfjsLib);
+    var s=document.createElement("script"); s.src=PJ+"pdf.min.js";
+    s.onload=function(){ try{ pdfjsLib.GlobalWorkerOptions.workerSrc=PJ+"pdf.worker.min.js"; }catch(e){} res(window.pdfjsLib); };
+    s.onerror=function(){ rej(new Error("PDF 보기 도구를 불러오지 못했습니다")); }; document.head.appendChild(s); }); }
+  var Z=1, TASK=0;
+  window.pssPdfView=async function(url,title,dlFn,fname){
+    var my=++TASK;
+    var ov=document.getElementById("pssPV");
+    if(!ov){ ov=document.createElement("div"); ov.id="pssPV"; document.body.appendChild(ov); }
+    ov.style.cssText="position:fixed;inset:0;z-index:2147483600;background:#3a3f4a;display:flex;flex-direction:column";
+    var b='style="padding:6px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer"';
+    ov.innerHTML='<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:#16213a;color:#fff;font-family:\'Noto Sans KR\',system-ui,sans-serif">'+
+      '<b style="flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+E(title||"자료 보기")+'</b>'+
+      '<button '+b+' onclick="pssPvZoom(-1)">－</button><button '+b+' onclick="pssPvZoom(1)">＋</button>'+
+      (dlFn?'<button '+b+' id="pssPvDl">내려받기</button>':'')+
+      '<button '+b.replace('transparent','#C9A227').replace('color:#fff','color:#16213a')+' onclick="pssPvClose()">✕ 닫기</button></div>'+
+      '<div id="pssPvBody" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:10px 0;text-align:center;color:#fff;font-family:system-ui,sans-serif"><div style="padding:30px">여는 중…</div></div>';
+    if(dlFn) document.getElementById("pssPvDl").onclick=dlFn;
+    document.documentElement.style.overflow="hidden"; Z=1;
+    var body=document.getElementById("pssPvBody");
+    try{
+      if(/\.(png|jpe?g|gif|webp)$/i.test(fname||"")){ body.innerHTML='<img src="'+E(url)+'" class="pvpg" style="width:calc(100% - 16px);max-width:1000px;background:#fff">'; return; }
+      var lib=await loadPdf(); if(my!==TASK) return;
+      var doc=await lib.getDocument({url:url}).promise; if(my!==TASK) return;
+      body.innerHTML='<div style="font-size:12px;opacity:.8;margin-bottom:6px">전체 '+doc.numPages+'쪽</div>';
+      var W=Math.min(body.clientWidth-16,1000), dpr=Math.min(window.devicePixelRatio||1,2);
+      for(var i=1;i<=doc.numPages;i++){
+        if(my!==TASK) return;
+        var pg=await doc.getPage(i), v1=pg.getViewport({scale:1}), sc=(W/v1.width)*dpr*1.5, vp=pg.getViewport({scale:sc});
+        var cv=document.createElement("canvas"); cv.width=vp.width; cv.height=vp.height; cv.className="pvpg";
+        cv.style.cssText="display:block;margin:0 auto 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.35);width:"+(W*Z)+"px;max-width:none";
+        body.appendChild(cv);
+        await pg.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
+      }
+    }catch(e){
+      body.innerHTML='<div style="padding:24px;line-height:1.7">화면 안에서 열지 못했습니다 ('+E(e.message||e)+')<br><button '+b+' onclick="window.open(\''+E(url)+'\',\'_blank\')">새 창으로 열기</button></div>';
+    }
+  };
+  window.pssPvZoom=function(d){
+    Z=Math.max(.6,Math.min(3,Z+(d>0?.25:-.25)));
+    var body=document.getElementById("pssPvBody"); if(!body) return;
+    var W=Math.min(body.clientWidth-16,1000);
+    [].forEach.call(body.querySelectorAll(".pvpg"),function(c){ c.style.width=(W*Z)+"px"; });
+  };
+  window.pssPvClose=function(){ TASK++; var ov=document.getElementById("pssPV"); if(ov) ov.remove(); if(!document.getElementById("vqrView")) document.documentElement.style.overflow=""; };
+
+  /* QR 화면: 보기 = 화면 안에서 */
+  var vq=window.vqrOpen;
+  window.vqrOpen=async function(id,dl){
+    if(dl) return vq(id,dl);
+    var d=(window.__vqrD||{})[id], c=window.__vqrC; if(!d||!c) return;
+    var r=await c.storage.from("veritas").createSignedUrl(d.path,1800);
+    if(r.error||!r.data){ alert("자료를 열지 못했습니다 — "+((r.error&&r.error.message)||"권한이 없습니다")); return; }
+    pssPdfView(r.data.signedUrl,(d.round?d.round+" · ":"")+d.title,function(){ vq(id,1); },d.fname||d.path);
+  };
+  /* 사이트 안 베리타스 자료: 보기 = 화면 안에서 */
+  var vv=window.vView;
+  if(typeof vv==="function") window.vView=async function(id){
+    try{
+      var r0=await sb.from("vdocs").select("*").eq("id",id).maybeSingle(); var d=r0.data; if(!d) return vv(id);
+      var r=await sb.storage.from("veritas").createSignedUrl(d.path,1800);
+      if(r.error||!r.data) return vv(id);
+      pssPdfView(r.data.signedUrl,(d.round?d.round+" · ":"")+d.title,function(){ window.vDown(id); },d.fname||d.path);
+    }catch(e){ return vv(id); }
+  };
+})();
+
+</script>
 </body>
 
 </html>
