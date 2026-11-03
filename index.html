@@ -6675,7 +6675,7 @@ function ccDelBody(m){
   async function vqrStudent(tok){
     var ov=document.createElement("div"); ov.id="vqrView";
     ov.style.cssText="position:fixed;inset:0;z-index:2147483000;overflow:auto;background:#f6f4ee;color:#16213a;font-family:'Noto Sans KR',system-ui,sans-serif";
-    ov.innerHTML='<div style="max-width:760px;margin:0 auto;padding:20px 16px 40px"><div style="font-weight:800;color:#8a6a10;font-size:13px;letter-spacing:.5px">덜컥합격 민사법연구소</div><h2 style="margin:4px 0 14px;font-size:22px">📂 베리타스 민사법 자료</h2><div id="vqrBody" style="font-size:14px">자료를 여는 중…</div></div>';
+    ov.innerHTML='<div style="max-width:760px;margin:0 auto;padding:20px 16px 40px"><h2 style="margin:4px 0 14px;font-size:22px">📂 박승수 변호사 베리타스 민사법 자료</h2><div id="vqrBody" style="font-size:14px">자료를 여는 중…</div></div>';
     document.body.appendChild(ov); document.documentElement.style.overflow="hidden";
     var B=function(h){ var b=document.getElementById("vqrBody"); if(b) b.innerHTML=h; };
     var c;
@@ -6804,7 +6804,7 @@ function ccDelBody(m){
       'td.n{font-size:18px;font-weight:700;width:26%}td.m{font-size:20px;font-weight:800;width:24%}td.q img{width:150px;height:150px;display:block;margin:0 auto}td.q .h{font-size:10.5px;color:#555;margin-top:4px}'+
       'tr{page-break-inside:avoid}.bar{margin-bottom:12px}@media print{.bar{display:none}body{margin:10mm}}</style></head><body>'+
       '<div class="bar"><button onclick="print()" style="padding:8px 16px;font-size:14px">🖨 인쇄 · PDF로 저장</button></div>'+
-      '<h2>덜컥합격 민사법연구소 · 베리타스 민사법 자료 QR</h2><div class="s">학생마다 그 학생 자료만 열립니다 · 가위로 잘라 본인에게만 나눠 주세요 · '+new Date().toLocaleDateString("ko-KR")+' 발급</div>'+
+      '<h2>박승수 변호사 베리타스 민사법 자료 QR</h2><div class="s">학생마다 그 학생 자료만 열립니다 · 가위로 잘라 본인에게만 나눠 주세요 · '+new Date().toLocaleDateString("ko-KR")+' 발급</div>'+
       '<table><tr><th>수험생번호</th><th>수험생이름</th><th>QR코드</th></tr>'+rows.join("")+'</table></body></html>');
     w.document.close();
   };
