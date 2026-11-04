@@ -7161,7 +7161,7 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
       core.forEach(function(c){ var L=(by[c.no]||[]).sort(sort);
         h+='<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12)"><b style="color:var(--t-ce8b93c,#e8b93c)">'+c.no+'강</b> <b>'+E(c.title)+'</b>'+
           '<div>'+(L.length?L.map(btn).join(""):'<span style="font-size:12.5px;opacity:.6">자료 준비 중</span>')+
-          ' <button onclick="barSelOpen(\''+subj+'\','+c.no+');document.getElementById(\'blOv\').remove()" style="margin:3px 0;padding:5px 10px;border-radius:8px;border:0;background:var(--t-bc9a227,#C9A227);color:#0D1F3C;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🧩 '+c.no+'회 선택형 풀기</button></div></div>';
+          ' <button onclick="document.getElementById(\'blOv\').remove();bctOpen(\''+subj+'\','+c.no+')" style="margin:3px 6px 3px 0;padding:5px 10px;border-radius:8px;border:1px solid var(--t-lc9a227_5,rgba(201,162,39,.5));background:transparent;color:inherit;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🧠 '+c.no+'강 핵심학습도구</button> <button onclick="barSelOpen(\''+subj+'\','+c.no+');document.getElementById(\'blOv\').remove()" style="margin:3px 0;padding:5px 10px;border-radius:8px;border:0;background:var(--t-bc9a227,#C9A227);color:#0D1F3C;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🧩 '+c.no+'회 선택형 풀기</button></div></div>';
       });
     }
     document.getElementById("blBx").innerHTML=h;
@@ -7186,6 +7186,240 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
       var sub=b.querySelector(".ecsub"); if(sub) sub.textContent="핵심강의 강의별 PDF 자료 (동영상 준비 전)"; });
   };
 })();
+</script>
+<script>
+/* ═══ 합격설계 변호사 「🧠 핵심학습도구」 (2026-11-04) — 핵심강의 강의별
+   ① 강의요약: 📝 요약노트 · 🃏 플래시카드 · 🔖 필수암기문장 · 🗺️ 마인드맵
+   ② OX풀이: 선택형 지문을 ○/×로 풀어 필수암기문장 암기상태 확인 (✅ 암기 · ❌ 다시 · ○ 아직)
+   ③ 선택형: 해당 회차 선택형 학습엔진 · ④ 사례형: 준비 중
+   자료: 요약노트 = Supabase bar_coresum(과목·강) · 필수암기문장/OX = bar_selq 해설의 ○/× 판정에서 바로 만듦 ═══ */
+(function(){
+  var E=function(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var SN={"민법":"민법","민소법":"민사소송법","상법":"상법"};
+  var CASE_RE=/((?:\(전\))?\d{2,4}(?:다|므|스|마|그|두|도|누|카|나|가|재|후|허|헌바|헌마|헌가)\d{2,6}(?:\((?:\d{2}년|전합|\d{2}년전합)\))?)/g;
+  function core(sj){ return ((window.PSS_BAR_CORE||{})[sj])||[]; }
+  function lecOf(sj,no){ return core(sj).filter(function(x){ return x.no===no; })[0]||null; }
+  function cs(t){ return E(t).replace(CASE_RE,'<span class="bctcs">$1</span>'); }
+  var S={sj:"민법",lec:1,tab:"sum",sub:"note",qs:[],items:[],sum:null,ci:0,flip:false,oi:0,oxm:"all",oxq:[],oxa:null,mind:null,fl:"all",cards:null};
+
+  /* ── 해설의 ○/× 판정 → 지문 · 필수암기문장 ── */
+  function J(t){ return String(t||"").replace(/\r/g,"").replace(/([가-힣])\n(?=[가-힣])/g,function(m,a){ return /[는은을를의에고며서로와과가도한된할인면여써게나라터등및]$/.test(a)?a+" ":a; }).replace(/\s*\n\s*/g," ").replace(/\s{2,}/g," ").trim(); }
+  var MK=/(^|[\s,\]])([①②③④⑤➀➁➂➃➄]|[ㄱㄴㄷㄹㅁㅂㅅ])\s*\.?\s*[\(\[]\s*(○|×|✕|✗|Ｏ|Ｘ|O|X)\s*[\)\]]/g;
+  var CIR={"①":1,"②":2,"③":3,"④":4,"⑤":5,"➀":1,"➁":2,"➂":3,"➃":4,"➄":5};
+  function stmtOf(q,mk){
+    if(CIR[mk]){ var o=(q.o||[])[CIR[mk]-1]; if(!o||/^[ㄱ-ㅎ](\s*[,·]\s*[ㄱ-ㅎ])*$/.test(String(o).trim())||/[ㄱ-ㅎ]\s*\((○|×)\)/.test(o)) return ""; return J(o); }
+    var m=new RegExp("(?:^|\\n)\\s*"+mk+"\\s*\\.\\s*([\\s\\S]*?)(?=\\n\\s*[ㄱ-ㅎ]\\s*\\.|$)").exec(String(q.q||""));
+    return m?J(m[1]):"";
+  }
+  function parse(qs){
+    var out=[];
+    qs.forEach(function(q){
+      var x=String(q.x||""), ms=[], m; MK.lastIndex=0;
+      while((m=MK.exec(x))){ ms.push({mk:m[2],ok:/○|Ｏ|O/.test(m[3]),s:m.index+m[1].length,e:MK.lastIndex}); }
+      ms.forEach(function(a,i){ var t=x.slice(a.e,i+1<ms.length?ms[i+1].s:x.length); a.t=J(t.split(/(?:^|\n)\s*핵심\s/)[0]).replace(/^[,\s]+/,""); });
+      for(var i=ms.length-2;i>=0;i--){ if(!ms[i].t) ms[i].t=ms[i+1].t; }
+      var stem=J(String(q.q||"").split("\n")[0]).replace(/\s*\(다툼이 있는 경우[^)]*\)\s*/g," ").replace(/\s*\(각 지문은[^)]*\)\s*/g," ").trim();
+      var seen={};
+      ms.forEach(function(a){
+        if(seen[a.mk]) return; seen[a.mk]=1;
+        var st=stmtOf(q,a.mk); var ex=a.t.replace(/^[→\s]+/,"");
+        var hasEx=ex.replace(CASE_RE,"").replace(/[\s.,()대법원판결선고]/g,"").length>=12;
+        var memo=a.ok?(st||(hasEx?ex:"")):(hasEx?ex:"");
+        if(!memo&&!st) return;
+        out.push({id:q.n+"-"+a.mk,n:q.n,mk:a.mk,ok:a.ok,stem:stem,st:st,ex:ex,hasEx:hasEx,memo:memo});
+      });
+    });
+    return out;
+  }
+  window.bctParse=parse;
+
+  /* ── 암기상태 (내 기기에 저장) ── */
+  function uid(){ try{ return (user&&(user.id||user.email||user.name))||"me"; }catch(e){ return "me"; } }
+  function key(){ return "bct_ox|"+uid()+"|"+S.sj+"|"+S.lec; }
+  function stGet(){ try{ return JSON.parse(localStorage.getItem(key())||"{}")||{}; }catch(e){ return {}; } }
+  function stSet(o){ try{ localStorage.setItem(key(),JSON.stringify(o)); }catch(e){} }
+
+  /* ── 불러오기 ── */
+  async function load(){
+    S.qs=[]; S.items=[]; S.sum=null; S.cards=null;
+    var sb=window.sb;
+    if(sb){
+      try{ var r=await sb.from("bar_selq").select("n,q,o,a,x").eq("subj",S.sj).eq("rnd",S.lec).order("n"); if(!r.error) S.qs=r.data||[]; }catch(e){}
+      try{ var r2=await sb.from("bar_coresum").select("data").eq("subj",S.sj).eq("lec",S.lec).maybeSingle(); if(r2&&!r2.error&&r2.data) S.sum=r2.data.data; }catch(e){}
+    }
+    S.items=parse(S.qs);
+    if(S.sum&&S.sum.sec){ S.cards=[]; S.sum.sec.forEach(function(sc){ (sc.items||[]).forEach(function(it){ S.cards.push({h:sc.h,f:it.f||(it.k),b:it.t,c:it.c||""}); }); }); (S.sum.cards||[]).forEach(function(c){ S.cards.push({h:c.h||"",f:c.f,b:c.b,c:c.c||""}); }); }
+  }
+
+  /* ── 창 ── */
+  function css(){
+    if(document.getElementById("bctCss")) return;
+    var st=document.createElement("style"); st.id="bctCss";
+    st.textContent=
+    "#bctOv{position:fixed;inset:0;z-index:9600;background:rgba(5,12,28,.62);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:22px 12px}"+
+    "#bctBx{width:min(1080px,100%);background:var(--t-b13254a,#13254a);color:var(--t-ceef2fa,#eef2fa);border:1px solid var(--t-lffffff_1,rgba(255,255,255,.12));border-radius:16px;padding:18px 20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.45)}"+
+    "#bctBx .bh{display:flex;gap:10px;align-items:center;flex-wrap:wrap}#bctBx .bh h2{margin:0;font-size:19px;color:var(--t-cc9a227,#C9A227)}"+
+    "#bctBx select{font:inherit;font-size:14px;padding:6px 8px;border-radius:8px;background:var(--t-b1a2c50,#1a2c50);color:inherit;border:1px solid var(--t-lffffff_2,rgba(255,255,255,.2));max-width:100%}"+
+    "#bctBx .x{margin-left:auto;background:none;border:0;color:inherit;font-size:22px;cursor:pointer}"+
+    ".bcttabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 8px}.bcttabs button,.bctsub button,.bctbtn{font:inherit;font-size:14px;font-weight:700;padding:8px 14px;border-radius:10px;border:1px solid var(--t-lffffff_2,rgba(255,255,255,.2));background:transparent;color:inherit;cursor:pointer}"+
+    ".bcttabs button.on{background:var(--t-bc9a227,#C9A227);color:#0D1F3C;border-color:transparent}"+
+    ".bctsub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;padding:8px;border-radius:12px;background:var(--t-bffffff_05,rgba(255,255,255,.05))}.bctsub button{font-size:13px;padding:6px 12px}.bctsub button.on{background:var(--t-ba06ee6_18,rgba(90,168,232,.22));border-color:#5aa8e8}"+
+    ".bctbtn.pri{background:var(--t-bc9a227,#C9A227);color:#0D1F3C;border-color:transparent}"+
+    ".bctcs{display:inline-block;margin:0 2px;padding:0 6px;border-radius:6px;font-size:.82em;font-weight:700;background:var(--t-bc9a227_18,rgba(201,162,39,.18));color:var(--t-ce8b93c,#e8b93c);white-space:nowrap}"+
+    ".bctsec{margin:0 0 14px;border:1px solid var(--t-lffffff_1,rgba(255,255,255,.12));border-radius:12px;overflow:hidden}.bctsec>h3{margin:0;padding:9px 14px;font-size:15.5px;background:var(--t-bffffff_06,rgba(255,255,255,.06));color:var(--t-cc9a227,#C9A227)}"+
+    ".bctrow{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:10px;padding:8px 14px;border-top:1px solid var(--t-bffffff_06,rgba(255,255,255,.07));font-size:14.5px;line-height:1.65}.bctrow b{color:var(--t-c9fc0ff,#9fc0ff)}"+
+    "@media(max-width:640px){.bctrow{grid-template-columns:1fr;gap:2px}.bctmm{flex-direction:column}.bctroot{align-self:flex-start;max-width:none;margin-bottom:8px}.bctbr{margin-left:10px}.bctb{flex-direction:column;gap:6px}.bctlv{margin-left:28px}}"+
+    ".bctcard{min-height:230px;border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;font-size:18px;line-height:1.7;background:var(--t-b1a2c50,#1a2c50);border:2px solid var(--t-lffffff_1,rgba(255,255,255,.14))}"+
+    ".bctcard.back{border-color:#C9A227;font-size:16px}.bctcard small{display:block;font-size:12.5px;opacity:.7;margin-bottom:8px}"+
+    ".bctnav{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:12px;flex-wrap:wrap}"+
+    ".bctmemo{padding:10px 14px;border-top:1px solid var(--t-bffffff_06,rgba(255,255,255,.07));font-size:14.5px;line-height:1.7;display:flex;gap:10px}.bctmemo .bd{flex-shrink:0;font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px;height:fit-content;margin-top:3px}"+
+    ".bd.ok{background:rgba(94,201,143,.18);color:#5ec98f}.bd.ng{background:rgba(232,90,90,.18);color:#f07a7a}.bd.no{background:var(--t-bffffff_1,rgba(255,255,255,.1));color:var(--t-c9aa6bd,#9aa6bd)}"+
+    ".bctstem{font-size:13px;opacity:.75;margin-bottom:6px}.bctq{font-size:17px;line-height:1.75;padding:18px;border-radius:14px;background:var(--t-b1a2c50,#1a2c50);border:1px solid var(--t-lffffff_1,rgba(255,255,255,.14))}"+
+    ".bctox{display:flex;gap:12px;justify-content:center;margin:14px 0}.bctox button{font:inherit;font-size:26px;font-weight:800;width:120px;padding:10px 0;border-radius:14px;cursor:pointer;border:2px solid var(--t-lffffff_2,rgba(255,255,255,.25));background:transparent;color:inherit}"+
+    ".bctres{border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.75}.bctres.ok{background:rgba(94,201,143,.12);border:1px solid rgba(94,201,143,.5)}.bctres.ng{background:rgba(232,90,90,.1);border:1px solid rgba(232,90,90,.5)}"+
+    ".bctstat{display:flex;gap:8px;flex-wrap:wrap;font-size:13.5px;margin:0 0 10px}.bctstat span{padding:4px 10px;border-radius:999px;background:var(--t-bffffff_06,rgba(255,255,255,.07))}"+
+    ".bctmm{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:6px 2px 12px}.bctroot{flex-shrink:0;align-self:center;padding:14px 16px;border-radius:14px;background:var(--t-bc9a227,#C9A227);color:#0D1F3C;font-weight:800;max-width:190px;font-size:15px;text-align:center}"+
+    ".bctbr{border-left:2px solid #C9A227;margin-left:18px;padding-left:0;display:flex;flex-direction:column;gap:8px}.bctb{display:flex;align-items:flex-start}.bctb>.bn{position:relative;flex-shrink:0;margin-left:16px;padding:8px 12px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;background:var(--t-ba06ee6_18,rgba(90,168,232,.2));border:1px solid #5aa8e8;min-width:120px}"+
+    ".bctb>.bn:before{content:'';position:absolute;left:-18px;top:50%;width:16px;border-top:2px solid #C9A227}.bctlv{display:flex;flex-wrap:wrap;gap:6px;margin-left:12px;padding-left:12px;border-left:2px dashed var(--t-l6aa0e0_6,rgba(90,168,232,.5))}.bctlv button{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;cursor:pointer;background:var(--t-bffffff_06,rgba(255,255,255,.07));color:inherit;border:1px solid var(--t-lffffff_2,rgba(255,255,255,.2))}.bctlv button.on{border-color:#C9A227;background:rgba(201,162,39,.2)}"+
+    ".bctdet{margin-top:6px;padding:12px 14px;border-radius:12px;border:1px solid #C9A227;font-size:14.5px;line-height:1.7}"+
+    ".bctnone{padding:30px 14px;text-align:center;opacity:.8;font-size:14px;line-height:1.8;border:1px dashed var(--t-lffffff_2,rgba(255,255,255,.25));border-radius:12px}";
+    document.head.appendChild(st);
+  }
+  function box(){
+    css();
+    var ov=document.getElementById("bctOv");
+    if(!ov){ ov=document.createElement("div"); ov.id="bctOv"; ov.onclick=function(e){ if(e.target===ov) ov.remove(); }; ov.innerHTML='<div id="bctBx"></div>'; document.body.appendChild(ov); }
+    return document.getElementById("bctBx");
+  }
+  window.bctClose=function(){ var o=document.getElementById("bctOv"); if(o) o.remove(); };
+
+  /* 과목 → 강 고르기 */
+  window.bctPick=function(sj){
+    try{ closeChooser(); }catch(e){}
+    var b=box(), L=core(sj);
+    b.innerHTML='<div class="bh"><h2>🧠 '+E(SN[sj]||sj)+' 핵심학습도구</h2><button class="x" onclick="bctClose()">×</button></div>'+
+      '<div style="font-size:13.5px;opacity:.8;margin:6px 0 12px">강을 고르면 ① 강의요약(요약노트 · 플래시카드 · 필수암기문장 · 마인드맵) → ② OX풀이 → ③ 선택형 → ④ 사례형 순서로 공부합니다</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">'+["민법","민소법","상법"].map(function(x){ return '<button class="bctbtn'+(x===sj?' pri':'')+'" onclick="bctPick(\''+x+'\')">'+SN[x]+'</button>'; }).join("")+'</div>'+
+      L.map(function(c){ return '<div class="bctrow" style="cursor:pointer;border:1px solid var(--t-lffffff_1,rgba(255,255,255,.12));border-radius:10px;margin-bottom:6px" onclick="bctOpen(\''+sj+'\','+c.no+')"><b>'+c.no+'강 '+E(c.unit||"")+'</b><span>'+E(c.title.replace(/^[^—]*—\s*/,""))+' <span style="opacity:.6;font-size:12.5px">→ 열기</span></span></div>'; }).join("");
+  };
+
+  window.bctOpen=async function(sj,lec,tab){
+    try{ closeChooser(); }catch(e){}
+    S.sj=sj; S.lec=+lec||1; S.tab=tab||"sum"; S.sub="note"; S.ci=0; S.flip=false; S.oi=0; S.oxa=null; S.mind=null; S.fl="all"; S.oxm="all";
+    var b=box(); b.innerHTML='<div style="padding:30px;text-align:center">불러오는 중…</div>';
+    await load(); S.oxq=S.items.slice(); render();
+  };
+  window.bctTab=function(t){ S.tab=t; S.oxa=null; render(); };
+  window.bctSub=function(t){ S.sub=t; render(); };
+  window.bctLec=function(v){ bctOpen(S.sj,+v,S.tab); };
+
+  function render(){
+    var b=box(), c=lecOf(S.sj,S.lec), L=core(S.sj);
+    var h='<div class="bh"><h2>🧠 핵심학습도구</h2><select onchange="bctLec(this.value)">'+L.map(function(x){ return '<option value="'+x.no+'"'+(x.no===S.lec?' selected':'')+'>'+E(SN[S.sj])+' '+x.no+'강 · '+E(x.title)+'</option>'; }).join("")+'</select>'+
+      '<button class="bctbtn" style="font-size:12.5px;padding:5px 10px" onclick="bctPick(\''+S.sj+'\')">강 목록</button><button class="x" onclick="bctClose()">×</button></div>';
+    if(c&&c.topics) h+='<div style="font-size:12.5px;opacity:.7;margin-top:6px">'+E(c.topics)+'</div>';
+    h+='<div class="bcttabs">'+[["sum","① 강의요약"],["ox","② OX풀이"],["sel","③ 선택형"],["case","④ 사례형"]].map(function(t){ return '<button class="'+(S.tab===t[0]?'on':'')+'" onclick="bctTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join("")+'</div>';
+    if(S.tab==="sum"){
+      h+='<div class="bctsub">'+[["note","📝 요약노트"],["card","🃏 플래시카드"],["memo","🔖 필수암기문장"],["mind","🗺️ 마인드맵"]].map(function(t){ return '<button class="'+(S.sub===t[0]?'on':'')+'" onclick="bctSub(\''+t[0]+'\')">'+t[1]+'</button>'; }).join("")+'</div>';
+      h+=({note:vNote,card:vCard,memo:vMemo,mind:vMind})[S.sub]();
+    } else if(S.tab==="ox") h+=vOX();
+    else if(S.tab==="sel") h+=vSel();
+    else h+='<div class="bctnone">✍️ <b>'+E(SN[S.sj])+' '+S.lec+'강 사례형</b> — 준비 중입니다<br>핵심강의 사례형 문제가 올라오면 이 자리에서 열립니다</div>';
+    b.innerHTML=h;
+  }
+  var NOSUM=function(w){ return '<div class="bctnone">📝 '+w+' — 준비 중입니다<br>이 강의 요약노트가 올라오면 함께 열립니다<br><span style="font-size:12.5px">지금은 <b>🔖 필수암기문장</b>과 <b>② OX풀이</b>를 이용할 수 있습니다</span></div>'; };
+
+  function vNote(){
+    if(!S.sum||!S.sum.sec) return NOSUM("요약노트");
+    return S.sum.sec.map(function(sc){ return '<div class="bctsec"><h3>'+E(sc.h)+'</h3>'+(sc.items||[]).map(function(it){ return '<div class="bctrow"><b>'+E(it.k)+'</b><div>'+cs(it.t)+(it.c?' <span class="bctcs">'+E(it.c)+'</span>':'')+'</div></div>'; }).join("")+'</div>'; }).join("")+
+      (S.sum.src?'<div style="font-size:12px;opacity:.6;text-align:right">자료: '+E(S.sum.src)+'</div>':'');
+  }
+  function vCard(){
+    if(!S.cards||!S.cards.length) return NOSUM("플래시카드");
+    var n=S.cards.length; if(S.ci>=n) S.ci=0; var c=S.cards[S.ci];
+    return '<div style="font-size:13px;opacity:.75;margin-bottom:8px">카드를 눌러 뒤집습니다 · '+(S.ci+1)+' / '+n+'</div>'+
+      (S.flip?'<div class="bctcard back" onclick="bctFlip()"><small>'+E(c.h)+' · '+E(c.f)+'</small><div>'+cs(c.b)+(c.c?' <span class="bctcs">'+E(c.c)+'</span>':'')+'</div></div>'
+             :'<div class="bctcard" onclick="bctFlip()"><small>'+E(c.h)+'</small><b>'+E(c.f)+'</b><div style="font-size:13px;opacity:.6;margin-top:12px">눌러서 답 보기</div></div>')+
+      '<div class="bctnav"><button class="bctbtn" onclick="bctCard(-1)">← 이전</button><button class="bctbtn pri" onclick="bctFlip()">뒤집기</button><button class="bctbtn" onclick="bctCard(1)">다음 →</button><button class="bctbtn" onclick="bctShuf()">🔀 섞기</button></div>';
+  }
+  window.bctFlip=function(){ S.flip=!S.flip; render(); };
+  window.bctCard=function(d){ var n=(S.cards||[]).length; if(!n) return; S.ci=(S.ci+d+n)%n; S.flip=false; render(); };
+  window.bctShuf=function(){ var a=S.cards||[]; for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } S.ci=0; S.flip=false; render(); };
+
+  function badge(r){ return r===1?'<span class="bd ok">✅ 암기</span>':(r===0?'<span class="bd ng">❌ 다시</span>':'<span class="bd no">○ 아직</span>'); }
+  function counts(){ var st=stGet(), a=0,b=0,c=0; S.items.forEach(function(it){ var r=st[it.id]&&st[it.id].r; if(r===1)a++; else if(r===0)b++; else c++; }); return [a,b,c]; }
+  function vMemo(){
+    if(!S.items.length) return '<div class="bctnone">🔖 필수암기문장 — 이 강의 선택형 문항이 아직 없습니다</div>';
+    var st=stGet(), k=counts();
+    var its=S.items.filter(function(it){ var r=st[it.id]&&st[it.id].r; return S.fl==="all"||(S.fl==="ng"&&r===0)||(S.fl==="no"&&r==null)||(S.fl==="ok"&&r===1); });
+    var h='<div class="bctstat"><span>필수암기문장 <b>'+S.items.length+'</b></span><span>✅ 암기 <b>'+k[0]+'</b></span><span>❌ 다시 <b>'+k[1]+'</b></span><span>○ 아직 <b>'+k[2]+'</b></span>'+
+      '<span style="background:none;padding:0;margin-left:auto">'+[["all","전체"],["ng","❌ 다시만"],["no","○ 아직만"],["ok","✅ 암기만"]].map(function(t){ return '<button class="bctbtn'+(S.fl===t[0]?' pri':'')+'" style="font-size:12.5px;padding:4px 10px;margin-left:4px" onclick="bctFl(\''+t[0]+'\')">'+t[1]+'</button>'; }).join("")+'</span></div>'+
+      '<div style="font-size:12.5px;opacity:.7;margin-bottom:8px">암기상태는 <b>② OX풀이</b>에서 맞히면 ✅ 암기, 틀리면 ❌ 다시로 바뀝니다</div>';
+    var g={}, ord=[]; its.forEach(function(it){ if(!g[it.n]){ g[it.n]=[]; ord.push(it.n); } g[it.n].push(it); });
+    h+=ord.map(function(n){ return '<div class="bctsec"><h3 style="font-size:14px">문'+n+'. '+E(g[n][0].stem)+'</h3>'+g[n].map(function(it){ var r=st[it.id]&&st[it.id].r; return '<div class="bctmemo">'+badge(r)+'<div>'+cs(it.memo||it.st)+'</div></div>'; }).join("")+'</div>'; }).join("")||'<div class="bctnone">해당하는 문장이 없습니다</div>';
+    return h;
+  }
+  window.bctFl=function(f){ S.fl=f; render(); };
+
+  function vMind(){
+    if(!S.sum||!S.sum.sec) return NOSUM("마인드맵");
+    var c=lecOf(S.sj,S.lec);
+    var h='<div style="font-size:13px;opacity:.75;margin-bottom:8px">가지(주제)를 누르면 접고 펼치고, 잎(키워드)을 누르면 내용이 아래에 나옵니다</div><div class="bctmm"><div class="bctroot">'+E(SN[S.sj])+' '+S.lec+'강<br><span style="font-size:12.5px;font-weight:700">'+E((c&&c.unit)||"")+'</span></div><div class="bctbr">'+
+      S.sum.sec.map(function(sc,i){ var shut=S.mind&&S.mind["c"+i]; return '<div class="bctb"><div class="bn" onclick="bctMB('+i+')">'+(shut?'▸ ':'▾ ')+E(sc.h)+'</div>'+(shut?'':'<div class="bctlv">'+(sc.items||[]).map(function(it,j){ var on=S.mind&&S.mind.sel===i+"-"+j; return '<button class="'+(on?'on':'')+'" onclick="bctML('+i+','+j+')">'+E(it.k)+'</button>'; }).join("")+'</div>')+'</div>'; }).join("")+'</div></div>';
+    if(S.mind&&S.mind.sel){ var p=S.mind.sel.split("-"), it=S.sum.sec[+p[0]].items[+p[1]]; h+='<div class="bctdet"><b style="color:#C9A227">'+E(S.sum.sec[+p[0]].h)+' › '+E(it.k)+'</b><div>'+cs(it.t)+(it.c?' <span class="bctcs">'+E(it.c)+'</span>':'')+'</div></div>'; }
+    return h;
+  }
+  window.bctMB=function(i){ S.mind=S.mind||{}; S.mind["c"+i]=!S.mind["c"+i]; render(); };
+  window.bctML=function(i,j){ S.mind=S.mind||{}; S.mind.sel=(S.mind.sel===i+"-"+j)?null:(i+"-"+j); render(); };
+
+  function vOX(){
+    var pool=S.items.filter(function(it){ return !!it.st; });
+    if(!pool.length) return '<div class="bctnone">🔘 OX풀이 — 이 강의 선택형 문항이 아직 없습니다</div>';
+    var st=stGet(), k=counts();
+    if(!S.oxq.length||S.oxq.some(function(x){ return !x.st; })) S.oxq=pool.slice();
+    var h='<div class="bctstat"><span>OX <b>'+pool.length+'</b>문항</span><span>✅ 암기 <b>'+k[0]+'</b></span><span>❌ 다시 <b>'+k[1]+'</b></span><span>○ 아직 <b>'+k[2]+'</b></span>'+
+      '<span style="background:none;padding:0;margin-left:auto"><button class="bctbtn'+(S.oxm==="all"?' pri':'')+'" style="font-size:12.5px;padding:4px 10px" onclick="bctOXM(\'all\')">처음부터 전체</button> <button class="bctbtn'+(S.oxm==="ng"?' pri':'')+'" style="font-size:12.5px;padding:4px 10px" onclick="bctOXM(\'ng\')">❌ 다시만 풀기</button> <button class="bctbtn'+(S.oxm==="no"?' pri':'')+'" style="font-size:12.5px;padding:4px 10px" onclick="bctOXM(\'no\')">○ 아직만 풀기</button></span></div>';
+    if(S.oi>=S.oxq.length){
+      return h+'<div class="bctnone">🎉 '+S.oxq.length+'문항을 모두 풀었습니다<br>✅ 암기 '+k[0]+' · ❌ 다시 '+k[1]+' · ○ 아직 '+k[2]+'<br><br><button class="bctbtn pri" onclick="bctTab(\'sum\');bctSub(\'memo\');bctFl(\'ng\')">🔖 ❌ 다시 문장 보러 가기</button> <button class="bctbtn" onclick="bctOXM(\'ng\')">❌ 다시만 또 풀기</button></div>';
+    }
+    var it=S.oxq[S.oi];
+    h+='<div style="font-size:12.5px;opacity:.7;margin-bottom:6px">'+(S.oi+1)+' / '+S.oxq.length+'</div><div class="bctstem">문'+it.n+'. '+E(it.stem)+'</div><div class="bctq">'+E(it.st)+'</div>';
+    if(S.oxa==null) h+='<div class="bctox"><button onclick="bctAns(1)" style="color:#5aa8e8">○</button><button onclick="bctAns(0)" style="color:#f07a7a">×</button></div>';
+    else{
+      var right=(S.oxa===1)===it.ok;
+      h+='<div class="bctres '+(right?'ok':'ng')+'" style="margin-top:12px"><b style="font-size:16px">'+(right?'✔ 맞았습니다 — ✅ 암기':'✘ 틀렸습니다 — ❌ 다시')+'</b> · 정답 <b>'+(it.ok?'○':'×')+'</b>'+
+        '<div style="margin-top:8px"><b style="color:#C9A227">🔖 필수암기문장</b><div>'+cs(it.memo||it.st)+'</div></div>'+
+        (it.ok&&it.hasEx&&it.ex!==it.memo?'<div style="margin-top:8px;font-size:13.5px;opacity:.85"><b>해설</b> '+cs(it.ex)+'</div>':'')+'</div>'+
+        '<div class="bctnav"><button class="bctbtn pri" onclick="bctNext()">다음 문항 →</button></div>';
+    }
+    return h;
+  }
+  window.bctAns=function(v){ var it=S.oxq[S.oi]; if(!it) return; S.oxa=v; var st=stGet(); st[it.id]={r:((v===1)===it.ok)?1:0,t:Date.now()}; stSet(st); render(); };
+  window.bctNext=function(){ S.oi++; S.oxa=null; render(); };
+  window.bctOXM=function(m){ var st=stGet(), pool=S.items.filter(function(it){ return !!it.st; }); S.oxm=m; S.oxq=pool.filter(function(it){ var r=st[it.id]&&st[it.id].r; return m==="all"||(m==="ng"&&r===0)||(m==="no"&&r==null); }); S.oi=0; S.oxa=null; if(!S.oxq.length){ try{ toast(m==="ng"?"❌ 다시 문항이 없습니다":"○ 아직 문항이 없습니다"); }catch(e){} S.oxm="all"; S.oxq=pool.slice(); } render(); };
+
+  function vSel(){
+    if(!S.qs.length) return '<div class="bctnone">🧩 '+E(SN[S.sj])+' '+S.lec+'강 — 이 강의에 연결된 선택형 회차가 없습니다</div>';
+    return '<div class="bctnone" style="border-style:solid">🧩 <b>'+E(SN[S.sj])+' '+S.lec+'회 선택형</b> · '+S.qs.length+'문항<br>박승수 변호사 핵심강의 회차별 선택형 문제를 풀고 정답 · 해설로 확인합니다<br><br><button class="bctbtn pri" onclick="bctClose();barSelOpen(\''+S.sj+'\','+S.lec+')">🧩 '+S.lec+'회 선택형 풀기 →</button></div>';
+  }
+
+  /* ── 들어오는 길: 강의 열기(오늘할당된학습하기) · 🧩/✍️ 창 ① 학습도구 · ② 강의 자료 목록 ── */
+  var oOL=window.openLecture;
+  if(typeof oOL==="function"){
+    var nOL=function(name){
+      try{ if(typeof isBarUser==="function"&&isBarUser()){ var hit=null; ["민법","민소법","상법"].forEach(function(sj){ core(sj).forEach(function(x){ if(!hit&&(x.title===name||name===("제"+x.no+"강"))&&(!window.PSS_CUR_SUBJ||window.PSS_CUR_SUBJ===sj||hit==null)) hit={sj:sj,no:x.no}; }); });
+        if(hit){ bctOpen(hit.sj,hit.no); return; } } }catch(e){}
+      return oOL.apply(this,arguments);
+    };
+    window.openLecture=nOL; try{ openLecture=nOL; }catch(e){}
+  }
+  try{
+    var add=function(k){ var T=BAR_TOOLS[k]; if(!T||T.__bct) return; T.__bct=1;
+      T.cards=[["민법","민법"],["민소법","민사소송법"],["상법","상법"]].map(function(a){ return {name:"🧠 "+a[1]+" 핵심학습도구",sub:"강의요약(요약노트 · 플래시카드 · 필수암기문장 · 마인드맵) · OX풀이 · 선택형 · 사례형",ready:true,go:"bctPick('"+a[0]+"')",act:"강 고르기 →"}; }).concat(T.cards); };
+    add("sel"); add("case");
+  }catch(e){}
+})();
+
 </script>
 </body>
 
