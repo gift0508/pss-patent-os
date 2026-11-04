@@ -281,9 +281,9 @@ footer{margin-top:70px;padding-top:18px;border-top:1px solid var(--t-l-line,var(
 /* 베리타스 수강생 화면 — 자료 메뉴만 (2026-10-23) */
 body.vmode .topbar>.engmenu:not(#vMenu){display:none!important}
 body.vmode #vMenu{display:flex!important}
-body.vmode #vNotice{display:block!important}
+
 #vNotice{margin:12px 0 4px;padding:10px 14px;border-radius:10px;border:1px solid var(--t-l-gold,var(--gold));background:var(--t-bc9a227_12,rgba(201,162,39,.12));color:var(--t-c-ink,var(--ink));font-size:14px;line-height:1.6}
-body.vmode .ubadge,body.vmode #upgTop,body.vmode .top-stats,body.vmode #homeHero .hero-sub,body.vmode #dashSections{display:none!important}
+body.vmode .ubadge,body.vmode #upgTop,body.vmode #homeHero .hero-sub{display:none!important}
 /* 가입 칸이 화면보다 길면 위·아래가 잘리지 않고 스크롤되게 (2026-10-23) */
 .gate{overflow-y:auto;align-items:flex-start;-webkit-overflow-scrolling:touch}
 .gate>.gatecard{margin:auto 0;flex:none}
@@ -731,10 +731,6 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
       <option value="변리사">변리사시험</option>
       <option value="변호사">변호사시험</option>
     </select>
-    <div id="fVidBox" style="display:none">
-    <label class="gl2">베리타스 학생고유번호 <small style="color:var(--t-c9aa6bd,#9aa6bd);font-weight:400">(베리타스 수강생 · 예: 2622-0043)</small></label>
-    <input id="fVid" type="text" inputmode="numeric" placeholder="2622-0043" maxlength="12" autocomplete="off">
-    </div>
     <div id="fNonBar1">
     <label class="gl2">수험 차수</label>
     <select id="fYear">
@@ -858,7 +854,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <div class="engmenu"><button class="mini" onclick="openEngine('schedule')">📅 수강신청</button><span class="fa">→</span><button class="mini" onclick="openEngine('match')">▶️ 강의선택</button><span class="fa">→</span><button class="mini" onclick="showRoadmap()">📄 전체학습계획</button><span class="fa">→</span><button class="mini" onclick="openEngine('mission')">✅ 오늘할당된학습하기</button><span class="fa">→</span><button class="mini" onclick="pickExam()">🎓 시험·과목 고르기</button><span class="fa">→</span><button class="mini" onclick="pickFbType()">📊 실전첨삭</button>
 <div style="flex-basis:100%;height:0"></div>
 <button class="mini" onclick="pickTeukgang()">🎓 특강</button><button class="mini" onclick="openMyRoom()">📚 내 강의실</button><button class="mini" onclick="openComm()">💬 소통</button><button class="mini" id="vNavBtn" style="display:none" onclick="openComm('veritas')">📂 베리타스 자료</button><button class="mini" onclick="openEngine('admin')">🏃 페이스메이커</button></div>
-    <div class="engmenu" id="vMenu" style="display:none"><button class="mini" onclick="barToolSel()">🧩 민사법 선택형</button><button class="mini" onclick="barToolCase()">✍️ 민사법 사례형</button><button class="mini" onclick="barToolRec()">📑 민사법 기록형</button><span class="fa" style="opacity:.45">|</span><button class="mini" onclick="barMaterials()">📂 강의자료</button><button class="mini" onclick="openComm('qna')">❓ 학습질의</button><button class="mini" onclick="openComm()">💬 소통</button></div>
+    <div class="engmenu" id="vMenu" style="display:none"><button class="mini" onclick="openEngine('schedule')">📅 수강신청</button><span class="fa">→</span><button class="mini" onclick="openEngine('match')">▶️ 강의선택</button><span class="fa">→</span><button class="mini" onclick="showRoadmap()">📄 전체학습계획</button><span class="fa">→</span><button class="mini" onclick="openEngine('mission')">✅ 오늘할당된학습하기</button><div style="flex-basis:100%;height:0"></div><button class="mini" onclick="barToolSel()">🧩 민사법 선택형</button><button class="mini" onclick="barToolCase()">✍️ 민사법 사례형</button><button class="mini" onclick="barToolRec()">📑 민사법 기록형</button><span class="fa" style="opacity:.45">|</span><button class="mini" onclick="pickFbType()">📊 실전첨삭</button><span class="fa" style="opacity:.45">|</span><button class="mini" onclick="openComm('qna')">❓ 학습질의</button><button class="mini" onclick="openComm()">💬 소통</button></div>
     <div class="userchip" id="userchip" style="display:none">
       <span id="uinfo"></span>
       <span class="ubadge"></span>
@@ -1487,13 +1483,22 @@ function pickPatentExam(){
 /* ═══ 변호사(베리타스) 수강생 학습도구 (2026-11-04) — 민사법 선택형 · 사례형 · 기록형 모달 · 문항이 등록되면 과목별로 열림 ═══ */
 var BAR_TOOLS={
   sel:{kicker:"🧩 민사법 선택형",title:"민사법 선택형 학습도구 — 과목을 고르세요",banner:'변호사시험 선택형(70문항 · 175점) 대비 과목별 학습도구입니다 · <b style="color:var(--t-cc9a227,#C9A227)">준비 중</b> 과목은 문항이 등록되면 열립니다',
-    cards:[{name:"민법 선택형",sub:"민법 파트 선택형 문제풀이",ready:false},{name:"민사소송법 선택형",sub:"민사소송법 파트 선택형 문제풀이",ready:false},{name:"상법 선택형",sub:"상법 파트 선택형 문제풀이",ready:false}]},
+    cards:[{name:"민법 선택형",sub:"선택형 문제풀이 학습엔진",ready:false},{name:"민사소송법 선택형",sub:"선택형 문제풀이 학습엔진",ready:false},{name:"상법 선택형",sub:"선택형 문제풀이 학습엔진",ready:false}]},
   "case":{kicker:"✍️ 민사법 사례형",title:"민사법 사례형 학습도구 — 과목을 고르세요",banner:'변호사시험 사례형(350점) 대비 과목별 진도별 사례형 학습도구입니다 · <b style="color:var(--t-cc9a227,#C9A227)">준비 중</b> 과목은 문항이 등록되면 열립니다',
-    cards:[{name:"민법 사례형",sub:"진도별 사례형 학습도구",ready:false},{name:"민사소송법 사례형",sub:"진도별 사례형 학습도구",ready:false},{name:"상법 사례형",sub:"진도별 사례형 학습도구",ready:false}]},
+    cards:[{name:"민법 사례형",sub:"사례형 학습엔진",ready:false},{name:"민사소송법 사례형",sub:"사례형 학습엔진",ready:false},{name:"상법 사례형",sub:"사례형 학습엔진",ready:false}]},
   rec:{kicker:"📑 민사법 기록형",title:"민사법 기록형 학습도구",banner:'변호사시험 기록형(175점) 대비 학습도구입니다 · <b style="color:var(--t-cc9a227,#C9A227)">준비 중</b> — 문항이 등록되면 열립니다',
-    cards:[{name:"민사법 기록형",sub:"청구취지 · 요건사실 · 소장 작성",ready:false}]}
+    cards:[{name:"민사법 기록형",sub:"기록형 학습엔진 · 청구취지 · 요건사실 · 소장 작성",ready:false}]}
 };
-function barTool(k){ var T=BAR_TOOLS[k]; ecCards(T.kicker,T.title,T.banner,T.cards); }
+/* 합격설계 학습자용 창 = ① 학습도구 + ② 강의 (동영상 · 강의가 없으면 PDF 자료) — 둘 다 올라오는 대로 열림 */
+var BAR_LEC={sel:["민법 선택형","민사소송법 선택형","상법 선택형"],"case":["민법 사례형","민사소송법 사례형","상법 사례형"],rec:["민사법 기록형"]};
+function barTool(k){
+  var T=BAR_TOOLS[k];
+  ecCards(T.kicker,T.title.replace(" 학습도구","").replace(" — 과목을 고르세요","")+" — 학습도구 · 강의",'합격설계 학습자를 위한 창입니다 · ① 학습도구로 익히고 ② 강의(동영상 · 강의가 없는 과목은 PDF 자료)로 공부합니다 · <b style="color:var(--t-cc9a227,#C9A227)">준비 중</b>은 올라오는 대로 열립니다',T.cards);
+  var g=document.getElementById("ecGrid"); if(!g) return;
+  var H=function(t,sub){ return '<div style="grid-column:1/-1;margin:6px 0 -2px;font-weight:800;font-size:15px;color:var(--t-cc9a227,#C9A227)">'+t+' <small style="font-weight:500;font-size:12px;opacity:.8">'+sub+'</small></div>'; };
+  var lec=(BAR_LEC[k]||[]).map(function(c){ return '<button class="eccard blank" onclick="toast(\''+c+' 강의 — 준비 중입니다. 강의(동영상) 또는 PDF 자료가 올라오면 여기에 목록이 나옵니다\')"><span class="ecnm">'+c+' 강의</span><span class="ecsub">동영상 강의 · 강의가 없으면 PDF 자료</span><span class="ecwait">준비 중</span></button>'; }).join("");
+  g.innerHTML=H("① 학습도구","문제풀이 · 학습엔진")+g.innerHTML+H("② 강의","동영상 강의 목록 · 강의가 없으면 PDF 자료 목록")+lec;
+}
 function barToolSel(){ barTool("sel"); }
 function barToolCase(){ barTool("case"); }
 function barToolRec(){ barTool("rec"); }
@@ -1888,7 +1893,6 @@ function examPick(v){
   var lb=document.getElementById("fTrackLbl"), tr=document.getElementById("fTrack");
   if(lb) lb.style.display=isBar?"none":"";
   if(tr) tr.style.display=isBar?"none":"";
-  var vb=document.getElementById("fVidBox"); if(vb) vb.style.display=isBar?"":"none";
   ["fNonBar1","fNonBar2","fNonBar3","fNonBar4"].forEach(function(id){ var x=document.getElementById(id); if(x) x.style.display=isBar?"none":""; });
   var pl=document.getElementById("fPlan");
   if(pl){ pl.options[0].text=isBar?"학습반 — 변호사시험 민사법·행정법 전체 + 관리·1:1 상담 (35% 할인)":"학습반 — 트랙 강의 전체 + 관리·1:1 상담 (35% 할인)"; }
@@ -1901,8 +1905,8 @@ function readProfileFields(){
   const alarm_ok=document.getElementById("fAlarm").checked;
   const exam=(document.getElementById("fExam")||{}).value||"변리사";
   if(exam==="변호사"){
-    const vid=window.vNorm?vNorm((document.getElementById("fVid")||{}).value):"";
-    if(!name||vid.length!==8) return null;
+    const vid=null;   /* 베리타스 고유번호는 받지 않음 — 베리타스 자료는 QR로 바로 열림 (2026-11-04) */
+    if(!name) return null;
     const use_ok=!!(document.getElementById("fUseOk")||{}).checked;
     return {school:"변호사",year:"베리타스",name,phone:null,alarm_ok:false,track:"bar",exam,vid,use_ok,use_ok_at:use_ok?new Date().toISOString():null,plan:"none",subj:null};
   }
@@ -1968,7 +1972,7 @@ async function signup(){
     return;
   }
   const pf=readProfileFields();
-  if(!pf){err.textContent=((document.getElementById("fExam")||{}).value==="변호사")?"성명과 베리타스 학생고유번호(8자리, 예: 2622-0043)를 입력해 주세요":"수험 차수·성명·휴대폰 번호를 모두 입력해 주세요";return;}
+  if(!pf){err.textContent=((document.getElementById("fExam")||{}).value==="변호사")?"성명을 입력해 주세요":"수험 차수·성명·휴대폰 번호를 모두 입력해 주세요";return;}
   if(pf.exam!=="변호사"&&!phoneOk(pf.phone)){err.textContent="휴대폰 번호를 010-0000-0000 형식으로 입력해 주세요";return;}
   const dupKey=pf.school+"|"+pf.year+"|"+pf.name;
   if(dupWarned!==dupKey){
@@ -4156,7 +4160,7 @@ window.ccGoPlan=function(){ try{ closeEngine(); }catch(e){} try{ showRoadmap(); 
 /* ── 전체학습계획 칸: 계획에서 계산 (담김 · 들은 강의 · 출발 단계 · 옮긴 단계) ── */
 function plCells(l){
   const t=plTrackOf(l), NS=ccNS(t), x=plTr(t), pl=ccPlanOf(t);
-  if(!x.pset) return ccZeros(t).map(function(_,k){ return {p:(CC_CATALOG[t][l]||[])[k]+"강",s:k===0?"now":"todo"}; });
+  if(!x.pset) return ccZeros(t).map(function(_,k){ const v=((CC_CATALOG[t]||{})[l]||[])[k]; return {p:(v!=null?v+"강":"목차 준비 중"),s:k===0?"now":"todo"}; });
   const c=ccPlanCalc(t), H=ccHeard(t,pl,l), sk=!!(pl.skip||{})[l], b=(pl.base||{})[l]||0, fo=(pl.focus||{})[l];
   const cnt=ccZeros(t).map(function(_,k){ return ccCount(ccSel(t,l,k,pl)); });
   const fdone=fo!=null&&cnt[fo]>0&&(H[fo]||0)>=cnt[fo];
@@ -6151,7 +6155,7 @@ function ccDelBody(m){
   function real(){ return !!(window.sb&&typeof user!=="undefined"&&user&&!user.demo&&user.email!=="open-admin"); }
   function isAdm(){ return !!(typeof user!=="undefined"&&user&&user.admin); }
   function isBar(){ try{ return typeof isBarUser==="function"&&isBarUser(); }catch(e){ return false; } }
-  function canSee(){ return isAdm()||isBar(); }
+  function canSee(){ return isAdm(); }   /* 베리타스 자료는 QR로만 — 합격설계 학습자(로그인)에게는 보이지 않음 · 관리자만 (2026-11-04) */
   function uid(){ try{ if(crypto&&crypto.randomUUID) return crypto.randomUUID(); }catch(e){} return Date.now().toString(36)+Math.random().toString(36).slice(2,10); }
   function ext(n){ var m=/\.([A-Za-z0-9]{1,6})$/.exec(String(n||"")); return m?m[1].toLowerCase():"bin"; }
   function body(){ return document.getElementById("acadBody"); }
