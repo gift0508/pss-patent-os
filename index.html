@@ -5509,6 +5509,7 @@ function ccMsgHTML(m){
   let who;
   if(m.is_admin) who='<b class="ccadm">👑 관리자</b>';
   else who='<button class="ccname" onclick="ccNameMenu(event,\''+m.user_id+'\',\''+ccEscC(m.name).replace(/'/g,"")+'\')">'+ccEscC(m.name)+(mine&&!adm?" (나)":"")+'</button>'+ccRealName(m.user_id);
+  if(adm&&!m.is_admin&&m.exam) who='<span style="font-size:10.5px;font-weight:800;padding:1px 6px;border-radius:999px;margin-right:4px;'+(m.exam==="변호사"?'background:rgba(94,201,143,.18);color:#5ec98f':'background:rgba(90,168,232,.18);color:#5aa8e8')+'">'+m.exam+'</span>'+who;   /* 관리자 화면: 어느 방 글인지 */
   let wl="";
   if(w){
     if(adm) wl='<span class="ccwl">🤫 귓속말 → '+ccEscC(m.to_name||"")+ccRealName(m.to_user)+'</span>';
