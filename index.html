@@ -7189,7 +7189,7 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
 </script>
 <script>
 /* ═══ 합격설계 변호사 「🧠 핵심학습도구」 (2026-11-04) — 핵심강의 강의별
-   ① 강의요약: 📝 요약노트 · 🃏 플래시카드 · 🔖 필수암기문장 · 🗺️ 마인드맵
+   ① 강의요약: 📝 요약노트 · 🃏 플래시카드(OX·선택형 핵심 6장 정도) · 🔖 필수암기문장 · 🗺️ 마인드맵
    ② OX풀이: 선택형 지문을 ○/×로 풀어 필수암기문장 암기상태 확인 (✅ 암기 · ❌ 다시 · ○ 아직)
    ③ 선택형: 해당 회차 선택형 학습엔진 · ④ 사례형: 준비 중
    자료: 요약노트 = Supabase bar_coresum(과목·강) · 필수암기문장/OX = bar_selq 해설의 ○/× 판정에서 바로 만듦 ═══ */
@@ -7248,7 +7248,7 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
       try{ var r2=await sb.from("bar_coresum").select("data").eq("subj",S.sj).eq("lec",S.lec).maybeSingle(); if(r2&&!r2.error&&r2.data) S.sum=r2.data.data; }catch(e){}
     }
     S.items=parse(S.qs);
-    if(S.sum&&S.sum.sec){ S.cards=[]; S.sum.sec.forEach(function(sc){ (sc.items||[]).forEach(function(it){ S.cards.push({h:sc.h,f:it.f||(it.k),b:it.t,c:it.c||""}); }); }); (S.sum.cards||[]).forEach(function(c){ S.cards.push({h:c.h||"",f:c.f,b:c.b,c:c.c||""}); }); }
+    /* 플래시카드 = 강마다 OX·선택형에서 가장 중요한 6장 정도 (bar_coresum.data.cards) */ if(S.sum&&S.sum.cards&&S.sum.cards.length) S.cards=S.sum.cards.map(function(c){ return {h:c.h||"",f:c.f,b:c.b,c:c.c||""}; });
   }
 
   /* ── 창 ── */
@@ -7327,7 +7327,7 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
     else h+='<div class="bctnone">✍️ <b>'+E(SN[S.sj])+' '+S.lec+'강 사례형</b> — 준비 중입니다<br>핵심강의 사례형 문제가 올라오면 이 자리에서 열립니다</div>';
     b.innerHTML=h;
   }
-  var NOSUM=function(w){ return '<div class="bctnone">📝 '+w+' — 준비 중입니다<br>이 강의 요약노트가 올라오면 함께 열립니다<br><span style="font-size:12.5px">지금은 <b>🔖 필수암기문장</b>과 <b>② OX풀이</b>를 이용할 수 있습니다</span></div>'; };
+  var NOSUM=function(w){ return '<div class="bctnone">📝 '+w+' — 준비 중입니다<br>이 강의 요약노트가 올라오면 함께 열립니다<br><span style="font-size:12.5px">지금은 <b>🔖 필수암기문장</b> · <b>🃏 플래시카드</b> · <b>② OX풀이</b>를 이용할 수 있습니다</span></div>'; };
 
   function vNote(){
     if(!S.sum||!S.sum.sec) return NOSUM("요약노트");
@@ -7335,9 +7335,9 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
       (S.sum.src?'<div style="font-size:12px;opacity:.6;text-align:right">자료: '+E(S.sum.src)+'</div>':'');
   }
   function vCard(){
-    if(!S.cards||!S.cards.length) return NOSUM("플래시카드");
+    if(!S.cards||!S.cards.length) return '<div class="bctnone">🃏 플래시카드 — 준비 중입니다<br>이 강의 OX · 선택형에서 가장 중요한 법리를 추린 카드가 올라오면 열립니다</div>';
     var n=S.cards.length; if(S.ci>=n) S.ci=0; var c=S.cards[S.ci];
-    return '<div style="font-size:13px;opacity:.75;margin-bottom:8px">카드를 눌러 뒤집습니다 · '+(S.ci+1)+' / '+n+'</div>'+
+    return '<div style="font-size:13px;opacity:.75;margin-bottom:8px">이 강의 OX · 선택형에서 가장 중요한 법리만 추린 카드입니다 · 카드를 눌러 뒤집습니다 · '+(S.ci+1)+' / '+n+'</div>'+
       (S.flip?'<div class="bctcard back" onclick="bctFlip()"><small>'+E(c.h)+' · '+E(c.f)+'</small><div>'+cs(c.b)+(c.c?' <span class="bctcs">'+E(c.c)+'</span>':'')+'</div></div>'
              :'<div class="bctcard" onclick="bctFlip()"><small>'+E(c.h)+'</small><b>'+E(c.f)+'</b><div style="font-size:13px;opacity:.6;margin-top:12px">눌러서 답 보기</div></div>')+
       '<div class="bctnav"><button class="bctbtn" onclick="bctCard(-1)">← 이전</button><button class="bctbtn pri" onclick="bctFlip()">뒤집기</button><button class="bctbtn" onclick="bctCard(1)">다음 →</button><button class="bctbtn" onclick="bctShuf()">🔀 섞기</button></div>';
