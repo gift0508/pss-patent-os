@@ -5491,6 +5491,7 @@ function ccChatAdd(rows){
   let added=0;
   rows.forEach(function(m){
     if(!m||ccChat.ids[m.id]) return;
+    if(window.pssAdmViewSkip&&pssAdmViewSkip(m)) return;
     if(ccChat.mode==="student"&&m.to_user&&m.to_user!==ccChat.myId&&m.user_id!==ccChat.myId) return;
     ccChat.ids[m.id]=1; ccChat.msgs.push(m); if(m.id>ccChat.lastId) ccChat.lastId=m.id;
     list.insertAdjacentHTML("beforeend",ccMsgHTML(m)); added++;
@@ -5718,7 +5719,7 @@ window.addEventListener("pagehide",function(){
 async function ccRoomLoad(){
   if(!sb) return;
   try{
-    const r=await sb.rpc("pss_room_list");
+    let r=null; if(window.pssAdmIs&&pssAdmIs()){ try{ r=await sb.rpc("pss_room_list_admin",{p_exam:pssAdmView()}); }catch(e){ r=null; } } if(!r||r.error) r=await sb.rpc("pss_room_list");
     if(r.error) throw r.error;
     ccRoom.list=(r.data||[]).slice();
     ccRoom.err="";
@@ -6204,7 +6205,7 @@ function ccDelBody(m){
       var r=au0.apply(this,arguments);
       setTimeout(function(){
         try{ var b=document.getElementById("vNavBtn"); if(b) b.style.display=canSee()?"":"none"; }catch(e){}
-        try{ document.body.classList.toggle("vmode",isBar()&&!isAdm()); }catch(e){}
+        try{ document.body.classList.toggle("vmode",isBar()); }catch(e){}
         vSaveJoinVid();
       },700);
       return r;
@@ -6214,7 +6215,7 @@ function ccDelBody(m){
   var vLastId=null;
   function vSync(){
     try{
-      var on=!!(typeof user!=="undefined"&&user)&&isBar()&&!isAdm();
+      var on=!!(typeof user!=="undefined"&&user)&&isBar();
       if(document.body.classList.contains("vmode")!==on) document.body.classList.toggle("vmode",on);
       var b=document.getElementById("vNavBtn"); if(b){ var d=(typeof user!=="undefined"&&user&&canSee())?"":"none"; if(b.style.display!==d) b.style.display=d; }
       var id=(typeof user!=="undefined"&&user&&user.id)||null;
@@ -7420,6 +7421,54 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
   }catch(e){}
 })();
 
+</script>
+<script>
+/* ═══ 관리자 화면 나누기 — 상단에서 「변리사 화면 / 변호사 화면」 고르기 (2026-11-04)
+   · 변호사 화면: 변호사 수강생과 같은 메뉴(수강신청→강의선택→전체학습계획→오늘할당된학습하기 · 선택형/사례형/기록형) + 관리자 단추
+   · 실전첨삭 · 시험·과목 고르기 · 채팅 · 가상 강의실도 고른 시험 것만 보임 · 고른 화면은 이 기기에 기억 ═══ */
+(function(){
+  var K="pss_admin_view";
+  window.pssAdmIs=function(){ try{ return !!(typeof user!=="undefined"&&user&&(user.admin||user.email==="open-admin")); }catch(e){ return false; } };
+  window.pssAdmView=function(){ try{ return localStorage.getItem(K)==="변호사"?"변호사":"변리사"; }catch(e){ return "변리사"; } };
+  /* 관리자는 고른 화면을 그 시험 수강생처럼 봄 */
+  var ib=window.isBarUser;
+  if(typeof ib==="function"){ var nb=function(){ if(pssAdmIs()) return pssAdmView()==="변호사"; return ib.apply(this,arguments); }; window.isBarUser=nb; try{ isBarUser=nb; }catch(e){} }
+  var pe=window.pickExam;
+  if(typeof pe==="function"){ var np=function(){ if(pssAdmIs()) return pssAdmView()==="변호사"?pickBarExam():pickPatentExam(); return pe.apply(this,arguments); }; window.pickExam=np; try{ pickExam=np; }catch(e){} }
+  var fl=window.pssFbList;
+  if(typeof fl==="function"){ var nf=function(){ var L=fl.apply(this,arguments); if(!pssAdmIs()) return L; var bar=pssAdmView()==="변호사"; return L.filter(function(c){ return bar?(c.key==="barcase"):(c.key!=="barcase"); }); }; window.pssFbList=nf; try{ pssFbList=nf; }catch(e){} }
+  /* 채팅: 관리자도 고른 시험 방 글 + 전체 공지만 */
+  window.pssAdmViewSkip=function(m){ if(!pssAdmIs()||!m||!m.exam||m.exam==="all") return false; return m.exam!==pssAdmView(); };
+
+  function css(){ if(document.getElementById("admViewCss")) return; var st=document.createElement("style"); st.id="admViewCss";
+    st.textContent=".admView{display:inline-flex;align-items:center;gap:4px;margin:0 0 0 10px;padding:3px;border-radius:999px;border:1px solid var(--t-lc9a227_5,rgba(201,162,39,.5));vertical-align:middle;font-size:12.5px}"+
+    ".admView b{padding:0 6px 0 8px;color:var(--t-cc9a227,#C9A227)}.admView button{font:inherit;font-weight:800;font-size:12.5px;padding:4px 12px;border-radius:999px;border:0;background:transparent;color:inherit;cursor:pointer}"+
+    ".admView button.on{background:var(--t-bc9a227,#C9A227);color:#0D1F3C}#vAdmRow{display:none;flex-basis:100%;gap:6px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed var(--t-lc9a227_5,rgba(201,162,39,.5))}"+
+    "body.vmode.vadm #vAdmRow{display:flex}";
+    document.head.appendChild(st); }
+  window.pssAdmSet=function(v){
+    try{ localStorage.setItem(K,v); }catch(e){}
+    try{ document.body.classList.toggle("vmode",v==="변호사"); }catch(e){}
+    try{ if(window.ccChat){ ccChat.ids={}; ccChat.msgs=[]; ccChat.lastId=0; } }catch(e){}
+    try{ ["engChooser"].forEach(function(id){ var x=document.getElementById(id); if(x) x.classList.remove("open"); }); ["bctOv","blOv"].forEach(function(id){ var x=document.getElementById(id); if(x) x.remove(); }); }catch(e){}
+    try{ var ev=document.getElementById("engview"); if(ev&&ev.classList.contains("open")&&typeof closeEngine==="function") closeEngine(); }catch(e){}
+    try{ if(typeof showHome==="function") showHome(); }catch(e){}
+    paint();
+    try{ toast((v==="변호사"?"⚖️ 변호사":"🎓 변리사")+" 화면으로 바꿨습니다"); }catch(e){}
+  };
+  function paint(){
+    var adm=pssAdmIs(), v=pssAdmView();
+    document.body.classList.toggle("vadm",adm);
+    var ws=document.querySelectorAll(".admView");
+    if(!adm){ Array.prototype.forEach.call(ws,function(w){ w.remove(); }); return; }
+    css();
+    Array.prototype.forEach.call(document.querySelectorAll(".topbar>.brand"),function(br){ if(!br.querySelector(".admView")) br.insertAdjacentHTML("beforeend",'<span class="admView" onclick="event.stopPropagation()"><b>관리자 화면</b><button data-v="변리사" onclick="pssAdmSet(\'변리사\')">🎓 변리사</button><button data-v="변호사" onclick="pssAdmSet(\'변호사\')">⚖️ 변호사</button></span>'); });
+    Array.prototype.forEach.call(document.querySelectorAll(".admView button"),function(b){ var on=b.getAttribute("data-v")===v; if(b.classList.contains("on")!==on) b.classList.toggle("on",on); });
+    var vm=document.getElementById("vMenu");
+    if(vm&&!document.getElementById("vAdmRow")) vm.insertAdjacentHTML("beforeend",'<div id="vAdmRow"><button class="mini" onclick="openEngine(\'admin\')">🏃 페이스메이커</button><button class="mini" onclick="openComm(\'veritas\')">📂 베리타스 자료</button><button class="mini" onclick="blAdmin()">📚 합격설계 강의자료</button></div>');
+  }
+  paint(); setInterval(paint,600);
+})();
 </script>
 </body>
 
