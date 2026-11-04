@@ -3453,7 +3453,7 @@ window.pssBarMode=function(){
 
 /* ===== 변호사 학생 화면 연결 (0928-L) ===== */
 (function(){
-  function barStu(){ try{ return isBarUser()&&!(user&&user.admin); }catch(e){ return false; } }
+  function barStu(){ try{ return isBarUser(); }catch(e){ return false; } }  /* 관리자는 「변호사 화면」일 때 isBarUser()가 참 */
   window.pssBarSoon=function(what){
     var m=document.getElementById('barSoon');
     if(!m){ m=document.createElement('div'); m.id='barSoon';
@@ -6977,7 +6977,7 @@ window.vDelMany=async function(){
    · 변리사: 기존 수강신청 창(plStart) · 변호사: 민법 · 민사소송법 · 상법 × 기본 → 핵심 → 진도별 → 최종 ═══ */
 (function(){
   var BST=["기본","핵심","진도별","최종"], BL={"민법":"민법","민소법":"민사소송법","상법":"상법","기록형":"기록형"};
-  function bar(){ try{ return typeof isBarUser==="function"&&isBarUser()&&!(user&&user.admin); }catch(e){ return false; } }
+  function bar(){ try{ return typeof isBarUser==="function"&&isBarUser(); }catch(e){ return false; } }
   function place(){ try{ return window.PSS_BAR_PLACE||JSON.parse(localStorage.getItem("pss_bar_place")||"null")||{}; }catch(e){ return {}; } }
   window.barStart=function(){
     var m=document.getElementById("plStart"); if(!m){ m=document.createElement("div"); m.id="plStart"; document.body.appendChild(m); }
@@ -7004,7 +7004,7 @@ window.vDelMany=async function(){
   /* 📅 수강신청(=schedule)은 어디서 누르든 이 창으로 */
   var oe=window.openEngine;
   window.openEngine=openEngine=function(k){
-    if(k==="schedule"&&typeof user!=="undefined"&&user&&!user.admin){ if(bar()) return barStart(); if(typeof plStart==="function") return plStart(); }
+    if(k==="schedule"&&typeof user!=="undefined"&&user){ if(bar()) return barStart(); if(typeof plStart==="function") return plStart(); }
     return oe.apply(this,arguments);
   };
 })();
@@ -7318,7 +7318,7 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
     var b=box(), c=lecOf(S.sj,S.lec), L=core(S.sj);
     var h='<div class="bh"><h2>🧠 핵심학습도구</h2><select onchange="bctLec(this.value)">'+L.map(function(x){ return '<option value="'+x.no+'"'+(x.no===S.lec?' selected':'')+'>'+E(SN[S.sj])+' '+x.no+'강 · '+E(x.title)+'</option>'; }).join("")+'</select>'+
       '<button class="bctbtn" style="font-size:12.5px;padding:5px 10px" onclick="bctPick(\''+S.sj+'\')">강 목록</button><button class="x" onclick="bctClose()">×</button></div>';
-    if(c&&c.topics) h+='<div style="font-size:12.5px;opacity:.7;margin-top:6px">'+E(c.topics)+'</div>';
+    if(S.sum&&S.sum.sec&&S.sum.sec.length) h+='<div style="font-size:12.5px;opacity:.8;margin-top:6px">📌 이 강 자료 범위: '+E(S.sum.sec.map(function(x){ return x.h; }).join(' · '))+'</div>'; else if(c&&c.topics) h+='<div style="font-size:12.5px;opacity:.7;margin-top:6px">'+E(c.topics)+'</div>';
     h+='<div class="bcttabs">'+[["sum","① 강의요약"],["ox","② OX풀이"],["sel","③ 선택형"],["case","④ 사례형"]].map(function(t){ return '<button class="'+(S.tab===t[0]?'on':'')+'" onclick="bctTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join("")+'</div>';
     if(S.tab==="sum"){
       h+='<div class="bctsub">'+[["note","📝 요약노트"],["card","🃏 플래시카드"],["memo","🔖 필수암기문장"],["mind","🗺️ 마인드맵"]].map(function(t){ return '<button class="'+(S.sub===t[0]?'on':'')+'" onclick="bctSub(\''+t[0]+'\')">'+t[1]+'</button>'; }).join("")+'</div>';
@@ -7429,7 +7429,7 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
 (function(){
   var K="pss_admin_view";
   window.pssAdmIs=function(){ try{ return !!(typeof user!=="undefined"&&user&&(user.admin||user.email==="open-admin")); }catch(e){ return false; } };
-  window.pssAdmView=function(){ try{ return localStorage.getItem(K)==="변호사"?"변호사":"변리사"; }catch(e){ return "변리사"; } };
+  window.pssAdmView=function(){ try{ return localStorage.getItem(K)==="변리사"?"변리사":"변호사"; }catch(e){ return "변호사"; } };  /* 처음엔 변호사 화면 */
   /* 관리자는 고른 화면을 그 시험 수강생처럼 봄 */
   var ib=window.isBarUser;
   if(typeof ib==="function"){ var nb=function(){ if(pssAdmIs()) return pssAdmView()==="변호사"; return ib.apply(this,arguments); }; window.isBarUser=nb; try{ isBarUser=nb; }catch(e){} }
