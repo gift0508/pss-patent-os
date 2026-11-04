@@ -7119,16 +7119,25 @@ window.barSelOpen=function(subj,rnd){ window.__BARSEL={subj:subj,rnd:rnd||null};
     try{ await window.sb.storage.from("barlec").remove([d.path]); }catch(e){}
     var r=await window.sb.from("bar_lecdocs").delete().eq("id",id); if(r.error){ toast("지우지 못했습니다 — "+r.error.message); return; } blList();
   };
-  /* 관리자 「📂 베리타스 자료」 화면 맨 아래에 ⑦ */
+  /* 관리자 전용 「📚 합격설계 강의자료」 — 베리타스 자료와 별개의 창 */
+  window.blAdmin=function(){
+    if(!adm()){ toast("관리자 전용입니다"); return; }
+    var ov=document.getElementById("blAdm"); if(!ov){ ov=document.createElement("div"); ov.id="blAdm"; ov.style.cssText="position:fixed;inset:0;z-index:9500;background:rgba(5,12,28,.6);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px"; ov.onclick=function(e){ if(e.target===ov) ov.remove(); }; document.body.appendChild(ov); }
+    ov.innerHTML='<div class="bx" id="blBox" style="background:var(--t-b13254a,#13254a);color:var(--t-ceef2fa,#eef2fa);border:1px solid var(--t-lc9a227_5,rgba(201,162,39,.5));border-radius:16px;max-width:820px;width:100%;padding:20px 22px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;color:var(--t-ce8b93c,#e8b93c)">📚 합격설계 강의자료 (변호사)</h3><button class="btn3" onclick="document.getElementById(\'blAdm\').remove()">닫기 ✕</button></div>'+
+      '<div class="muted" style="margin:6px 0">합격설계 학습자용 강의 자료(보충자료 · 선택형 문제 · 해설 · 교재) — 베리타스 현장강의 자료(QR)와는 별개입니다 · 학습자는 🧩 선택형 · ✍️ 사례형 창의 「② 강의」에서 화면 안에서 봅니다</div>'+
+      '<div class="muted" style="margin:6px 0">PDF 여러 개 또는 <b>zip</b> · 파일 이름으로 과목 · 강(회차) · 종류(보충자료 · 문제 · 해설 · 교재)를 읽습니다 — 예: <b>0423-박승수 민법 보충자료(1).pdf</b> → 민법 1강 보충자료</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input type="file" id="blFiles" multiple accept=".pdf,.zip" onchange="blLoad()"><select id="blSubj" onchange="blPreview()"><option value="">과목 — 파일 이름으로 자동</option><option value="민법">민법</option><option value="민소법">민사소송법</option><option value="상법">상법</option></select></div>'+
+      '<div id="blPrev"></div><div id="blList" style="margin-top:8px"></div></div>';
+    blList();
+  };
+  /* 관리자에게만 메뉴 단추 */
   setInterval(function(){
-    try{ if(!adm()) return; var B=document.getElementById("acadBody"); if(!B||!document.getElementById("vqPanel")||document.getElementById("blBox")) return;
-      B.insertAdjacentHTML("beforeend",'<div class="bx" id="blBox"><b>⑦ 합격설계 강의 자료 (변호사 · 핵심강의)</b> <span class="muted">합격설계 학습자용 — 베리타스 QR 자료와 별개 · 학습자 창 「② 강의」에서 화면 안 보기</span>'+
-        '<div class="muted" style="margin:6px 0">PDF 여러 개 또는 <b>zip</b> · 파일 이름으로 과목 · 강(회차) · 종류(보충자료 · 문제 · 해설 · 교재)를 읽습니다 — 예: <b>0423-박승수 민법 보충자료(1).pdf</b> → 민법 1강 보충자료</div>'+
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input type="file" id="blFiles" multiple accept=".pdf,.zip" onchange="blLoad()"><select id="blSubj" onchange="blPreview()"><option value="">과목 — 파일 이름으로 자동</option><option value="민법">민법</option><option value="민소법">민사소송법</option><option value="상법">상법</option></select></div>'+
-        '<div id="blPrev"></div><div id="blList" style="margin-top:8px"></div></div>');
-      blList();
+    try{ var m=document.querySelector(".topbar>.engmenu:not(#vMenu)"); if(!m) return; var b=document.getElementById("blAdmBtn");
+      if(adm()){ if(!b) m.insertAdjacentHTML("beforeend",'<button class="mini" id="blAdmBtn" onclick="blAdmin()">📚 합격설계 강의자료</button>'); }
+      else if(b) b.remove();
     }catch(e){}
-  },700);
+  },800);
 
   /* ── 학습자: 과목별 강의 자료 목록 ── */
   window.barLecOpen=async function(subj){
