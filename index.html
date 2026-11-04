@@ -959,7 +959,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <div class="pairrow">
       <a class="realbtn" href="#" onclick="openEngine('mission');return false">✅ 오늘할당된학습하기 — 오늘의 학습 체크</a> 
        <a class="realbtn" href="#" onclick="pickExam();return false">🎓 시험·과목 고르기 — 변리사 · 변호사시험</a>
-        <a class="realbtn" href="#" onclick="pickFbType();return false">📊 실전첨삭 — 변리사 · 변호사 전 과목</a>
+        <a class="realbtn" href="#" onclick="pickFbType();return false">📊 실전첨삭</a>
     </div>
   </section>
 
@@ -1503,14 +1503,21 @@ function pickFbType(){
   var banner=document.getElementById("ecBanner");
   if(banner) banner.innerHTML='<b style="color:var(--t-cc9a227,#C9A227)">🎫 이용권</b> — 학습반·단과반 모두 이용권으로 응시합니다. 시험지를 고르면 이용권이 쓰입니다 ('+(window.pssTkRuleText?pssTkRuleText('fb'):'')+').';
   var isAdmF=!!(typeof user!=="undefined"&&user&&(user.admin||user.email==="open-admin"));
-  var FBL=FB_ENGINES.slice();
+  /* 변리사 수강생 = 변리사 2차 민사소송법만 · 변호사 수강생 = 변호사시험 과목만 · 관리자 = 모두 (2026-11-04) */
+  var FBL=pssFbList();
   document.getElementById("ecGrid").innerHTML=FBL.map(function(c){
     return '<button class="eccard ready" onclick="openFbEngine(\''+c.eng+'\')"><span class="ecnm">'+c.name+'</span><span class="ecsub">'+c.sub+'</span><span class="ecgo">열기 →</span></button>';
   }).join("");
   document.getElementById("engChooser").classList.add("open");
 }
+function pssFbList(){
+  var adm=!!(typeof user!=="undefined"&&user&&(user.admin||user.email==="open-admin"));
+  if(adm) return FB_ENGINES.slice();
+  var bar=(typeof isBarUser==="function"&&isBarUser());
+  return FB_ENGINES.filter(function(c){ return bar?(c.key==="barcase"):(c.key!=="barcase"); });
+}
 function openFbEngine(eng){
-  var c=FB_ENGINES.filter(function(x){ return x.eng===eng; })[0]; if(!c) return;
+  var c=pssFbList().filter(function(x){ return x.eng===eng; })[0]; if(!c){ toast("이 실전첨삭은 다른 시험 수강생용입니다"); return; }
   window.__BARSUBJ=c.subj||""; window.__BARENG=c.eng; window.__BARTYPE=c.type||"case";
   try{ closeChooser(); }catch(e){}
   openEngine(c.key, c.key==="barcase"?{subj:c.subj, key:c.eng, type:c.type||"case"}:null);
