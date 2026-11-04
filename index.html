@@ -858,7 +858,7 @@ html[data-theme="light"] body{background:linear-gradient(160deg,#f4f6fa 0%,#eef1
     <div class="engmenu"><button class="mini" onclick="openEngine('schedule')">📅 수강신청</button><span class="fa">→</span><button class="mini" onclick="openEngine('match')">▶️ 강의선택</button><span class="fa">→</span><button class="mini" onclick="showRoadmap()">📄 전체학습계획</button><span class="fa">→</span><button class="mini" onclick="openEngine('mission')">✅ 오늘할당된학습하기</button><span class="fa">→</span><button class="mini" onclick="pickExam()">🎓 시험·과목 고르기</button><span class="fa">→</span><button class="mini" onclick="pickFbType()">📊 실전첨삭</button>
 <div style="flex-basis:100%;height:0"></div>
 <button class="mini" onclick="pickTeukgang()">🎓 특강</button><button class="mini" onclick="openMyRoom()">📚 내 강의실</button><button class="mini" onclick="openComm()">💬 소통</button><button class="mini" id="vNavBtn" style="display:none" onclick="openComm('veritas')">📂 베리타스 자료</button><button class="mini" onclick="openEngine('admin')">🏃 페이스메이커</button></div>
-    <div class="engmenu" id="vMenu" style="display:none"><button class="mini" onclick="vOpenCat('민법 사례형')">📘 민법 사례형</button><button class="mini" onclick="vOpenCat('민사소송법 사례형')">📗 민사소송법 사례형</button><button class="mini" onclick="vOpenCat('상법 사례형')">📙 상법 사례형</button><button class="mini" onclick="vOpenCat('기록형')">📑 기록형</button><button class="mini" onclick="vOpenCat('민법 선택형')">📘 민법 선택형</button><button class="mini" onclick="vOpenCat('민사소송법 선택형')">📗 민사소송법 선택형</button><button class="mini" onclick="vOpenCat('상법 선택형')">📙 상법 선택형</button><div style="flex-basis:100%;height:0"></div><button class="mini" onclick="vOpenCat('')">📂 베리타스 자료 전체</button><button class="mini" onclick="openComm('qna')">❓ 학습질의</button><button class="mini" onclick="openComm()">💬 소통</button></div>
+    <div class="engmenu" id="vMenu" style="display:none"><button class="mini" onclick="barToolSel()">🧩 민사법 선택형</button><button class="mini" onclick="barToolCase()">✍️ 민사법 사례형</button><button class="mini" onclick="barToolRec()">📑 민사법 기록형</button><span class="fa" style="opacity:.45">|</span><button class="mini" onclick="barMaterials()">📂 강의자료</button><button class="mini" onclick="openComm('qna')">❓ 학습질의</button><button class="mini" onclick="openComm()">💬 소통</button></div>
     <div class="userchip" id="userchip" style="display:none">
       <span id="uinfo"></span>
       <span class="ubadge"></span>
@@ -1483,6 +1483,26 @@ function pickPatentExam(){
     '학습엔진과 실전첨삭은 학습반·단과반 모두 <b>🎫 이용권</b>으로 이용합니다',
     [{name:"1차 민법 (객관식)", sub:"선택형 학습엔진 · 오늘의 세트 짜기", ready:true, go:"closeChooser();openEngWithCat('sel','1차 민법')"},
      {name:"2차 민사소송법 (주관식)", sub:"진도별 사례형 학습엔진", ready:true, go:"closeChooser();openEngWithCat('case','2차 민사소송법')"}]);
+}
+/* ═══ 변호사(베리타스) 수강생 학습도구 (2026-11-04) — 민사법 선택형 · 사례형 · 기록형 모달 · 문항이 등록되면 과목별로 열림 ═══ */
+var BAR_TOOLS={
+  sel:{kicker:"🧩 민사법 선택형",title:"민사법 선택형 학습도구 — 과목을 고르세요",banner:'변호사시험 선택형(70문항 · 175점) 대비 과목별 학습도구입니다 · <b style="color:var(--t-cc9a227,#C9A227)">준비 중</b> 과목은 문항이 등록되면 열립니다',
+    cards:[{name:"민법 선택형",sub:"민법 파트 선택형 문제풀이",ready:false},{name:"민사소송법 선택형",sub:"민사소송법 파트 선택형 문제풀이",ready:false},{name:"상법 선택형",sub:"상법 파트 선택형 문제풀이",ready:false}]},
+  "case":{kicker:"✍️ 민사법 사례형",title:"민사법 사례형 학습도구 — 과목을 고르세요",banner:'변호사시험 사례형(350점) 대비 과목별 진도별 사례형 학습도구입니다 · <b style="color:var(--t-cc9a227,#C9A227)">준비 중</b> 과목은 문항이 등록되면 열립니다',
+    cards:[{name:"민법 사례형",sub:"진도별 사례형 학습도구",ready:false},{name:"민사소송법 사례형",sub:"진도별 사례형 학습도구",ready:false},{name:"상법 사례형",sub:"진도별 사례형 학습도구",ready:false}]},
+  rec:{kicker:"📑 민사법 기록형",title:"민사법 기록형 학습도구",banner:'변호사시험 기록형(175점) 대비 학습도구입니다 · <b style="color:var(--t-cc9a227,#C9A227)">준비 중</b> — 문항이 등록되면 열립니다',
+    cards:[{name:"민사법 기록형",sub:"청구취지 · 요건사실 · 소장 작성",ready:false}]}
+};
+function barTool(k){ var T=BAR_TOOLS[k]; ecCards(T.kicker,T.title,T.banner,T.cards); }
+function barToolSel(){ barTool("sel"); }
+function barToolCase(){ barTool("case"); }
+function barToolRec(){ barTool("rec"); }
+/* 베리타스 현장강의 자료: 과목·유형별로 */
+function barMaterials(){
+  var C=["민법 사례형","민사소송법 사례형","상법 사례형","기록형","민법 선택형","민사소송법 선택형","상법 선택형"];
+  ecCards("📂 강의자료","베리타스 현장강의 자료 — 과목·유형을 고르세요","박승수 변호사 베리타스 민사법 강의에서 쓰는 문제지 · 해설 · 공통자료 · 개인자료입니다",
+    C.map(function(c){ return {name:c,sub:"강의자료 보기",ready:true,go:"closeChooser();vOpenCat('"+c+"')",act:"열기 →"}; })
+     .concat([{name:"전체 자료",sub:"모든 과목·유형",ready:true,go:"closeChooser();vOpenCat('')",act:"열기 →"}]));
 }
 function pickBarExam(){
   ecCards("🎓 변호사시험 학습엔진","민사법 700점 — 선택형 175 · 사례형 350 · 기록형 175",
